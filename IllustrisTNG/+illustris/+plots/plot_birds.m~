@@ -1,0 +1,36 @@
+%% centrals 
+illustris.plots.plot_phaseSpace(xxlim,yylim,cgmBird./countA,'tit',sprintf('All: %s',num2str(countA)),'lines','clims',[-7 0])
+%printout_fig(gcf,'cgmBird_All')
+
+
+illustris.plots.plot_phaseSpace(xxlim,yylim,cgmBirdC./countC,'tit',sprintf('Centrals: %s',num2str(countC)),'lines','clims',[-7 0])
+%printout_fig(gcf,'cgmBird_Centrals')
+
+
+illustris.plots.plot_phaseSpace(xxlim,yylim,cgmBirdQC./countQC,'tit',sprintf('Quenched Centrals: %s',num2str(countQC)),'lines','clims',[-7 0])
+%printout_fig(gcf,'cgmBird_Centrals_Quenched')
+
+illustris.plots.plot_phaseSpace(xxlim,yylim,cgmBirdTC./countTC,'tit',sprintf('trans Centrals: %s',num2str(countTC)),'lines','clims',[-7 0])
+%printout_fig(gcf,'cgmBird_Centrals_trans')
+
+
+illustris.plots.plot_phaseSpace(xxlim,yylim,cgmBirdSFC./countSFC,'tit',sprintf('SF Centrals: %s',num2str(countSFC)),'lines','clims',[-7 0])
+%printout_fig(gcf,'cgmBird_Centrals_SF')
+
+
+%% sats
+illustris.plots.plot_phaseSpace(xxlim,yylim,cgmBirdS./countS,'tit',sprintf('Sats: %s',num2str(countS)),'lines','clims',[-7 0])
+%printout_fig(gcf,'cgmBird_Sats')
+
+
+illustris.plots.plot_phaseSpace(xxlim,yylim,cgmBirdQS./countQS,'tit',sprintf('Quenched Sats: %s',num2str(countQS)),'lines','clims',[-7 0])
+%printout_fig(gcf,'cgmBird_Sats_Quenched')
+
+illustris.plots.plot_phaseSpace(xxlim,yylim,cgmBirdTS./countTS,'tit',sprintf('trans Sats: %s',num2str(countTS)),'lines','clims',[-7 0])
+%printout_fig(gcf,'cgmBird_Sats_trans')
+
+
+illustris.plots.plot_phaseSpace(xxlim,yylim,cgmBirdSFS./countSFS,'tit',sprintf('SF Sats: %s',num2str(countSFS)),'lines','clims',[-7 0])
+%printout_fig(gcf,'cgmBird_Sats_SF')
+
+

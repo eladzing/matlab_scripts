@@ -1,0 +1,22 @@
+
+eta=0.01:0.01:50;
+epsi=[];
+for i=1:length(cat.sigma)
+    
+    eps(i)=max(sqrt( eta.^2.*(bfunc(eta,1)+...
+    cat.fg(i).*cat.beta(i).^3.*bfunc(eta,cat.beta(i))+...
+    2.*cat.fb(i)./eta.^3)./(1+cat.fg(i)+cat.fb(i))));
+end
+
+
+eta=0.01:0.01:50;
+q=[];
+for i=1:length(cat.sigma)
+    
+    q=QToomre(eta,1,cat.fg(i),cat.fg(i),cat.beta(i),cat.fb(i),cat.xi(i));
+
+
+
+
+end
+

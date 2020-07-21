@@ -1,0 +1,12 @@
+%% script to plot nice images of TNG clusters 
+global illUnits
+units;
+m200=fofs.Group_M_Mean200.*illUnits.massUnit;
+m200Mask=m200>1e13;
+
+
+
+
+%% get 10 most massive
+
+%% get info about cluster 

@@ -1,0 +1,60 @@
+function result = angular_distance(zend,varargin )
+%ANGULAR_DISTANCE calculates the angular distance to an object for a given
+%redshift in a cosmological model defined by the parameters Omega_m ,
+%Omega_l and h at z=0. The distance is found by integration over the
+%friedmann equation. Result is in Mpc;
+
+
+if length(zend)>1
+    error('enter only one redshift')
+end
+
+%% set defualts: 
+global hub 
+h0 = hub ;
+Omm = 0.3; 
+Oml= 0.7; 
+res=1e-4;
+units;
+
+i=1;
+while i<=length(varargin)
+    switch lower(varargin{i})
+        case {'h0','hubble','hub'}
+            i=i+1;
+            h0=varargin{i};
+        case {'omegam','omm','omega_m'}
+            i=i+1;
+            Omm=varargin{i};
+        case {'omegal','oml','omega_lambda','lambda'}
+            i=i+1;
+            Oml=varargin{i};
+        otherwise
+            error('friedeq - illegal argument: %s',varargin{i})
+    end
+    i=i+1;
+end
+
+if isempty(h0)
+    h0=0.7;
+end
+
+if h0>1
+    h0=h0./100;
+end
+
+
+zz=0:zend*res:zend;
+
+
+eofz=friedeq(zz,'hub',h0,'Omm',Omm,'Oml',Oml)./(100.*h0);
+
+p1=trapz(zz,1./eofz);
+
+result=(cspeed./km)/(100.*h0)/(1+zend).*p1;
+
+
+
+
+end
+

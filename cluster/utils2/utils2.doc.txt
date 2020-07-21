@@ -1,0 +1,75 @@
+function [Vxx Vyy Vzz VcmX VcmY VcmZ] = V_Vcm(MPSec)
+  Calculates the center of mass velocity and returns the corrected velocity
+  field
+
+------------------------------------
+function [Vr Vtheta Vphi] = V_decomposition(MPSec, cm)
+  Calculates the (r,theta,phi) components of the velocity field based on
+  V_Vcm()'s data.
+
+------------------------------------
+function [result] = Vr(MPSec, cm)
+  Calculates the radial component of the velocity based on V_Vcm()'s data.
+
+------------------------------------
+function [derivative n_range] = derive_sgolay(data, dx, ORDER, WINDOW_LENGTH)
+  Savitzky-Golay first derivative, works on spherical 3D data (derives along R), and vectors.
+  See: derive_simple().
+
+------------------------------------
+function [derivative n_range] = derive_simple(data, dx, ORDER, WINDOW_LENGTH)
+  Performs a simple discrete first derivative. Works on a +-1 window.
+  Works only on a spherical 3D cube (derives along R).
+  (ignores ORDER and WINDOW_LENGTH)
+
+------------------------------------
+function ff = flux_sphere(MPSec)
+  Returns the calculated flux in a spherical cube
+
+------------------------------------
+function [gradR gradPhi gradTheta] = grad_sphere(MPsec, sphere_cube)
+  calculates the gradient in spherical coordinates of the given spherical
+  cube.
+
+------------------------------------
+load_maxcolormap
+The most best and invincible colormap curtesy of giorae. Maximal color
+  seperation.
+
+------------------------------------
+function [temperature, metallicity lambda] = read_lambda()
+ read the tabulated data file of the Lambda (cooling function)
+
+------------------------------------
+function h = scattercloud(x,y,n,l,clm,cmap,dilute)
+
+ SCATTERCLOUD display density of scatter data
+    SCATTERCLOUD(X,Y) creates a scatterplot of X and Y, displayed over a
+    surface representing the smoothed density of the points.  The density is
+    determined with a 2D histogram, using 25 equally spaced bins in both
+    directions.
+    SCATTERCLOUD(X,Y,N) uses N equally spaced bins.
+    SCATTERCLOUD(X,Y,N,L) uses L as a parameter to the smoothing algorithm.
+     Defaults to 1.  Larger values of L lead to a smoother density, but a
+     worse fit to the original data.
+    SCATTERCLOUD(X,Y,N,L,CLM) uses CLM as the color/linestyle/marker for
+     the scatter plot.  Defaults to 'k+'.
+    SCATTERCLOUD(X,Y,N,L,CLM,CMAP) uses CMAP as the figure's colormap.  The
+     default is 'flipud(gray(256))'.
+    H = SCATTERCLOUD(...) returns the handles for the surface and line
+     objects created.
+ 
+    Example:
+ 
+      scattercloud(1:100 + randn(1,100), sin(1:100) + randn(1,100),...
+                   50,.5,'rx',jet(256))
+
+------------------------------------
+function [smoothed_data n_range] = smooth_sgolay(data, ORDER, R_FRAC)
+  Savitzky-Golay smoothening with adaptive window size (window size
+  proportional to the radius. Useful on noisy profiles.
+
+------------------------------------
+function write_cube(filename, cube_struct)
+  Writes a cartesian cube in the same format as read by read_cube().
+  cube_struct must contain all fields as returned by read_cube().

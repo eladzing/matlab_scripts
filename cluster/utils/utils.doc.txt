@@ -1,0 +1,353 @@
+function [Jx Jy Jz] = AngularMomentum(MPSec, cm)
+  Calculates the angular momentum vector at each point for the current
+  cluster (See: new_env). Units: Msun * Mpc * (km/s)
+ 
+  @param MPSec  The required Mpc resolution (1, 2, 4, or 8)
+  @param cm     (optional) Center of coordinate system relative to the
+                           cube's center.
+  @returns  The angular momentum cubes in the X, Y, and Z directions.
+ 
+
+------------------------------------
+function [Jx_Profile Jy_Profile Jz_Profile J_Profile Jtheta_Profile Jphi_Profile] = AngularMomentum_Profiles(Jx,Jy,Jz)
+  Calculates the angular momentum profiles from the angular momentum cubes.
+ 
+  @param Jx,Jy,Jz  The angular momentum cubes in the X, Y, and Z directions
+                   respectively.
+  @returns  The angular momentum profiles in cartesian and spherical
+            coordinates.
+ 
+
+------------------------------------
+function result = MAKE_CUM_PROFILE_FROM_CUBE(data)
+  Return a cumulative sum profile for cartesian cubes of extensive parameters. 
+  Same as cumsum(MAKE_PROFILE_FROM_CUBE(data))
+ 
+  @param data    The cartesian data cube.
+ 
+  @returns     The cumulative sum profile.
+ 
+
+------------------------------------
+function result = MAKE_MASS_WEIGHTED_PROFILE(data, rho_sp)
+  Utility function to generate a mass-weighted profile from 
+  a given spherical cube (See: cart2sphere)
+ 
+  @param data    The spherical data cube.
+  @param rho_sp  The density profile in a spherical data cube.
+ 
+  @returns     The mass-weighted profile.
+ 
+
+------------------------------------
+function result = MAKE_MASS_WEIGHTED_VAR_PROFILE(data, rho_sp)
+  Utility function to generate a mass-weighted variance profile from 
+  a given spherical cube (See: cart2sphere)
+  Same as: MAKE_MASS_WEIGHTED_PROFILE(data.^2) - MAKE_MASS_WEIGHTED_PROFILE(data).^2
+ 
+  @param data    The spherical data cube.
+  @param rho_sp  The density profile in a spherical data cube.
+ 
+  @returns     The mass-weighted variance profile.
+ 
+
+------------------------------------
+function result = MAKE_PROFILE(data)
+  Utility function to generate a volume-weighted profile from 
+  a given spherical cube (See: cart2sphere)
+ 
+  @param data  The spherical data cube.
+ 
+  @returns     The volume-weighted profile.
+ 
+
+------------------------------------
+function result = MAKE_PROFILE_FROM_CUBE(data)
+  Returns a sum profile for cartesian cubes of extensive parameters.  
+  The profile is the sum of all values at a given radius, and not the average. 
+  The calculation is done in a manner that preserves the sum of all data 
+  within a sphere, Unlike using using cart2sphere and then summing, which 
+  resamples and does not preserve cumulative values. Useful when the total 
+  'mass' should be preserved, or when calculating integrals.
+ 
+  @param data    The cartesian data cube.
+ 
+  @returns     The sum profile
+ 
+
+------------------------------------
+function result = MAKE_VAR_PROFILE(data)
+  Utility function to generate a volume-weighted variance profile from 
+  a given spherical cube (See: cart2sphere)
+  Same as: MAKE_PROFILE(data.^2) - MAKE_PROFILE(data).^2
+ 
+  @param data  The spherical data cube.
+ 
+  @returns     The volume-weighted variance profile.
+ 
+
+------------------------------------
+function result = RHODM(MPSec)
+  Utility function to load the dark matter density cube
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = RHOG(MPSec)
+  Utility function to load the gas density cube
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = RHOG_sphere(MPc)
+  Utility function to load the gas density cube in spherical coordinates
+  (See: cart2sphere)
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = RHOTOT(MPSec)
+  Utility function to load the total density cube
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = RHOTOT_sphere(MPc)
+  Utility function to load the total density cube in spherical coordinates
+  (See: cart2sphere)
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = S(MPSec)
+  Utility function to calculate the entropy cube according to:
+  S = T/(\rho_{gas}^{2/3})
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = S_sphere(MPc);
+  Utility function to load the entropy cube in spherical coordinates
+  (See: cart2sphere)
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = T(MPSec)
+  Utility function to load the temperature cube
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = T_sphere(MPc);
+  Utility function to load the temperature cube in spherical coordinates
+  (See: cart2sphere)
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = Vphi_sphere(MPc)
+  Utility function to load the phi-axis velocity cube in spherical coordinates
+  (See: cart2sphere)
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = Vr_sphere(MPc)
+  Utility function to load the radial velocity cube in spherical coordinates
+  (See: cart2sphere)
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = Vtheta_sphere(MPc)
+  Utility function to load the theta-axis velocity cube in spherical coordinates
+  (See: cart2sphere)
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = Vx(MPSec)
+  Utility function to load the X-axis velocity cube
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = Vy(MPSec)
+  Utility function to load the Y-axis velocity cube
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = Vz(MPSec)
+  Utility function to load the Z-axis velocity cube
+ 
+  @param MPSec The required Mpc resolution (1, 2, 4, or 8)
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = cart2sphere(cube,MAX_R,cm)
+  Converts a cartesian cube to a spherical coordinates cube.
+  Coordinates are (R,Phi,Theta) such that:
+     0.5   <= R     <= 128 (in jumps of 0.5)
+     -Pi/2 <= Phi   <= Pi/2 (in non-linear spacing to impose a constant ds
+                           per radius)
+     -Pi   <= Theta <= Pi
+  See: sphere_grid, uni_sphere
+ 
+  @param cube   The cartesian cube
+  @param MAX_R  (optional) Specifies the maximum radius index (1-256)
+                            where 1 corresponds to 0.5 grid cell radius, and
+                                256 corresponds to 128 grid cell radius.
+  @param cm     (optional) Center of coordinate system relative to the
+                           cube's center.
+
+------------------------------------
+function ds = ds_sphere(MPc)
+  Returns a 256.^3 cube with the differential area elements (dA) matching
+  a spherical cube of MPc size (See: cart2sphere).
+ 
+  @param MPc  The required Mpc resolution (1, 2, 4, or 8)
+ 
+  @returns     The differential area cube
+ 
+
+------------------------------------
+function result = lambda_Profile(R_Profile, J_Profile)
+  Calculates the scalar spin parameter 
+  \lambda = (J/M_g)/(rV_c) where V_c^2=GM_tot(r)/r
+  for the current cluster (See: new_env).
+ 
+  @param R_Profile  The radius profile matching the given J_Profile.
+  @param J_Profile  The Angular Momentum profile (See:
+                    AngularMomentum_Profiles).
+
+------------------------------------
+function new_env(halo)
+  Utility function to set up the FILE_FORMAT and FILE_FORMAT_SPHERE
+  environment variables, used globally to locate and load cluster data.
+ 
+  @param halo  Cluster Name
+ 
+
+------------------------------------
+function result = read_MTOT_Profile(R_Profile)
+  Utility function to read the cumulative total mass profile
+  from Kravtsov's data for the current cluster (See: new_env).
+ 
+  @param R_Profile  The radius profile for which the profile should be
+                    calculated.
+  @returns  The total mass profiles
+ 
+
+------------------------------------
+function [MG_Profile MSTAR_Profile MDM_Profile] = read_Mass_Profiles(R_Profile)
+  Utility function to read the cumulative gas, star, and DM mass profiles
+  from Kravtsov's data for the current cluster (See: new_env).
+ 
+  @param R_Profile  The radius profile for which the profiles should be
+                    calculated.
+  @returns  The gas, star, and DM mass profiles
+ 
+
+------------------------------------
+function [RHOG_Profile RHOTOT_Profile] = read_RHO_Profiles(R_Profile)
+  Utility function to read the gas and total density profiles
+  from Kravtsov's data for the current cluster (See: new_env).
+ 
+  @param R_Profile  The radius profile for which the profiles should be
+                    calculated.
+  @returns  The gas, and total density profiles
+ 
+
+------------------------------------
+function result = read_T_Profile(R_Profile)
+  Utility function to read the temperature profile
+  from Kravtsov's data for the current cluster (See: new_env).
+ 
+  @param R_Profile  The radius profile for which the profile should be
+                    calculated.
+  @returns  The temperature profiles
+ 
+
+------------------------------------
+function result = read_cube(filename)
+  Utility function to load a "Kravtsov Data Cube"
+ 
+  @param filename  The file to load.
+  @returns  A 256^3 matrix of singles.
+ 
+
+------------------------------------
+function result = sphere_R_Profile(MPSec)
+  Generates the 'canonical' radius profile for the spherical coordinates
+  system.
+ 
+  @param MPSec  The required Mpc resolution (1, 2, 4, or 8)
+ 
+  @returns  The radius profile
+ 
+
+------------------------------------
+function [mesh_r mesh_phi mesh_theta] = sphere_grid(mpc)
+  Utility function to generate the mesh grids for the spherical coordinates returned by cart2sphere().
+  Coordinates are (R,Phi,Theta) such that:
+     R is in units of Mpc (between 0.5*(mpc/h)/256 and 128*(mpc/h)/256)
+     -Pi/2 <= Phi   <= Pi/2 (in non-linear spacing to impose a constant ds
+                           per radius)
+     -Pi   <= Theta <= Pi
+ 
+  @param mpc  The required Mpc resolution (1, 2, 4, or 8)
+  @returns    The three mesh grids for the R, Phi, and Theta coordinates.
+
+------------------------------------
+function [xx,yy,zz] = uni_sphere(varargin)
+ UNI_SPHERE Generate sphere.
+  IMPORTANT: THIS IS A MODIFIED VERSION OF MATLAB'S SPHERE() FUNCTION
+             We modified the Phi coordinate spacing to enforce a constant
+             ds per radius, and generate a UNIform sphere.
+ 
+    [X,Y,Z] = UNI_SPHERE(N) generates three (N+1)-by-(N+1)
+    matrices so that SURF(X,Y,Z) produces a unit sphere.
+ 
+    [X,Y,Z] = UNI_SPHERE uses N = 20.
+ 
+    UNI_SPHERE(N) and just SPHERE graph the sphere as a SURFACE
+    and do not return anything.
+ 
+    UNI_SPHERE(AX,...) plots into AX instead of GCA.
+ 
+    See also ellipsoid, cylinder.
+
+------------------------------------
+units
+  Useful units in MKS

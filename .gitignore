@@ -1,0 +1,16 @@
+forNofi.m
+for_Sandro/
+generalPrintout/
+IllustrisTNG/*.tar.gz
+IllustrisTNG/*.pdf
+IllustrisTNG/matFiles/
+IllustrisTNG/tempdir/
+stadtmobil/
+rpsProject/matFiles/
+cluster/mat_files/
+cluster/obsolete/
+scp*
+sync*
+matSync
+*.fig
+pathdef.m

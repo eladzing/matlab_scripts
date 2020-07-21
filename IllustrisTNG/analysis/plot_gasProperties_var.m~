@@ -1,0 +1,356 @@
+%% Plot results for gas properties in Centrals in TNG
+%% load data
+global simDisplayName
+if readFlag
+    
+    global DEFAULT_MATFILE_DIR
+    %load([DEFAULT_MATFILE_DIR '/cooling_times_z0_' simDisplayName '.mat'])
+    load([DEFAULT_MATFILE_DIR '/gasProperties_snp' num2str(snap) '_' simDisplayName '.mat'])
+    load([DEFAULT_MATFILE_DIR '/BH_energyInjection_snp' num2str(snap) '_' simDisplayName '.mat'])
+    
+    %     bhStruct.inGal=illustris.utils.read_catalog('bh_inGal','folder','bhProps');
+    %     tCoolStruct.inGal=illustris.utils.read_catalog('gasProps_inGal','folder','gasProperties');
+    
+    
+    %     global DRACOFLAG
+    %     if DRACOFLAG
+    %         fofs=illustris.groupcat.loadHalos(bp,99);
+    %         subs=illustris.groupcat.loadSubhalos(bp,99);
+    %
+    %     else
+    %         load([DEFAULT_MATFILE_DIR '/tng100_z0_fofs_subs.mat'])
+    %     end
+    %
+    fofs=illustris.groupcat.loadHalos(bp,snap);
+    subs=illustris.groupcat.loadSubhalos(bp,snap);
+    
+    fofs=illustris.utils.addTvirFofs(fofs);
+end
+subsInfo = illustris.infrastructure.build_sub_fof_connection(subs,fofs);
+units; % load general unit structure in cgs.
+illustris.utils.set_illUnits(snap)
+global illUnits
+
+%% define what we are plotting
+% identify centrals
+centralMask= subsInfo.isCentral(tCoolStruct.galMask);
+
+%gasField='CGM';
+
+%global simDisplayName
+
+% get usefel stuff
+galMass=tCoolStruct.galMass(tCoolStruct.galMask);  % galaxy stellar mass
+gasMass=tCoolStruct.(['in' gasField]).gasMass(:,tCoolStruct.galMask);
+sfr=subs.SubhaloSFRinRad(tCoolStruct.galMask);  % sfr in galaxy
+ssfr=illustris.utils.calc_ssfr(subs);% sfr./galMass + 10^0.5*1e-17.*10.^(0.5.*rand(size(sfr)));
+ssfr=ssfr(tCoolStruct.galMask);
+
+ssfrThresh=1e-11;
+qMask=ssfr<=ssfrThresh;
+
+% sfre(1,:)=sfr./gasMass(1,:);
+% sfre(2,:)=sfr./gasMass(1,:);
+
+
+
+tcQ25=tCoolStruct.(['in' gasField]).quantTc(2,tCoolStruct.galMask);
+tcQ25R=tCoolStruct.(['in' gasField]).quantTc(2,tCoolStruct.galMask)./...
+    tCoolStruct.(['in' gasField]).medianTc(tCoolStruct.galMask);
+tcQ75=tCoolStruct.(['in' gasField]).quantTc(3,tCoolStruct.galMask);
+tcQ75R=tCoolStruct.(['in' gasField]).quantTc(3,tCoolStruct.galMask)./...
+    tCoolStruct.(['in' gasField]).medianTc(tCoolStruct.galMask);
+tcQ10=tCoolStruct.(['in' gasField]).quantTc(1,tCoolStruct.galMask);
+tcQ10R=tCoolStruct.(['in' gasField]).quantTc(1,tCoolStruct.galMask)./...
+    tCoolStruct.(['in' gasField]).medianTc(tCoolStruct.galMask);
+tcQ90=tCoolStruct.(['in' gasField]).quantTc(4,tCoolStruct.galMask);
+tcQ90R=tCoolStruct.(['in' gasField]).quantTc(4,tCoolStruct.galMask)./...
+    tCoolStruct.(['in' gasField]).medianTc(tCoolStruct.galMask);
+
+
+tcM=tCoolStruct.(['in' gasField]).massBinTc(:,tCoolStruct.galMask)./...
+    sum(tCoolStruct.(['in' gasField]).massBinTc(:,tCoolStruct.galMask),1);
+
+gasTempQ25=tCoolStruct.(['in' gasField]).quantTemp(2,tCoolStruct.galMask);
+gasTempQ25R=tCoolStruct.(['in' gasField]).quantTemp(2,tCoolStruct.galMask)./...
+    tCoolStruct.(['in' gasField]).medianTemp(tCoolStruct.galMask);
+gasTempQ75=tCoolStruct.(['in' gasField]).quantTemp(3,tCoolStruct.galMask);
+gasTempQ75R=tCoolStruct.(['in' gasField]).quantTemp(3,tCoolStruct.galMask)./...
+    tCoolStruct.(['in' gasField]).medianTemp(tCoolStruct.galMask);
+gasTempQ10=tCoolStruct.(['in' gasField]).quantTemp(1,tCoolStruct.galMask);
+gasTempQ10R=tCoolStruct.(['in' gasField]).quantTemp(1,tCoolStruct.galMask)./...
+    tCoolStruct.(['in' gasField]).medianTemp(tCoolStruct.galMask);
+gasTempQ90=tCoolStruct.(['in' gasField]).quantTemp(4,tCoolStruct.galMask);
+gasTempQ90R=tCoolStruct.(['in' gasField]).quantTemp(4,tCoolStruct.galMask)./...
+    tCoolStruct.(['in' gasField]).medianTemp(tCoolStruct.galMask);
+
+
+gasTempM=tCoolStruct.(['in' gasField]).massBinTemp(:,tCoolStruct.galMask)./...
+    sum(tCoolStruct.(['in' gasField]).massBinTemp(:,tCoolStruct.galMask),1);
+
+
+gasTemp=tCoolStruct.(['in' gasField]).quantTemp(2,tCoolStruct.galMask);
+gasEnt=tCoolStruct.(['in' gasField]).meanEntMW(1,tCoolStruct.galMask);
+% gasMach=tCoolStruct.(['in' gasField]).medianMach(1,tCoolStruct.galMask);
+% gasMach2=tCoolStruct.(['in' gasField]).meanMachEW(1,tCoolStruct.galMask);
+% gasEDisp=tCoolStruct.(['in' gasField]).EnergyDissipation(:,tCoolStruct.galMask);
+% gasVDisp=tCoolStruct.(['in' gasField]).velDisp(:,tCoolStruct.galMask);
+gasDens=tCoolStruct.(['in' gasField]).quantDensN(2,tCoolStruct.galMask);
+
+% fgs=(tCoolStruct.(['in' gasField]).gasMass(tCoolStruct.galMask)+...
+%     tCoolStruct.(['in' gasField]).sfrMass(tCoolStruct.galMask))./galMass;
+% fg=fgs./(1+fgs);
+
+%% black hole stuff
+bhQM=bhStruct.inGal.cumEngQM(tCoolStruct.galMask);
+bhRM=bhStruct.inGal.cumEngRM(tCoolStruct.galMask);
+bhMass=bhStruct.inGal.bhMassMax(tCoolStruct.galMask);
+%subs.SubhaloMassInRadType(illustris.partTypeNum('bh')+1,tCoolStruct.galMask).*illUnits.massUnit;
+
+galaxyMask=centralMask & gasTemp>0 & bhMass>0;
+galType='centrals';
+
+
+
+nameTag=[gasField '_' galType '_snp' num2str(snap) '_' simDisplayName];
+
+
+
+%% get tvir for host fofs
+tvir=fofs.Group_T_Mean200(subsInfo.hostFof+1);
+tvir=tvir(tCoolStruct.galMask);
+global tvirMean
+tvirMean=mk_meanMedian_bin(log10(galMass(galaxyMask)),log10(tvir(galaxyMask)),'nb',20);
+
+%% build stellar to halo connection 
+hostMass=fofs.Group_M_Crit200(subsInfo.hostFof(tCoolStruct.galMask)+1).*illUnits.massUnit;
+hostMed=mk_meanMedian_bin(log10(galMass(galaxyMask)),log10(hostMass(galaxyMask)),'bins',9:0.5:12.5);
+
+%% plotting stuff
+
+switch gasField
+    case 'Gal'
+        gasTag='ISM';
+    case {'CGM'}
+        gasTag='CGM_{in}';
+        case {'Out'}
+        gasTag='CGM_{out}';
+    case 'Sub'
+        gasTag='Subhalo';
+end
+
+
+mstarLab='$\log M_\star\,[\mathrm{M_\odot}]$';
+%tcLab=sprintf('$\\log t_\\mathrm{cool,%s}\\,[\\mathrm{Gyr}]$',gasTag);
+tcLab='$\log t_\mathrm{cool}\,[\mathrm{Gyr}]$';
+ssfrLab='$\log \mathrm{sSFR}\,[\mathrm{yr^{-1}}]$';
+%sfreLab=sprintf('$\\log \\mathrm{SFRe}\\,[\mathrm{yr^{-1}}] $';
+mgasLab=sprintf('$\\log M_\\mathrm{gas,%s}\\,[\\mathrm{M_\\odot}]$',gasTag);
+tempLab=sprintf('$\\log T_{\\mathrm{%s}} \\,[\\mathrm{K}]$',gasTag);
+temp2Lab=sprintf('$\\log T_{\\mathrm{%s}}/T_{\\mathrm{vir}} $',gasTag);
+entLab=sprintf('$\\log S_{\\mathrm{%s}} \\,[\\mathrm{KeV\\,cm^2}]$',gasTag);
+fgsLab=sprintf('$\\log M_\\mathrm{gas,%s}/M_\\mathrm{star}$',gasTag);
+fgLab=sprintf('$\\log M_\\mathrm{gas,%s}/M_\\mathrm{Baryon}$',gasTag);
+%densLab=sprintf('$\\log n_\\mathrm{%s}\\,[\\mathrm{cm^{-3}}]$',gasTag);
+densLab=sprintf('$\\log n_\\mathrm{%s}\\,[\\mathrm{cm^{-3}}]$',gasTag);
+QMLab='$\log E_\mathrm{HAM}$';
+RMLab='$\log E_\mathrm{LAM}$';
+bhLab='$\log E_\mathrm{LAM}/E_\mathrm{HAM}$';
+bhLab2='$\log M_{\mathrm{BH}}\,[\mathrm{M_\odot}]$';
+% edissLab=sprintf('$\\log \\dot{E}_\\mathrm{dis,%s}$',gasTag);
+% sigmaLab=sprintf('$\\log \\sigma_{\\mathrm{%s}}\\,[\\mathrm{km/sec}]$',gasTag);
+% machLab=sprintf('$\\log \\mathcal{M}_\\mathrm{%s}$',gasTag);
+% machLab2=sprintf('$\\log \\mathcal{M}_\\mathrm{EW,%s}$',gasTag);
+
+%cmap=brewermap(256,'RdYlBu');
+cmap=brewermap(256,'*Spectral');
+
+
+fprintf('ready to plot \n')
+%pause
+
+%% mass vs entropy
+
+if entFlag
+    
+    % create contours
+    filt=fspecial('disk',6);
+    xdata=log10(galMass(galaxyMask));
+    ydata=log10(gasEnt(galaxyMask));
+    
+    popCont=plot_population_contour(xdata,ydata,'smooth',filt,'noplot');
+    yl=[-3 3];
+    xl=[9 12.5];
+    
+    
+    % create quenched contour 
+    qfilt=fspecial('disk',12);
+    xqdata=log10(galMass(galaxyMask & qMask));
+    yqdata=log10(gasEnt(galaxyMask & qMask));
+    
+    qCont=plot_population_contour(xqdata,yqdata,'smooth',qfilt,'noplot');
+    
+    % create sf contour 
+    xsfdata=log10(galMass(galaxyMask & ~qMask));
+    ysfdata=log10(gasEnt(galaxyMask & ~qMask));
+    
+    sfCont=plot_population_contour(xsfdata,ysfdata,'smooth',qfilt,'noplot');
+    
+  
+    % create tree
+    minLev=7;
+    splitParam=30;
+    tre=tree2d(xdata,ydata,[xl(1) yl(1)],diff(xl) ,diff(yl), splitParam,minLev);
+    
+%     
+%     % ssfr
+%     plot_massEnt3('tree',xdata,ydata,log10(ssfr(galaxyMask)),tre,ssfrLab,flipud(cmap),xl,yl,popCont,qCont,gasField,[-15 -9],hostMed)
+%     
+%     fname=sprintf('massEnt_%s_%s','ssfr',nameTag);
+%     if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    % sfre
+    %plot_massEnt3('tree',xdata,ydata,log10(sfre(galaxyMask)),sfreLab,flipud(cmap))
+    %fname=sprintf('massEnt_%s_%s','sfre',nameTag);
+    %if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    
+    % tcool 25 
+        
+    plot_massEnt3('tree',xdata,ydata,log10(tcQ25(galaxyMask)),tre,'tc25',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-2.5 1.5],hostMed)
+    fname=sprintf('massEnt_%s_%s','tcoolQ25',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(tcQ25R(galaxyMask)),tre,'tc25R',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-2 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tcoolQ25R',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(tcQ75(galaxyMask)),tre,'tc75',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-2.5 1.5],hostMed)
+    fname=sprintf('massEnt_%s_%s','tcoolQ75',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(tcQ75R(galaxyMask)),tre,'tc75R',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-2 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tcoolQ75R',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+   
+    
+    plot_massEnt3('tree',xdata,ydata,log10(tcQ10(galaxyMask)),tre,'tc10',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-2.5 1.5],hostMed)
+    fname=sprintf('massEnt_%s_%s','tcoolQ10',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(tcQ10R(galaxyMask)),tre,'tc10R',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-2 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tcoolQ10R',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(tcQ90(galaxyMask)),tre,'tc90',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-2.5 1.5],hostMed)
+    fname=sprintf('massEnt_%s_%s','tcoolQ90',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(tcQ90R(galaxyMask)),tre,'tc90R',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-2 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tcoolQ90R',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    
+    
+    plot_massEnt3('tree',xdata,ydata,log10(tcM(1,galaxyMask)),tre,'MF1Gyr',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-3 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tcoolM1',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(tcM(2,galaxyMask)),tre,'MF10Gyr',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-3 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tcoolM2',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(tcM(3,galaxyMask)),tre,'MF>10Gyr',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-3 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tcoolM3',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    
+    
+    %% temp
+    
+    plot_massEnt3('tree',xdata,ydata,log10(gasTempQ25(galaxyMask)),tre,'T25',cmap,xl,yl,popCont,qCont,sfCont,gasField,[4 8],hostMed)
+    fname=sprintf('massEnt_%s_%s','tempQ25',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(gasTempQ25R(galaxyMask)),tre,'T25R',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-2 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tempQ25R',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(gasTempQ75(galaxyMask)),tre,'T75',cmap,xl,yl,popCont,qCont,sfCont,gasField,[4 8],hostMed)
+    fname=sprintf('massEnt_%s_%s','tempQ75',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(gasTempQ75R(galaxyMask)),tre,'T75R',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-2 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tempQ75R',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+   
+    
+    plot_massEnt3('tree',xdata,ydata,log10(gasTempQ10(galaxyMask)),tre,'T10',cmap,xl,yl,popCont,qCont,sfCont,gasField,[4 8],hostMed)
+    fname=sprintf('massEnt_%s_%s','tempQ10',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(gasTempQ10R(galaxyMask)),tre,'T10R',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-2 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tempQ10R',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(gasTempQ90(galaxyMask)),tre,'T90',cmap,xl,yl,popCont,qCont,sfCont,gasField,[4 8],hostMed)
+    fname=sprintf('massEnt_%s_%s','tempQ90',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(gasTempQ90R(galaxyMask)),tre,'T90R',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-2 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tempQ90R',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    
+    
+    plot_massEnt3('tree',xdata,ydata,log10(gasTempM(1,galaxyMask)),tre,'MFcold',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-3 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tempM1',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(gasTempM(2,galaxyMask)),tre,'MFwarm',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-3 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tempM2',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    plot_massEnt3('tree',xdata,ydata,log10(gasTempM(3,galaxyMask)),tre,'MFhot',cmap,xl,yl,popCont,qCont,sfCont,gasField,[-3 0],hostMed)
+    fname=sprintf('massEnt_%s_%s','tempM3',nameTag);
+    if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+    
+    
+    
+    
+    
+end
+
+
+% %% bhrat vs. entropy 
+% if bhratFlag
+%     
+%     base=10^0.5*1e-8;
+%     scat=0.5;
+%     bhrat=bhRM(galaxyMask)./bhQM(galaxyMask);
+%     msk=bhrat==0 | isinf(bhrat);
+%     bhrat(msk)=base.*10.^(scat.*rand(1,sum(msk)));
+%     
+%     
+%     filt=fspecial('disk',6);
+%     xdata=log10(bhrat);
+%     ydata=log10(gasEnt(galaxyMask));
+%     
+%     popCont=plot_population_contour(xdata,ydata,'smooth',filt,'noplot');
+%     yl=[-3 3];
+%     xl=[-7.6 0];
+%     
+%        
+%     minLev=7;
+%     splitParam=30;
+%    
+%     tre=tree2d(xdata,ydata,[xl(1) yl(1)],diff(xl) ,diff(yl), splitParam,minLev);
+%         
+%     % ssfr
+%     plot_bhratEnt2('tree',xdata,ydata,log10(ssfr(galaxyMask)),tre,ssfrLab,flipud(cmap),xl,yl,popCont,'Gal',[-16.5 -9],hostMed);
+%     
+%     fname=sprintf('bhratEnt_%s_%s','ssfr',nameTag);
+%     if  printFlag; printout_fig(gcf,fname,'fig','v'); end
+%     
+%     
+% end

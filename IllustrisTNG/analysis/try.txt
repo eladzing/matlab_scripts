@@ -1,0 +1,10 @@
+tree = illustris.sublink.loadTree(bp,snap,id,fields,true);
+%firstInd=length(tree.SnapNum);
+len=tree.count;
+    gas=illustris.snapshot.loadSubhalo(bp, tree.SnapNum(i), tree.SubfindID(i), 'gas',{'Coordinates','Density','ElectronAbundance',...
+        vv=gas.Velocities(k,:).*illustris.utils.velocityFactor(snap,'gas')-tree.SubhaloVel(k,i).*illustris.utils.velocityFactor(snap,'sub');
+    gas.newCoord = illustris.utils.centerObject(gas.Coordinates,tree.SubhaloPos(:,i));
+    rhalfStar=tree.SubhaloHalfmassRadType(illustris.partTypeNum('stars')+1,i); % stellar half mass radius
+    rhalfGas=tree.SubhaloHalfmassRadType(illustris.partTypeNum('gas')+1,i); % gas half mass radius
+    bhs=illustris.snapshot.loadSubhalo(bp, tree.SnapNum(i), tree.SubfindID(i),'bh',...
+    bhs.newCoord = illustris.utils.centerObject(bhs.Coordinates,tree.SubhaloPos(:,i));

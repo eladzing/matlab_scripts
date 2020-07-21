@@ -1,0 +1,157 @@
+%global DEFAULT_MATFILE_DIR
+%load([DEFAULT_MATFILE_DIR '/catalog_masses.mat'])
+
+
+%% set Host parameters
+Mh=5e14;
+cvh=cvir_Mvir(Mh,0,'random');
+fgh=0.15;
+host=NFW('mv',Mh,'cc',cvh,'fg',fgh,'crit');
+
+%% orbits
+if readFlag
+    load([DEFAULT_MATFILE_DIR '/orbitBank.mat'])
+end
+
+oInd=1:length(orb);
+oInd=shuffleArray(oInd);
+
+
+
+fprintf('Running evolution \n')
+
+
+sz=size(cata);
+%betaRange=[1/2.5  1/2 1/1.5  1  1.5 2  2.5 Inf];
+%fgsRange=[0.05 0.2 0.35 0.5 0.65 0.8 0.95 Inf];
+
+betaRange=[1/5 1/3 1/2 1/1.5 4/5 1.0 Inf]; 
+fgsRange=[0.05 0.1 0.2 0.3 0.4 0.5 Inf];
+    
+
+
+
+
+for k=7 %1:sz(1)
+    for j=2:sz(2)
+        
+        catg=cata(k,j);
+        ngal=length(catg.Ms);
+        fprintf('Running on catalog %i of %i, evoloving galaxies \n',...
+            (k-1)*sz(2)+j,prod(sz))
+        prc0=20;
+        step=20;
+        for i=1:ngal
+            %gals
+            
+            prc=i/ngal*100;
+            if prc>=prc0
+                
+                fprintf('completed %s %% of catalog \n',num2str(prc0))
+                
+                prc0=prc0+step;
+                
+            end
+            
+            
+            gal=GALAXY('ms',catg.Ms(i),'rd',catg.rd(i),'fgs',catg.fgs(i),...
+                'beta',catg.beta(i),'fbs',catg.fbs(i),'xi',catg.xi(i),...
+                'Mh',catg.Mv(i),'cv',catg.cv(i));
+            
+            
+            orbInd=oInd(i);
+            
+            galRes(i)=galEvolutionMachineLight(gal,host,orb(orbInd),'nobar');
+            
+        
+            % find final index for orbit  
+            iend1=find(orb(i).rad>host.Rvir,1,'first');
+            vra=orb(i).x.*orb(i).vx+orb(i).y.*orb(i).vy;
+            iend2=find(vra(1:end-1)>0 & vra(2:end)<0,1,'first');
+            
+            if isempty(iend1)
+                iend1=length(orb(i).rad);
+            end
+            
+            if isempty(iend2)
+                iend2=length(orb(i).rad);
+            end
+            
+            iend(i)=min(iend1,iend2);
+            
+            
+            
+        end
+        catEvol(k,j).galRes=galRes;
+        
+        
+        %% calculate quenched fraction
+        
+        %iend=6599;
+        edj=0:0.1:1;
+        bCen=edj(1:end-1)+0.5.*diff(edj);
+        
+        qf1=zeros(1,length(bCen));
+        qf2=zeros(1,length(bCen));
+        cnt1=qf1;
+        cnt2=qf2;
+        for ii=1:length(galRes)
+        
+            
+            
+            rpp=galRes(ii).rpos(1:iend(ii))./host.Rvir;
+            rpp2=rpp.*generate_projectionFac(length(rpp))';
+            bInd=discretize(rpp,edj);
+            bInd2=discretize(rpp2,edj);
+            
+            
+            qn=galRes(ii).ssfr(1:iend(ii))<1e-11;
+            onn=ones(size(qn));
+            
+            qff1=zeros(1,length(bCen));
+            cntt1=qff1;
+            qff2=qff1;
+            cntt2=qff1;
+            
+            for jj=1:length(bCen)
+                qff1(jj)=sum(qn(bInd==jj));
+                cntt1(jj)=sum(onn(bInd==jj));
+                
+                qff2(jj)=sum(qn(bInd2==jj));
+                cntt2(jj)=sum(onn(bInd2==jj));
+            end
+            
+            qf1=qf1+qff1;
+            qf2=qf2+qff2;
+            cnt1=cnt1+cntt1;
+            cnt2=cnt2+cntt2;
+            
+        end
+        
+        qFrac(k,j).qf=qf1;
+        qFrac(k,j).qfProj=qf2;
+        qFrac(k,j).cnt=cnt1;
+        qFrac(k,j).cntProj=cnt2;
+        qFrac(k,j).bCen=bCen;
+        qFrac(k,j).fgs=fgsRange(k);
+        qFrac(k,j).beta=betaRange(j);
+        
+        
+        
+        
+        
+    end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+

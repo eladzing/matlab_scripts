@@ -1,0 +1,16 @@
+full_flux_profile_allbox('/home/alf/eladzing/data/kravtsov/clusters/CL7','CL7');
+full_flux_profile_allbox('/home/alf/eladzing/data/kravtsov/clusters/CL6','CL6');
+full_flux_profile_allbox('/home/alf/eladzing/data/kravtsov/clusters/CL9','CL9');
+full_flux_profile_allbox('/home/alf/eladzing/data/kravtsov/clusters/CL10','CL10');
+full_flux_profile_allbox('/home/alf/eladzing/data/kravtsov/clusters/CL11','CL11');
+full_flux_profile_allbox('/home/alf/eladzing/data/kravtsov/clusters/CL14','CL14');
+full_flux_profile_allbox('/home/alf/eladzing/data/kravtsov/clusters/CL24','CL24');
+%full_flux_profile_allbox2('/home/alf/eladzing/data/kravtsov/clusters/CL5','CL5');
+full_flux_profile_allbox2('/home/alf/eladzing/data/kravtsov/clusters/CL105','CL105');
+full_flux_profile_allbox2('/home/alf/eladzing/data/kravtsov/clusters/CL103','CL103');
+full_flux_profile_allbox2('/home/alf/eladzing/data/kravtsov/clusters/CL106','CL106');
+full_flux_profile_allbox2('/home/alf/eladzing/data/kravtsov/clusters/CL107','CL107');
+full_flux_profile_allbox('/home/alf/eladzing/data/kravtsov/clusters/CL101','CL101');
+full_flux_profile_allbox('/home/alf/eladzing/data/kravtsov/clusters/CL102','CL102');
+full_flux_profile_allbox('/home/alf/eladzing/data/kravtsov/clusters/CL104','CL104');
+full_flux_profile_allbox('/home/alf/eladzing/data/kravtsov/clusters/CL3','CL3');

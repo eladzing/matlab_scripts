@@ -1,0 +1,250 @@
+function res=cell2grid(coords,vals,cellSize,varargin)
+%CELL2GRID - map scattered cells into uiform grid
+%            Map a set of values in cells (e.g. from an unstructured mesh
+%            or particel data) to a uniform grid.size of grid is set by the
+%            positions of the particles, assuming they are centered on the
+%            origin. Optionally, if not centered boxSide is set by the minimal
+%            and maximal positions of the cells/particles - (DANGER: this
+%            does not take into account periodic boundry conditions!!)
+%
+%            coordinates, cell values and cell sizes (diameter not radius!) must be given.
+%            if cellSize is a single number than it is expanded to the size of
+%            the vals array.
+%            varargin can set the grid size, values weights, and setting
+%            whether the values are extensive or intensive, as well as
+%            whether the coordinates are centered.
+%
+%            Once boxside is set by min/max of cell/particle positions, it
+%            is increased by the equivilant of a set number of grid cells.
+%            This ensures that large cells on the edge do not spill over.
+%            the number of cell lengths added to the boxside is set by the
+%            variable 'buffer' which is set to 10 by default but can be set
+%            in varargin.
+
+
+%% defaults and perliminatries
+len=length(vals);
+
+Ngrid=256;
+wt=ones(size(vals));
+cellNum=len;
+mappingType='null';
+centeredFlag=true;
+boxSide=0;
+buffer=10; % once boxside is set by  min/max of part
+
+if length(cellSize)==1
+    cellSize=cellSize.*ones(size(vals));
+end
+
+
+%% parse arguments
+i=1;
+while i<=length(varargin)
+    switch lower(varargin{i})
+        case{'side','boxside','box'}
+            i=i+1;
+            boxSide=varargin{i};
+        case{'ngrid','ng','nc','ncell'}
+            i=i+1;
+            Ngrid=varargin{i};
+        case{'weights','weight','wt'}
+            i=i+1;
+            wt=varargin{i};
+        case{'extensive','ext','sum'}
+            mappingType='extensive';
+        case{'intensive','int','avg','average'}
+            mappingType='intensive';
+        case{'max','maximal'}
+            mappingType='maximal';
+        case{'notcentered','nocentered'}
+            centeredFlag=false;
+            fprintf('CAUTION: DOES NOT ACCOUNT FOR PERIODIC BOUNDARIES!! \n');
+        case{'buffer','bf','buff'}
+            i=i+1;
+            buffer=varargin{i};
+        otherwise
+            error('CELL2GRID - Illegal argument: %s',varargin{i})
+    end
+    i=i+1;
+end
+
+if strcmp(mappingType,'null')
+    error('CELL2GRID - Must state mapping type: extensive, intensive or maximal');
+end
+if ~any(size(coords)==3)
+    error('CELL2GRID - Coordinates are not 3D');
+end
+
+if length(size(coords))~=2
+    error('CELL2GRID - Coordinates wrong shape');
+end
+
+
+%% find box side length
+
+dim=find(size(coords)~=3);
+if boxSide==0
+    if centeredFlag   % particles are centered on origin.
+        m1=abs(max(coords,[],dim));
+        m2=abs(min(coords,[],dim));
+        ll=max(cat(1,m1,m2));
+        
+        boxSide=ceil(2.*ll);
+        %   boxSide=boxSide+buffer*boxSide/Ngrid; %increase boxsize so smoothed cells won't go out of bounds
+        clear m1 m2 ll
+        
+    else
+        error('Non-centered positions not yet possible')
+        %         m1=max(max(coords,[],dim));
+        %         m2=min(min(coords,[],dim));
+        %
+        %         boxSide=ceil(m1-m2);
+        %         %    boxSide=boxSide+buffer*boxSide/Ngrid; %increase boxsize so smoothed cells won't go out of bounds
+        %         clear m1 m2 ll
+        
+    end
+end
+
+boxSide=boxSide+buffer*boxSide/Ngrid; %increase boxsize so smoothed cells will not go out of bounds
+
+%% find location of sim cells in grid
+% the following assumes that the positions are centered on the origin -
+% need to chnage for uncentered case.
+indX=ceil((coords(1,:)./boxSide+0.5).*Ngrid);
+indY=ceil((coords(2,:)./boxSide+0.5).*Ngrid);
+indZ=ceil((coords(3,:)./boxSide+0.5).*Ngrid);
+
+
+%skipFlag= indXlo<1 | indX> Ngrid | indY<1 | indY> Ngrid | indZ<1 | indZ> Ngrid  ;
+
+%cl=(gasStruct.Masses./gasStruct.Density).^(1/3); % "radius" of sim cells
+gcl=ceil(cellSize./(boxSide/Ngrid));     %"diameter" of sim cells in grid units
+if strcmp(mappingType,'extensive-gaussian')
+    gcl=3.*gcl;
+end
+gcl=gcl+(1-mod(gcl,2)); % fix values to be only odd
+ 
+gind=(gcl-1)/2;   % extract no. of cells below and above the center cell;
+
+
+indXlo=indX-gind;indXhi=indX+gind;
+indYlo=indY-gind;indYhi=indY+gind;
+indZlo=indZ-gind;indZhi=indZ+gind;
+
+skipFlag= indXlo>Ngrid | indXhi < 1 | indYlo>Ngrid | indYhi<1 | indZlo>Ngrid | indZhi<1 ;
+
+indXlo(indXlo<1)=1;
+indYlo(indYlo<1)=1;
+indZlo(indZlo<1)=1;
+
+indXhi(indXhi>Ngrid)=Ngrid;
+indYhi(indYhi>Ngrid)=Ngrid;
+indZhi(indZhi>Ngrid)=Ngrid;
+
+
+% clear indX indY indZ gind;
+
+%% build grid
+cube=zeros(Ngrid,Ngrid,Ngrid);
+
+
+%% set value and weights and fill up grid
+
+switch(mappingType)
+    case('extensive')
+        
+        vals=vals./(gcl.^3); % divide value by volume of grid cells - only for extensive values
+        
+        for i=1:cellNum
+            
+            if skipFlag(i)
+                continue;
+            end
+            
+            cube(indXlo(i):indXhi(i),indYlo(i):indYhi(i),indZlo(i):indZhi(i))=...
+                cube(indXlo(i):indXhi(i),indYlo(i):indYhi(i),indZlo(i):indZhi(i))+vals(i);
+            
+            
+            %         cube(indX(i)-gind(i):indX(i)+gind(i),...
+            %             indY(i)-gind(i):indY(i)+gind(i),...
+            %             indZ(i)-gind(i):indZ(i)+gind(i))=cube(indX(i)-gind(i):indX(i)+gind(i),...
+            %             indY(i)-gind(i):indY(i)+gind(i),...
+            %             indZ(i)-gind(i):indZ(i)+gind(i))+vals(i);
+            
+        end
+        
+        
+        wts=0;
+    case('intensive')
+        wts=zeros(Ngrid,Ngrid,Ngrid); % for intensive values the weights are divided
+        wt=wt./(gcl.^3);
+        
+        for i=1:cellNum
+            
+            if skipFlag(i)
+                continue;
+            end
+            %fprintf('mach=%s \n',num2str(vals(i)));
+            cube(indXlo(i):indXhi(i),indYlo(i):indYhi(i),indZlo(i):indZhi(i))=...
+                cube(indXlo(i):indXhi(i),indYlo(i):indYhi(i),indZlo(i):indZhi(i))+vals(i).*wt(i);
+            
+            wts(indXlo(i):indXhi(i),indYlo(i):indYhi(i),indZlo(i):indZhi(i))=...
+                wts(indXlo(i):indXhi(i),indYlo(i):indYhi(i),indZlo(i):indZhi(i))+wt(i);
+            
+            %         cube(indX(i)-gind(i):indX(i)+gind(i),...
+            %             indY(i)-gind(i):indY(i)+gind(i),...
+            %             indZ(i)-gind(i):indZ(i)+gind(i))=cube(indX(i)-gind(i):indX(i)+gind(i),...
+            %             indY(i)-gind(i):indY(i)+gind(i),...
+            %             indZ(i)-gind(i):indZ(i)+gind(i))+vals(i).*wt(i);
+            %
+            %         wts(indX(i)-gind(i):indX(i)+gind(i),...
+            %             indY(i)-gind(i):indY(i)+gind(i),...
+            %             indZ(i)-gind(i):indZ(i)+gind(i))=wts(indX(i)-gind(i):indX(i)+gind(i),...
+            %             indY(i)-gind(i):indY(i)+gind(i),...
+            %             indZ(i)-gind(i):indZ(i)+gind(i))+wt(i);
+            %
+            
+        end
+        cube=cube./wts;
+        cube(wts==0)=0;
+        
+        
+    case('extensive-gaussian')
+        
+        % define sub-grid around particle for gaussian calculation. 
+        
+        % calculate contribution to each cell in sub-grid
+        
+        % add to master grid 
+        
+        
+        
+    case('maximal')
+        wts=0;
+        
+        for i=1:cellNum
+            if skipFlag(i)
+                continue;
+            end
+            
+            for ii=indXlo(i):indXhi(i)
+                for jj=indYlo(i):indYhi(i)
+                    for kk=indZlo(i):indZhi(i)
+                        cube(ii,jj,kk)=max(cube(ii,jj,kk),vals(i));
+                    end
+                end
+            end
+        end
+        
+end
+
+
+res.cube=cube;
+res.Ngrid=Ngrid;
+res.boxSide=boxSide;
+res.cellVol=(boxSide/Ngrid)^3;
+res.weights=wts;
+res.mapping=mappingType;
+
+end

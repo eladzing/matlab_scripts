@@ -1,0 +1,15 @@
+%printing:
+%Don't want more than 3 printing arugments altogether
+%numvarargs=length(varargin);
+%if numvarargs>3
+%    error('mkmap: too many printing arguments');
+%end
+
+%set defualt printing flag, printing tag, and output dir
+%defvals={'noprint', type ,'/home/eladzing/Ubuntu One/cluster/printout'};
+
+%assign the optional values
+%defvals(1:numvarargs)=varargin;
+
+% transfer to easy to use varaibles
+%[printflag printtag printoutdir]=defvals{:};

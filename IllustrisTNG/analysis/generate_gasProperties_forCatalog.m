@@ -1,16 +1,15 @@
-%% this is an updated version of generate_coolingTimes_gals
-% new things - medians and quantiles are now mass-median.
-%            - STD is now mass weighted
-%            - added mass distribution to some parameters
-%            - commented out some values which have not been useful so far
+%% This Script generates interesting gas properties for the subfind catalogs and 
+% save them as catalogs for TNG 
+% So
 
-%% Study the differences between the gas in sf vs. quiescent centals
-% go over all galaxies and extract cooling times for the gas and entropy as
-% well
-%
-% several areas: within 2*r_h, all gas in the subhalo, others?
+
+
+
+
 
 %% set framework
+% the simulation, snapshot, and environment should be set prior to running
+% the script 
 
 %global matFilePath
 %global cosmoStruct

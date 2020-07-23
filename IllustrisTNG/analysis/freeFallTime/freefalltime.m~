@@ -73,7 +73,7 @@ for i=1:len
     tff0=sqrt(3*pi./(32*Units.G.*rhom))./Units.Gyr;
     
     
-    %% fit 1 - 2nd order polynomial
+    %% fit 1 - polynomial
     % Set up fittype and options.
     
     xData=log10(r./rv)';

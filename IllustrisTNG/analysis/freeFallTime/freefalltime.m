@@ -9,7 +9,7 @@ if perlimFlag
            
     subsInfo=illustris.infrastructure.build_sub_fof_connection(subs,fofs);
     
-    mask=illustris.utils.generateMask('subs',subs,'fofs',fofs,'centrals');
+    mask=illustris.infrastructure.generateMask('subs',subs,'fofs',fofs,'centrals');
     
     rr=(0.01:0.01:2);
 end

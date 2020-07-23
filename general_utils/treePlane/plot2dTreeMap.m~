@@ -12,10 +12,9 @@ function [ output_args ] = plot2dTreeMap(val,treeStruct,varargin)
 % 'fig' - figure handle 
 % 'min'/'max' - values for scaling the colormap values 
 % 'colormap' - pre-generated colormap
-% 'edge'  - draw a dark line demarking the edge of the bin 
+% 'edge' 
             
 
-% set defaules 
 ddx=[0 1 1 0 0];
 ddy=[0 0 1 1 0];
 hf=[];
@@ -24,7 +23,6 @@ cmap=brewermap(256,'*Spectral');
 valLim=[min(val) max(val);];
 edgeFlag=false;
 
-% parse arguments 
 i=1;
 while i<=length(varargin)
     switch(lower(varargin{i}))
@@ -52,7 +50,6 @@ while i<=length(varargin)
     i=i+1;
 end
 
-% open/assign figure
 if isempty(hf)
     hf=figure;
 else
@@ -68,18 +65,16 @@ valScaled(valScaled>1)=1;
 valScaled=ceil(valScaled.*(length(cmap)-1))+1;
 
 
-% plot cells 
 for i=1:length(treeStruct.treeLevel)
     
-    if isnan(valScaled(i)) % ignore illeagal values 
+    
+    if isnan(valScaled(i))
         continue
     end
     
-    % define polygon of cell 
     xPoly=treeStruct.treeBLC(1,i)+ddx.*(treeStruct.xSide/2^treeStruct.treeLevel(i));
     yPoly=treeStruct.treeBLC(2,i)+ddy.*(treeStruct.ySide/2^treeStruct.treeLevel(i));
     
-    % draw cell with/without edge 
     if ~edgeFlag
         patch(xPoly,yPoly,cmap(valScaled(i),:),'edgeColor','none');
     else

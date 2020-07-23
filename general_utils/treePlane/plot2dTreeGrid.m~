@@ -1,20 +1,20 @@
 function [ output_args ] = plot2dTreeGrid(treeStruct,varargin)
 %PLOT2DTREEGRID Plot an adaptively sized grid based on tree2d
-%   Given an adaptively sized grid (genetrated by tree2d function), plot a
-%   the grid cells on a plane.
-%
-% Arguments:
+%   Given an adaptively sized grid (genetrated by tree2d function), plot a 
+%   the grid cells on a plane. 
+% 
+% Arguments: 
 % treeStruct - adaptively sized grid cells data structure (generated with
 %               tree2d function)
-% additional, optional arguments set as pairs:
-% 'fig' - figure handle
+% additional, optional arguments set as pairs: 
+% 'fig' - figure handle 
 
-% set defaults
+% set defaults 
 ddx=[0 1 1 0 0];
 ddy=[0 0 1 1 0];
 hf=[];
 
-% parse arguments
+% parse arguments 
 i=1;
 while i<=length(varargin)
     switch(lower(varargin{i}))
@@ -27,7 +27,7 @@ while i<=length(varargin)
     i=i+1;
 end
 
-% open/assign figure
+% open/assign figure 
 if isempty(hf)
     hf=figure;
 else
@@ -35,7 +35,7 @@ else
 end
 
 
-% define level 0 cell
+% define polygons of the cells 
 xPoly=treeStruct.blCorner(1)+ddx.*(treeStruct.xSide);
 yPoly=treeStruct.blCorner(2)+ddy.*(treeStruct.ySide);
 
@@ -43,7 +43,6 @@ plot(xPoly,yPoly);
 
 hold on
 
-% plot individual cells
 for i=1:length(treeStruct.treeLevel)
     
     xPoly=treeStruct.treeBLC(1,i)+ddx.*(treeStruct.xSide/2^treeStruct.treeLevel(i));

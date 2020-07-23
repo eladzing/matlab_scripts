@@ -11,13 +11,23 @@ function res = tree2d( xVal,yVal,blCorner,xSide,ySide,splitParam,minLevel )
 % to avoid bins which are very large and sparse. 
 % 
 % Argumnets: 
-%   xVal,yVal - x-axis and y-axis values of points
+%   xVal,yVal     - x-axis and y-axis values of data points
+%   blCorner      - x,y coordinates of bottom-left corner of the entire grid
 %   xSide, ySide  - size of data plane in the X & Y directions
-%   splitParam - Maximal no. of points to per bin before splitting the bin
-%   minlevel - The minimal refinement level  -
+%   splitParam    - Maximal no. of points to per bin before splitting the bin
+%   minlevel      - The minimal refinement level  -
 % 
-% ouptut: A data structure containing; 
-% 
+% ouptut: A data structure containing the input arguments and: 
+% treeBLC     - an array of the x,y coordinates for the bottom-left corner
+%               of all grid cells
+% treeLevel   - the refinement level of each grid cell 
+% pointsBLC   - for each data point, the x,y coordinate (bottom-left corner)
+%               of the grid cell it inhabits 
+% pointsLevel - for each data point, the refinement level of the grid cell
+%                it inhabits 
+
+
+% helpful arrays 
 ddx=[0 1 1 0];
 ddy=[0 0 1 1];
 
@@ -25,19 +35,20 @@ if ~exist('minLevel','var')
     minLevel=0;
 end
 
+% initialize output 
 treeBLC=[];  % record x,y values of bottom-left corners of bins
 treeLevel=[]; % record the refinement level of bins 
-outputBLC=zeros(2,length(xVal)); % Ass
-outputLevel=zeros(size(xVal)); 
+outputBLC=zeros(2,length(xVal)); % rAssign each data point to a grid bin
+outputLevel=zeros(size(xVal)); % Aecord the bin refinement level for each data point  
 
 
-
-
+% begin recursion at level= 0 
 level=0;
 
-doCell(blCorner,level)
+doCell(blCorner,level) % recursive function which does the splitting. 
 
 
+% assifgn output to data structure 
 res.blCorner=blCorner;
 res.xSide=xSide;
 res.ySide=ySide;
@@ -57,11 +68,17 @@ res.treeLevel=treeLevel;
     % - add it to the tree if the number of points are below the limit
     % - split it up (call the same function) if too many points 
     % grid cells with zero points are not recorded 
+   
+    % Check which points are found in the cell 
     inCellMask=inCell(blc,level);
     
     if sum(inCellMask)>0 
         if sum(inCellMask)<=splitParam && level>=minLevel
             
+            % number of data points is below the limit & cell is above the 
+            % minmal refinement level
+            % This cell is done! 
+                        
             outputBLC(1,inCellMask)=blc(1);
             outputBLC(2,inCellMask)=blc(2);
             outputLevel(inCellMask)=level;
@@ -70,6 +87,8 @@ res.treeLevel=treeLevel;
             
             
         else
+            
+            % split cell into 4 and repeat for each sub-cell
             
             blcNew(:,1)=blc(1)+ddx.*(xSide/2^(level+1));
             blcNew(:,2)=blc(2)+ddy.*(ySide/2^(level+1));
@@ -85,10 +104,9 @@ res.treeLevel=treeLevel;
 
 
 
-
     function mask= inCell(blc,level)
     % Auxilary function which returns a logical mask for which points are
-    % found within  agrid bin. 
+    % found within a grid bin. 
     
     %% build polygon
     xPoly=blc(1)+ddx.*(xSide/2^level); %      [x0 x0+dx x0+dx x0];

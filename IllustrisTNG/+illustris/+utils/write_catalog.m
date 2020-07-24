@@ -1,4 +1,4 @@
-function  write_catalog( catalog,snap,varargin )
+function  write_catalog(catalog,snap,varargin )
 %WRITE_CATALOG write data catalog to hdf files in the same structure as the
 %other TNG values
 %   Detailed explanation goes here
@@ -10,7 +10,7 @@ catalogName ='';
 folderName='';
 catPath=myPOSTPROCESSING;
 structFlag=isstruct(catalog);
-verboseFlag=false
+verboseFlag=false;
 
 %% parse arguments
 i=1;

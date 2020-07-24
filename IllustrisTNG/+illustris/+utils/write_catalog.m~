@@ -53,7 +53,7 @@ fullPath=[catPath '/' folderName];
 % build correct file name
 global simName
 
-fullName=[catalogName '_' num2str(snap,'%03d') '.hdf5'];
+fullName=[catalogName '_' simName '_' num2str(snap,'%03d') '.hdf5'];
 
 
 %% get info about catalog

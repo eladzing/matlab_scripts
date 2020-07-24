@@ -353,14 +353,13 @@ global DRACOFLAG
 if DRACOFLAG
     
     
+    
     for fld=compNames
         
-        outStruct=PropStruct.(
-        
-        
-        
-        
-        fname=sprintf('gasProperties_snp%s_%s.mat',num2str(snap),simDisplayName);
+        outStruct=PropStruct.(fld);
+               
+                
+        catName=sprintf('Subhalos_%s_PhysicalGasProperties_%s',fld,num2str(snap));
         save([DEFAULT_MATFILE_DIR '/' fname],'PropStruct','-v7.3')
         
         fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
@@ -371,18 +370,19 @@ if DRACOFLAG
         fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname2]);
         
     end
-    fprintf(' *** DONE!  *** \n');
-    
-    %% save to postprocessed catalog
-    
-    %global myPOSTPROCESSING
-    % PropStruct.inGal.mask=floor(galMask);
-    % PropStruct.inCGM.mask=floor(galMask);
-    % PropStruct.inSub.mask=floor(galMask);
-    % illustris.utils.write_catalog( PropStruct.inGal,99,'name','gasProps_inGal','folderName','gasProperties','verbose');
-    % illustris.utils.write_catalog( PropStruct.inCGM,99,'name','gasProps_inCGM','folderName','gasProperties','verbose');
-    % illustris.utils.write_catalog( PropStruct.inSub,99,'name','gasProps_inSub','folderName','gasProperties','verbose');
-    %
-    
-    
-    
+end
+fprintf(' *** DONE!  *** \n');
+
+%% save to postprocessed catalog
+
+%global myPOSTPROCESSING
+% PropStruct.inGal.mask=floor(galMask);
+% PropStruct.inCGM.mask=floor(galMask);
+% PropStruct.inSub.mask=floor(galMask);
+% illustris.utils.write_catalog( PropStruct.inGal,99,'name','gasProps_inGal','folderName','gasProperties','verbose');
+% illustris.utils.write_catalog( PropStruct.inCGM,99,'name','gasProps_inCGM','folderName','gasProperties','verbose');
+% illustris.utils.write_catalog( PropStruct.inSub,99,'name','gasProps_inSub','folderName','gasProperties','verbose');
+%
+
+
+

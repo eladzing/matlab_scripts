@@ -45,7 +45,7 @@ PropStruct.galMask=galMask;
 r200c=fofs.Group_R_Crit200(subsInfo.hostFof+1);
 
 %% generate values
-fprintf(' *** Running over %s Galaxies *** \n',num2str(sum(galMask)));
+%fprintf(' *** Running over %s Galaxies *** \n',num2str(sum(galMask)));
 
 step=5;
 stepNext=5;
@@ -58,6 +58,7 @@ distLen=100;
 
 
 %% initialize to zero
+fprintf('Initializing output... \n');
 
 % set component
 compNames=["Gal", "CGMin", "CGMout", "CGMall" "Sub"];
@@ -79,6 +80,7 @@ propNames=["Mean", "StdDev", "Median", "Quantiles"];
 
 
 %% initialize output
+
 for fld=compNames
     PropStruct.(fld).mask=int8(galMask);
     for param=paramNames
@@ -103,6 +105,8 @@ qus=[0.1 0.25 0.5 0.75 0.9];
 PropStruct.qants=qus([1 2 4 5]);
 
 %% run over subind objects
+fprintf(' *** Running over %s Galaxies *** \n',num2str(sum(galMask)));
+
 cnt=0;
 for id=0:len-1
     
@@ -215,10 +219,10 @@ for id=0:len-1
                     %massDist(end)=massDist(end)+sum(mm(~tcMask));
                     %[~,mxInd]=max(massDist);
                     param='Tcool';
-                    PropStruct.(fld).([fld param 'Mean'])(id+1)=sum(mm(tcMask).*tc(tcMask))/sum(mm(tcMask));
-                    PropStruct.(fld).([fld param 'StdDev'])(id+1)=calc_standardDev(tc(tcMask),mm(tcMask));
-                    PropStruct.(fld).([fld param 'Median'])(id+1)=10.^mus(3);
-                    PropStruct.(fld).([fld param 'Quantiles'])(:,id+1)=10.^mus([1 2 4 5]);
+                    PropStruct.(fld).(strcat(fld,param,'MeanMW'))(id+1)=sum(mm(tcMask).*tc(tcMask))/sum(mm(tcMask));
+                    PropStruct.(fld).(strcat(fld,param,'StdDevMW'))(id+1)=calc_standardDev(tc(tcMask),mm(tcMask));
+                    PropStruct.(fld).(strcat(fld,param,'MassMedian'))(id+1)=10.^mus(3);
+                    PropStruct.(fld).(strcat(fld,param,'MassQuantiles'))(:,id+1)=10.^mus([1 2 4 5]);
                     %PropStruct.(fld).modeTc(id+1)=xx(mxInd);
                     
                     %                     ll=length(tcBin)+1;
@@ -240,10 +244,10 @@ for id=0:len-1
                     %[~,mxInd]=max(massDist);
                     
                     param='TcTff';
-                    PropStruct.(fld).([fld param 'Mean'])(id+1)=sum(mm(tcMask).*tcff(tcMask))/sum(mm(tcMask));
-                    PropStruct.(fld).([fld param 'StdDev'])(id+1)=calc_standardDev(tcff(tcMask),mm(tcMask));
-                    PropStruct.(fld).([fld param 'Median'])(id+1)=10.^mus(3);
-                    PropStruct.(fld).([fld param 'Quantiles'])(:,id+1)=10.^mus([1 2 4 5]);
+                    PropStruct.(fld).(strcat(fld,param,'MeanMW'))(id+1)=sum(mm(tcMask).*tcff(tcMask))/sum(mm(tcMask));
+                    PropStruct.(fld).(strcat(fld,param,'StdDevMW'))(id+1)=calc_standardDev(tcff(tcMask),mm(tcMask));
+                    PropStruct.(fld).(strcat(fld,param,'MassMedian'))(id+1)=10.^mus(3);
+                    PropStruct.(fld).(strcat(fld,param,'MassQuantiles'))(:,id+1)=10.^mus([1 2 4 5]);
                     %PropStruct.(fld).modeTcTff(id+1)=xx(mxInd);
                     
                     %                     ll=length(tctffBin)+1;
@@ -266,10 +270,10 @@ for id=0:len-1
                 [~, ~, mus]=mk_mass_histogram(log10(tmp),mm,qus,distLen);
                 %[~,mxInd]=max(massDist);
                 param='Temp';
-                PropStruct.(fld).([fld param 'Mean'])(id+1)=sum(mm.*tmp)/sum(mm);
-                PropStruct.(fld).([fld param 'StdDev'])(id+1)=calc_standardDev(tmp,mm);
-                PropStruct.(fld).([fld param 'Median'])(id+1)=10.^mus(3);
-                PropStruct.(fld).([fld param 'Quantiles'])(:,id+1)=10.^mus([1 2 4 5]);
+                PropStruct.(fld).(strcat(fld,param,'MeanMW'))(id+1)=sum(mm.*tmp)/sum(mm);
+                PropStruct.(fld).(strcat(fld,param,'StdDevMW'))(id+1)=calc_standardDev(tmp,mm);
+                PropStruct.(fld).(strcat(fld,param,'MassMedian'))(id+1)=10.^mus(3);
+                PropStruct.(fld).(strcat(fld,param,'MassQuantiles'))(:,id+1)=10.^mus([1 2 4 5]);
                 %PropStruct.(fld).modeTemp(id+1)=xx(mxInd);
                 %
                 %                 ll=length(tempBin)+1;
@@ -289,10 +293,10 @@ for id=0:len-1
                 [~, ~, mus]=mk_mass_histogram(log10(ent),mm,qus,distLen);
                 %[~,mxInd]=max(massDist);
                 param='Entropy';
-                PropStruct.(fld).([fld param 'Mean'])(id+1)=sum(mm.*ent)/sum(mm);
-                PropStruct.(fld).([fld param 'StdDev'])(id+1)=calc_standardDev(ent,mm);
-                PropStruct.(fld).([fld param 'Median'])(id+1)=10.^mus(3);
-                PropStruct.(fld).([fld param 'Quantiles'])(:,id+1)=10.^mus([1 2 4 5]);
+                PropStruct.(fld).(strcat(fld,param,'MeanMW'))(id+1)=sum(mm.*ent)/sum(mm);
+                PropStruct.(fld).(strcat(fld,param,'StdDevMW'))(id+1)=calc_standardDev(ent,mm);
+                PropStruct.(fld).(strcat(fld,param,'MassMedian'))(id+1)=10.^mus(3);
+                PropStruct.(fld).(strcat(fld,param,'MassQuantiles'))(:,id+1)=10.^mus([1 2 4 5]);
                 %PropStruct.(fld).modeEnt(id+1)=xx(mxInd);
                 
                 %                 ll=length(entBin)+1;
@@ -312,10 +316,10 @@ for id=0:len-1
                 [~, ~, mus]=mk_mass_histogram(log10(nDens),mm,qus,distLen);
                 %[~,mxInd]=max(massDist);
                 param='Density';
-                PropStruct.(fld).([fld param 'Mean'])(id+1)=mean(nDens);
-                PropStruct.(fld).([fld param 'StdDev'])(id+1)=std(nDens);
-                PropStruct.(fld).([fld param 'Median'])(id+1)=10.^mus(3);
-                PropStruct.(fld).([fld param 'Quantiles'])(:,id+1)=10.^mus([1 2 4 5]);
+                PropStruct.(fld).(strcat(fld,param,'MeanMW'))(id+1)=mean(nDens);
+                PropStruct.(fld).(strcat(fld,param,'StdDevMW'))(id+1)=std(nDens);
+                PropStruct.(fld).(strcat(fld,param,'MassMedian'))(id+1)=10.^mus(3);
+                PropStruct.(fld).(strcat(fld,param,'MassQuantiles'))(:,id+1)=10.^mus([1 2 4 5]);
                 %PropStruct.(fld).modeDensN(id+1)=xx(mxInd);
                 
                 %                 ll=length(densBin)+1;
@@ -332,9 +336,9 @@ for id=0:len-1
                 %                 end
                 %
                 
-                PropStruct.(fld).([fld 'GasMass'])(id+1)=sum(mm); % only non-sf gas
-                PropStruct.(fld).([fld 'SfrMass'])(id+1)=sum(mass(distMask & sfMask));
-                PropStruct.(fld).([fld 'AvgDens'])(id+1)=sum(mm)/sum(mm./nDens); % in cm^-3
+                PropStruct.(fld).(strcat(fld, 'GasMass'))(id+1)=sum(mm); % only non-sf gas
+                PropStruct.(fld).(strcat(fld, 'SfrMass'))(id+1)=sum(mass(distMask & sfMask));
+                PropStruct.(fld).(strcat(fld, 'AvgDens'))(id+1)=sum(mm)/sum(mm./nDens); % in cm^-3
                 %PropStruct.(fld).([fld 'Sfr'])(id+1)=sum(gas.StarFormationRate(distMask & sfMask));
                 %
                 %                 PropStruct.(fld).cellNum(id+1)=sum(mask);
@@ -353,22 +357,29 @@ global DRACOFLAG
 if DRACOFLAG
     
     
+    
     for fld=compNames
         
         outStruct=PropStruct.(fld);
-               
+                
+        catName=sprintf('Subhalos_%s_PhysicalGasProperties',fld);
         
+        folder='default';
         
-        fname=sprintf('gasProperties_snp%s_%s.mat',num2str(snap),simDisplayName);
-        save([DEFAULT_MATFILE_DIR '/' fname],'PropStruct','-v7.3')
+        illustris.utils.write_catalog(outStruct,snap,'name',catName,...
+            'path','default','folder','PhysicalGasProperties','v');
         
-        fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
-        
-        fname2=sprintf('gasProperties_massHistograms_snp%s_%s',num2str(snap),simDisplayName);
-        save([DEFAULT_MATFILE_DIR '/' fname2],'massHist','-v7.3')
-        
-        fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname2]);
-        
+   
+         fname=sprintf('gasProperties_snp%s_%s.mat',num2str(snap),simDisplayName);
+         save([DEFAULT_MATFILE_DIR '/' fname],'PropStruct','-v7.3')
+
+         fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
+%         
+%         fname2=sprintf('gasProperties_massHistograms_snp%s_%s',num2str(snap),simDisplayName);
+%         save([DEFAULT_MATFILE_DIR '/' fname2],'massHist','-v7.3')
+%         
+%         fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname2]);
+%         
     end
 end
 fprintf(' *** DONE!  *** \n');

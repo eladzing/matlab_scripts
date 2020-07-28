@@ -63,7 +63,7 @@ fprintf('Initializing output... \n');
 % set component
 compNames=["Gal", "CGMin", "CGMout", "CGMall" "Sub"];
 paramNames=["Tcool", "TcTff", "Temp", "Entropy", "Density"];
-propNames=["Mean", "StdDev", "Median", "Quantiles"];
+propNames=["MeanMW", "StdDevMW", "MassMedian", "MassQuantiles"];
 
 % These values are not needed for the catalogs
 % tcBin=[-1 0 1];
@@ -87,7 +87,7 @@ for fld=compNames
         for prop=propNames
             pname=strcat(fld,param,prop);
             switch prop
-                case 'Quantiles'
+                case 'MassQuantiles'
                     PropStruct.(fld).(pname)=zeros(4,len);
                 otherwise
                     PropStruct.(fld).(pname)=zeros(1,len);
@@ -111,7 +111,7 @@ cnt=0;
 for id=0:len-1
     
     % for following progress
-    perCent=floor((id+1)/len*100);
+    perCent=floor((cnt+1)/len2*100);
     
     if (perCent>=stepNext)     %       mod(perCent,5)==0 && perCent>=5)
         fprintf('%s %% of Galaxies done  \n',num2str(floor(perCent)))

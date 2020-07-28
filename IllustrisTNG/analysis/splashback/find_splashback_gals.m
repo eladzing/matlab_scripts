@@ -2,6 +2,7 @@
 
 %global matFilePath
 %global cosmoStruct
+
 if ~skip2point
     
     %sim='300';
@@ -13,6 +14,7 @@ if ~skip2point
     global illUnits
     global BASEPATH
     global LBox
+    global simDisplayName
     %treeType='SubLink_gal';
     
     
@@ -28,9 +30,18 @@ if ~skip2point
                
     end
     
+    % assign a lower stellar mass threshold based on the TNG box. 
+    if contains(simDisplayName,'100') || contains(simDisplayName,'300')
+        massThresh=10^9; % threshold for *stellar* mass
+    elseif contains(simDisplayName,'50')
+        massThresh=10^7; % threshold for *stellar* mass
+    else
+        error('mass threshold not set  - could not identify simulation: %s \n',simDisplayName);
+    end
+    fprintf('Setting stellar mass threshold to: %0.1e solar mass \n',massThresh); 
     
-    massThresh=10^9; % threshold for *stellar* mass
     %hostMassThresh=10^(13.5);
+    
     %% load subsinfo
     subsInfo = illustris.infrastructure.build_sub_fof_connection(subs,fofs);
     units; % load general unit structure in cgs.
@@ -38,8 +49,8 @@ if ~skip2point
     hostMass=fofs.Group_M_Crit200(subsInfo.hostFof+1).*illUnits.massUnit;
     massAllGals= subs.SubhaloMassInRadType(illustris.partTypeNum('stars')+1,:).*illUnits.massUnit; % stellar mass within 2*rhalf
 
-    % identify central galaxies in mass range. 
-    galMask=illustris.utils.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'centrals');
+    % Generate mask for centrals from within the 'good' galaxies' 
+    galMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'centrals');
 
     treeType='SubLink_gal';
     snapStart=snap;
@@ -47,7 +58,7 @@ if ~skip2point
     
 end
 
-%% generate values
+%% run over galaxies and generate the histories of paramters 
 fprintf(' *** Running over %s Galaxies *** \n',num2str(length(galMask)));
 
 step=5;
@@ -91,7 +102,7 @@ for id=0:len-1
                
         unitFactors=illustris.utils.calc_illUnits(tree.SnapNum(1:lastInd));
 
-        %% Get things which can begotten directly from tree. 
+        %% Get things which can be gotten directly from tree. 
         res.hostMass=tree.Group_M_Crit200(1:lastInd)'.*unitFactors.massUnit;
         res.hostR200=tree.Group_R_Crit200(1:lastInd)'.*unitFactors.lengthUnit;
         %res.halfMassRadType=tree.SubhaloHalfmassRadType(1:lastInd).*unitFactors.lengthUnit;
@@ -128,8 +139,8 @@ end
 global DRACOFLAG
 if DRACOFLAG
     global DEFAULT_MATFILE_DIR
-    global simDisplayName
-    fname=sprintf('central_history_splashback_z%s_%s',num2str(illustris.utils.get_zred(snap)),simDisplayName);
+    
+    fname=sprintf('central_history_splashback_snp%s_%s',num2str(snap),simDisplayName);
     
     save([DEFAULT_MATFILE_DIR '/' fname],'centralHist','done','-v7.3')
     

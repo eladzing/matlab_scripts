@@ -8,8 +8,8 @@ if ~skip2write
     if readFlag
         
         global DEFAULT_MATFILE_DIR
-        load([DEFAULT_MATFILE_DIR '/central_history_splashback_z0_' simDisplayName '.mat'])
-        
+        load([DEFAULT_MATFILE_DIR '/central_history_splashback_snp99_' simDisplayName '.mat'])
+        % contains the centralHist structure and a mask array done. 
         
     end
     
@@ -63,11 +63,11 @@ if ~skip2write
         
         
         for k=1:length(zz)-1
-            isSatZ(k,ind(i))=any(zSat>zz(k) & zSat<zz(k+1));
+            isSatZ(k,ind(i))=any(zSat>=zz(k) & zSat<zz(k+1));
         end
         
         for k=1:length(time)-1
-            isSatT(k,ind(i))=any(lookBSat>time(k) & lookBSat<time(k+1));
+            isSatT(k,ind(i))=any(lookBSat>=time(k) & lookBSat<time(k+1));
         end
         
         
@@ -100,6 +100,7 @@ fprintf(' *** Finished preparing catalog. Now saving  *** \n');
 % time=[0 1 2 5 10 12];
 splashbackRedshift.isSat=isSatZ;
 splashbackRedshift.redshift=zz;
+splashbackRedshift.mask=done;
 
 %radThresh=[0.05 0.10 0.25 0.5 1];
 splashbackRedshift.isFar_5prc=squeeze(isFarZ(1,:,:));
@@ -110,6 +111,7 @@ splashbackRedshift.isFar_50prc=squeeze(isFarZ(4,:,:));
 % time=[0 1 2 5 10 12];
 splashbackTime.isSat=isSatT;
 splashbackTime.Lookback=time;
+splashbackTime.mask=done;
 
 splashbackTime.isFar_5prc=squeeze(isFarT(1,:,:));
 splashbackTime.isFar_10prc=squeeze(isFarT(2,:,:));

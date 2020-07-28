@@ -110,7 +110,7 @@ end
 
 
 if verboseFlag
-    fprintf('*** Finished writing catalog: %s \n',[fullPath '/' fullName]);
+    fprintf('*** Finished writing catalog: %s *** \n',[fullPath '/' fullName]);
 end
 
 end

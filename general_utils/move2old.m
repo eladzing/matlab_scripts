@@ -33,7 +33,7 @@ end
 fileThere=exist(fullName,'file');
 
 if fileThere==0
-    fprintf('MOVE2OLD - The folder %s does not contain the a file by the name %s. A O K.',pathe,fileName);
+    fprintf('MOVE2OLD - The folder %s does not contain the a file by the name %s. A O K. \n',pathe,fileName);
     status=true;
 elseif fileThere==2
     if rmFlag

@@ -9,7 +9,7 @@ if perlimFlag
     hostTags2={'12.2' '12.8' '13.2' '13.8' '14.2' '14.8' '15.2'};
     
     %baseName='qFrac_Ms100_noRPS_%s_host%s_fgs%s.mat';
-     baseName='qFrac_Ms100_%s_host%s_fgs%s_snp67.mat';
+     baseName='qFrac_Ms100_%s_host%s_fgs%s_snp99.mat';
      %baseName='qFrac_Ms100_%s_host%s_fgh300_fgs%s.mat';
     
     flags=true(5,7);
@@ -177,8 +177,8 @@ for kk=1:3
             nc=1;
             
             loc='SouthEast';
-            titTag='Low Mass Halos (fgs set at z=0.5)';
-            ptag='lohHalos_fgsSnap67';
+            titTag='Low Mass Halos (fgs set at z=0)';
+            ptag='lohHalos_fgsSnap99';
             martinaTag='none';
         case 2
             kstart=3;
@@ -188,8 +188,8 @@ for kk=1:3
             
             nc=2;
             loc='SouthEast';
-            titTag='Intermediate Mass Halos (fgs set at z=0.5)';
-            ptag='midHalos_fgsSnap67';
+            titTag='Intermediate Mass Halos (fgs set at z=0)';
+            ptag='midHalos_fgsSnap99';
             martinaTag='lo';
         case 3
             kstart=5;
@@ -199,8 +199,8 @@ for kk=1:3
             wkend=6;
             nc=3;
             loc='SouthEast';
-            titTag='High Mass Halos (fgs set at z=0.5)';
-            ptag='hiHalos_fgsSnap67';
+            titTag='High Mass Halos (fgs set at z=0)';
+            ptag='hiHalos_fgsSnap99';
             martinaTag='hi';
     end
     
@@ -255,7 +255,17 @@ for kk=1:3
         scount=scount+1;
     end
     
-  
+    %% martina results 
+    
+    switch martinaTag
+        case 'hi'
+            plot(martina_14(2,:),martina_14(1,:),'-','color',cmap(5,:))
+            plot(martina_145(2,:),martina_145(1,:),'-','color',cmap(6,:))
+            case 'lo'
+            plot(martina_13(2,:),martina_13(1,:),'-')
+            plot(martina_135(2,:),martina_135(1,:),'-')
+    end
+    
 %     
 %     for k=kstart:kend
 %         ltag=sprintf('TNG100 %s',tngTag{k});
@@ -299,25 +309,6 @@ for kk=1:3
         %if k==1;hold on;end
     end
     
-      %% martina results 
-    
-    switch martinaTag
-        case 'hi'
-            h(end+1)=plot(martina_14(2,:),martina_14(1,:),'-','color',cmap(5,:),...
-                'DisplayName','Martina 14');
-            h(end+1)=plot(martina_145(2,:),martina_145(1,:),'-','color',cmap(6,:),...
-                'DisplayName','Martina 14.5');
-            case 'lo'
-            h(end+1)=plot(martina_13(2,:),martina_13(1,:),'-','color',cmap(3,:),...
-                'DisplayName','Martina 13');
-            h(end+1)=plot(martina_135(2,:),martina_135(1,:),'-','color',cmap(4,:),...
-                'DisplayName','Martina 13.5');
-    end
-    
-    
-    
-    
-    
     xlim(xl)
     ylim([0 1])
     grid
@@ -333,7 +324,7 @@ for kk=1:3
     
     fname=sprintf('qf_comparison_ms_noRPS_fgs%s_%s',simEmulate,ptag);
     %fname=sprintf('qf_comparison_ms_fgh_fgs%s_%s',simEmulate,ptag);
-    %printout_fig(gcf,fname,'v');
+    printout_fig(gcf,fname,'v');
     
 end
  

@@ -7,7 +7,7 @@ if ~exist('leng','var')
     leng=200;
 end
 
-[bird, ~, xxlim]= histogram1d(val,mass,'len',leng);
+[bird, ~, xxlim]= histogram1d(double(val),double(mass),'len',leng);
 len=size(bird,1);
 xx0=linspace(xxlim(1),xxlim(2),len+1);
 xx=xx0(1:end-1)+0.5.*diff(xx0);

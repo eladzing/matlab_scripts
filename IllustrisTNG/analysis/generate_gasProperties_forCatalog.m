@@ -26,8 +26,17 @@ if readFlag
     load([DEFAULT_MATFILE_DIR '/freeFallTime_profiles_snp' num2str(illUnits.snap) '_' simDisplayName '.mat']);
 end
 
+% assign a lower stellar mass threshold based on the TNG box.
+if contains(simDisplayName,'100') || contains(simDisplayName,'300')
+    massThresh=10^9; % threshold for *stellar* mass
+elseif contains(simDisplayName,'50')
+    massThresh=10^7; % threshold for *stellar* mass
+else
+    error('mass threshold not set  - could not identify simulation: %s \n',simDisplayName);
+end
+fprintf('Setting stellar mass threshold to: %0.1e solar mass \n',massThresh);
 
-massThresh=10^9; % threshold for *stellar* mass
+
 
 %% load subsinfo
 subsInfo = illustris.infrastructure.build_sub_fof_connection(subs,fofs);
@@ -142,7 +151,7 @@ for id=0:len-1
         
         % calculate cooling time
         if isfield(gas,'GFM_CoolingRate')
-            tcool=illustris.utils.calcCoolingTime(gas.Density,gas.InternalEnergy,gas.GFM_CoolingRate); % cooling time in Gyr^-1
+            tcool=double(illustris.utils.calcCoolingTime(gas.Density,gas.InternalEnergy,gas.GFM_CoolingRate)); % cooling time in Gyr^-1
         else
             tcool=nan(size(mass));
         end
@@ -361,26 +370,28 @@ if DRACOFLAG
     for fld=compNames
         
         outStruct=PropStruct.(fld);
-                
+        
         catName=sprintf('Subhalos_%s_PhysicalGasProperties',fld);
         
-        folder='default';
+        folder=['PhysicalGasProperties/' simDisplayName];
         
         illustris.utils.write_catalog(outStruct,snap,'name',catName,...
             'path','default','folder','PhysicalGasProperties','v');
         
-   
-         fname=sprintf('gasProperties_snp%s_%s.mat',num2str(snap),simDisplayName);
-         save([DEFAULT_MATFILE_DIR '/' fname],'PropStruct','-v7.3')
-
-         fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
-%         
-%         fname2=sprintf('gasProperties_massHistograms_snp%s_%s',num2str(snap),simDisplayName);
-%         save([DEFAULT_MATFILE_DIR '/' fname2],'massHist','-v7.3')
-%         
-%         fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname2]);
-%         
+        
+        %
+        %         fname2=sprintf('gasProperties_massHistograms_snp%s_%s',num2str(snap),simDisplayName);
+        %         save([DEFAULT_MATFILE_DIR '/' fname2],'massHist','-v7.3')
+        %
+        %         fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname2]);
+        %
     end
+    
+    fname=sprintf('gasProperties_snp%s_%s.mat',num2str(snap),simDisplayName);
+    save([DEFAULT_MATFILE_DIR '/' fname],'PropStruct','-v7.3')
+    
+    fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
+    
 end
 fprintf(' *** DONE!  *** \n');
 

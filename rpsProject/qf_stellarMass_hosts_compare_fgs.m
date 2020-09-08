@@ -8,9 +8,12 @@ if perlimFlag
     hostTags={'1e12' '5e12' '1e13' '5e13' '1e14' '5e14' '1e15'};
     hostTags2={'12.2' '12.8' '13.2' '13.8' '14.2' '14.8' '15.2'};
     
+    snaps=["50","67","99"];
+    zreds=["z=1","z=0.5","z=0"];
+    lts=[":","--","-"];
     %baseName='qFrac_Ms100_noRPS_%s_host%s_fgs%s.mat';
-     baseName='qFrac_Ms100_%s_host%s_fgs%s_snp67.mat';
-     %baseName='qFrac_Ms100_%s_host%s_fgh300_fgs%s.mat';
+    baseName='qFrac_Ms100_%s_host%s_fgsTNG100_snp%s.mat';
+    %baseName='qFrac_Ms100_%s_host%s_fgh300_fgs%s.mat';
     
     flags=true(5,7);
     flags(3:5,1)=false;
@@ -24,85 +27,91 @@ if perlimFlag
             
             if flags(j,i)
                 
+                for k=1:length(snaps)
+                    fname=sprintf(baseName,tags{j},hostTags{i},snaps(k));
+                    load([DEFAULT_MATFILE_DIR '/' fname ])
+                    
+                    qfHost(i,k).(sprintf('qf%s',tag2{j}))=qFrac;
+                    clear qFrac
+                end
                 
-                fname=sprintf(baseName,tags{j},hostTags{i},simEmulate);
-                load([DEFAULT_MATFILE_DIR '/' fname ])
-                
-                qfHost(i).(sprintf('qf%s',tag2{j}))=qFrac;
             end
         end
     end
     
-    for i=1:length(hostTags)
+    for k=1:length(snaps)
         
-        for j=1:length(tags)
+        for i=1:length(hostTags)
             
-            if j==1
+            for j=1:length(tags)
                 
-                qfHost(i).qfMs1=qfHost(i).(sprintf('qf%s',tag2{j})).ms1Pass(betaInd).qf;
-                qfHost(i).cntMs1=qfHost(i).(sprintf('qf%s',tag2{j})).ms1Pass(betaInd).cnt;
-                
-                qfHost(i).qfMsF=qfHost(i).(sprintf('qf%s',tag2{j})).msFull(betaInd).qf;
-                qfHost(i).cntMsF=qfHost(i).(sprintf('qf%s',tag2{j})).msFull(betaInd).cnt;
-                
-                qfHost(i).qfMs1P=qfHost(i).(sprintf('qf%s',tag2{j})).ms1Pass(betaInd).qfProj;
-                qfHost(i).cntMs1P=qfHost(i).(sprintf('qf%s',tag2{j})).ms1Pass(betaInd).cntProj;
-                
-                qfHost(i).qfMsFP=qfHost(i).(sprintf('qf%s',tag2{j})).msFull(betaInd).qfProj;
-                qfHost(i).cntMsFP=qfHost(i).(sprintf('qf%s',tag2{j})).msFull(betaInd).cntProj;
-                
-                qfHost(i).qfMrFP =qfHost(i).(sprintf('qf%s',tag2{j})).massRatSFull(betaInd).qfProj;
-                qfHost(i).cntMrFP=qfHost(i).(sprintf('qf%s',tag2{j})).massRatSFull(betaInd).cntProj;
-                               
-                
-                
-                qfHost(i).bcen=qfHost(i).(sprintf('qf%s',tag2{j})).msFull(betaInd).bCen-0.25;
-            else
-                
-                if ~isempty(qfHost(i).(sprintf('qf%s',tag2{j})))
+                if j==1
                     
-                    if length(qfHost(i).(sprintf('qf%s',tag2{j})).ms1Pass)>1
-                      nb=betaInd;
-                    else
-                      nb=1;
+                    qfHost(i,k).qfMs1=qfHost(i,k).(sprintf('qf%s',tag2{j})).ms1Pass(betaInd).qf;
+                    qfHost(i,k).cntMs1=qfHost(i,k).(sprintf('qf%s',tag2{j})).ms1Pass(betaInd).cnt;
+                    
+                    qfHost(i,k).qfMsF=qfHost(i,k).(sprintf('qf%s',tag2{j})).msFull(betaInd).qf;
+                    qfHost(i,k).cntMsF=qfHost(i,k).(sprintf('qf%s',tag2{j})).msFull(betaInd).cnt;
+                    
+                    qfHost(i,k).qfMs1P=qfHost(i,k).(sprintf('qf%s',tag2{j})).ms1Pass(betaInd).qfProj;
+                    qfHost(i,k).cntMs1P=qfHost(i,k).(sprintf('qf%s',tag2{j})).ms1Pass(betaInd).cntProj;
+                    
+                    qfHost(i,k).qfMsFP=qfHost(i,k).(sprintf('qf%s',tag2{j})).msFull(betaInd).qfProj;
+                    qfHost(i,k).cntMsFP=qfHost(i,k).(sprintf('qf%s',tag2{j})).msFull(betaInd).cntProj;
+                    
+                    qfHost(i,k).qfMrFP =qfHost(i,k).(sprintf('qf%s',tag2{j})).massRatSFull(betaInd).qfProj;
+                    qfHost(i,k).cntMrFP=qfHost(i,k).(sprintf('qf%s',tag2{j})).massRatSFull(betaInd).cntProj;
+                    
+                    
+                    
+                    qfHost(i,k).bcen=qfHost(i,k).(sprintf('qf%s',tag2{j})).msFull(betaInd).bCen-0.25;
+                else
+                    
+                    if ~isempty(qfHost(i,k).(sprintf('qf%s',tag2{j})))
+                        
+                        if length(qfHost(i,k).(sprintf('qf%s',tag2{j})).ms1Pass)>1
+                            nb=betaInd;
+                        else
+                            nb=1;
+                        end
+                        
+                        qfHost(i,k).qfMs1 = qfHost(i,k).qfMs1 + qfHost(i,k).(sprintf('qf%s',tag2{j})).ms1Pass(nb).qf;
+                        qfHost(i,k).cntMs1= qfHost(i,k).cntMs1+ qfHost(i,k).(sprintf('qf%s',tag2{j})).ms1Pass(nb).cnt;
+                        
+                        qfHost(i,k).qfMsF = qfHost(i,k).qfMsF + qfHost(i,k).(sprintf('qf%s',tag2{j})).msFull(nb).qf;
+                        qfHost(i,k).cntMsF= qfHost(i,k).cntMsF+ qfHost(i,k).(sprintf('qf%s',tag2{j})).msFull(nb).cnt;
+                        
+                        qfHost(i,k).qfMs1P = qfHost(i,k).qfMs1P + qfHost(i,k).(sprintf('qf%s',tag2{j})).ms1Pass(nb).qfProj;
+                        qfHost(i,k).cntMs1P= qfHost(i,k).cntMs1P+ qfHost(i,k).(sprintf('qf%s',tag2{j})).ms1Pass(nb).cntProj;
+                        
+                        qfHost(i,k).qfMsFP = qfHost(i,k).qfMsFP + qfHost(i,k).(sprintf('qf%s',tag2{j})).msFull(nb).qfProj;
+                        qfHost(i,k).cntMsFP= qfHost(i,k).cntMsFP+ qfHost(i,k).(sprintf('qf%s',tag2{j})).msFull(nb).cntProj;
+                        
+                        qfHost(i,k).qfMrFP =  qfHost(i,k).qfMrFP  + qfHost(i,k).(sprintf('qf%s',tag2{j})).massRatSFull(nb).qfProj;
+                        qfHost(i,k).cntMrFP=  qfHost(i,k).cntMrFP + qfHost(i,k).(sprintf('qf%s',tag2{j})).massRatSFull(nb).cntProj;
+                        
                     end
-                    
-                    qfHost(i).qfMs1 = qfHost(i).qfMs1 + qfHost(i).(sprintf('qf%s',tag2{j})).ms1Pass(nb).qf;
-                    qfHost(i).cntMs1= qfHost(i).cntMs1+ qfHost(i).(sprintf('qf%s',tag2{j})).ms1Pass(nb).cnt;
-                    
-                    qfHost(i).qfMsF = qfHost(i).qfMsF + qfHost(i).(sprintf('qf%s',tag2{j})).msFull(nb).qf;
-                    qfHost(i).cntMsF= qfHost(i).cntMsF+ qfHost(i).(sprintf('qf%s',tag2{j})).msFull(nb).cnt;
-                    
-                    qfHost(i).qfMs1P = qfHost(i).qfMs1P + qfHost(i).(sprintf('qf%s',tag2{j})).ms1Pass(nb).qfProj;
-                    qfHost(i).cntMs1P= qfHost(i).cntMs1P+ qfHost(i).(sprintf('qf%s',tag2{j})).ms1Pass(nb).cntProj;
-                    
-                    qfHost(i).qfMsFP = qfHost(i).qfMsFP + qfHost(i).(sprintf('qf%s',tag2{j})).msFull(nb).qfProj;
-                    qfHost(i).cntMsFP= qfHost(i).cntMsFP+ qfHost(i).(sprintf('qf%s',tag2{j})).msFull(nb).cntProj;
-                    
-                    qfHost(i).qfMrFP =  qfHost(i).qfMrFP  + qfHost(i).(sprintf('qf%s',tag2{j})).massRatSFull(nb).qfProj;
-                    qfHost(i).cntMrFP=  qfHost(i).cntMrFP + qfHost(i).(sprintf('qf%s',tag2{j})).massRatSFull(nb).cntProj;
-                    
                 end
+                
             end
             
+            qfHost(i,k).qff=qfHost(i,k).qfMsF./qfHost(i,k).cntMsF;
+            qfHost(i,k).qf1=qfHost(i,k).qfMs1./qfHost(i,k).cntMs1;
+            
+            qfHost(i,k).qffP=qfHost(i,k).qfMsFP./qfHost(i,k).cntMsFP;
+            qfHost(i,k).qf1P=qfHost(i,k).qfMs1P./qfHost(i,k).cntMs1P;
+            
+            qfHost(i,k).qfMrP=qfHost(i,k).qfMrFP./qfHost(i,k).cntMrFP;
+            
+            
+            
+            %     % cut by stellar mass
+            %
+            %     qfh(i,j)=qfh(i,j)+qfHost(i)
+            %     nh(i,j)=nh(i,j)+qfHost(i).
+            
+            
         end
-        
-        qfHost(i).qff=qfHost(i).qfMsF./qfHost(i).cntMsF;
-        qfHost(i).qf1=qfHost(i).qfMs1./qfHost(i).cntMs1;
-        
-        qfHost(i).qffP=qfHost(i).qfMsFP./qfHost(i).cntMsFP;
-        qfHost(i).qf1P=qfHost(i).qfMs1P./qfHost(i).cntMs1P;
-        
-        qfHost(i).qfMrP=qfHost(i).qfMrFP./qfHost(i).cntMrFP;
-        
-        
-        
-        %     % cut by stellar mass
-        %
-        %     qfh(i,j)=qfh(i,j)+qfHost(i)
-        %     nh(i,j)=nh(i,j)+qfHost(i).
-        
-        
     end
     
     %% prepare TNG values
@@ -135,7 +144,7 @@ if perlimFlag
     msCTNG=qFracCenTNG.stellarMassBins(1:end);
     mhCTNG=qFracCenTNG.hostBins(1:end-1);
     
-       
+    
     qfC100=qFracCenTNG.qbinT100./qFracCenTNG.nbinT100;
     qfC300=qFracCenTNG.qbinT300./qFracCenTNG.nbinT300;
     
@@ -160,8 +169,8 @@ cmap=cmap([1 2 3 4 5 7 8],:);
 % xax(1,:)=qfHost(1).bcen;
 % xax(2,:)=qfHost(1).bcen+.5;
 
-xax=qfHost(1).bcen;
-xax(end+1)=qfHost(1).bcen(end)+0.5;
+xax=qfHost(1,1).bcen;
+xax(end+1)=qfHost(1,1).bcen(end)+0.5;
 
 xl=[9.0 11.7];
 dx=diff(xl)*0.01;
@@ -177,8 +186,8 @@ for kk=1:3
             nc=1;
             
             loc='SouthEast';
-            titTag='Low Mass Halos (fgs set at z=0.5)';
-            ptag='lohHalos_fgsSnap67';
+            titTag='Low Mass Halos';
+            ptag='lohHalos';
             martinaTag='none';
         case 2
             kstart=3;
@@ -189,7 +198,7 @@ for kk=1:3
             nc=2;
             loc='SouthEast';
             titTag='Intermediate Mass Halos (fgs set at z=0.5)';
-            ptag='midHalos_fgsSnap67';
+            ptag='midHalos';
             martinaTag='lo';
         case 3
             kstart=5;
@@ -199,8 +208,8 @@ for kk=1:3
             wkend=6;
             nc=3;
             loc='SouthEast';
-            titTag='High Mass Halos (fgs set at z=0.5)';
-            ptag='hiHalos_fgsSnap67';
+            titTag='High Mass Halos';
+            ptag='hiHalos';
             martinaTag='hi';
     end
     
@@ -210,111 +219,108 @@ for kk=1:3
     hcnt=0;
     scount=0;
     for k=kstart:kend
-        ltag=sprintf('mod. %s',hostTags2{k});
-             ind=find(~isnan(qfHost(k).qffP));
-%             yax=cat(1,qfHost(k).qffP,qfHost(k).qffP);
-% 
-%             hcnt=hcnt+1;
-%         
-%             hh=plot(xax(:,ind),yax(:,ind),'.-','color',cmap(k,:),...
-%                 'DisplayName',ltag,'linewidth',1.5);
-%             h(hcnt)=hh(1);
+        for sn=1:length(snaps)
+            ltag=sprintf('mod. %s, %s',hostTags2{k},zreds(sn));
+            ind=find(~isnan(qfHost(k,sn).qffP));
+            
+            
             hcnt=hcnt+1;
-            yax=[qfHost(k).qffP(ind) qfHost(k).qffP(ind(end))];
+            yax=[qfHost(k,sn).qffP(ind) qfHost(k,sn).qffP(ind(end))];
             ddx=(scount-1)*dx;
-        h(hcnt)=stairs(xax([ind ind(end)+1])+ddx,yax,'-','color',cmap(k,:),...
-            'DisplayName',ltag,'linewidth',1.5);
-%         h(hcnt)=stairs(qfHost(k).bcen+0.25,qfHost(k).qffP,'o-','color',cmap(k,:),...
-%             'DisplayName',ltag,'linewidth',1.5);
-%         
-        
-        if k==kstart; hold on; end
+            h(hcnt)=stairs(xax([ind ind(end)+1])+ddx,yax,lts(sn),'color',cmap(k,:),...
+                'DisplayName',ltag,'linewidth',1.5);
+            %         h(hcnt)=stairs(qfHost(k).bcen+0.25,qfHost(k).qffP,'o-','color',cmap(k,:),...
+            %             'DisplayName',ltag,'linewidth',1.5);
+            %
+            
+            if k==kstart && sn==1; hold on; end
+        end
         scount=scount+1;
     end
     
     % TNG
     
     
-    tngTag={'12','12.5','13','13.5','14','14.5','15'};
-    scount=0;   
-    for k=kstart:kend
-        ltag=sprintf('TNG300 %s',tngTag{k});
-        ind=find(~isnan(qfP300(:,k)));          
-        
-        hcnt=hcnt+1;
-        
-        yax=[qfP300(ind,k); qfP300(ind(end),k)];
-            ddx=(scount-1)*dx;
-        h(hcnt)=stairs(msTNG([ind ; ind(end)+1])+ddx,yax,'--','color',cmap(k,:),...
-            'DisplayName',ltag,'linewidth',1.5);
-        
-        
-%         h(hcnt)=stairs(msTNG+0.25,qfP300(:,k),'-.+','color',cmap(k,:),...
-%             'DisplayName',ltag,'linewidth',1.5);
-        % if k==1; hold on; end
-        scount=scount+1;
-    end
-    
-  
-%     
+%     tngTag={'12','12.5','13','13.5','14','14.5','15'};
+%     scount=0;
 %     for k=kstart:kend
-%         ltag=sprintf('TNG100 %s',tngTag{k});
-%         ind=find(~isnan(qfP100(:,k)));          
+%         ltag=sprintf('TNG300 %s',tngTag{k});
+%         ind=find(~isnan(qfP300(:,k)));
 %         
 %         hcnt=hcnt+1;
 %         
-%         yax=[qfP100(ind,k); qfP100(ind(end),k)];
-%             
-%         h(hcnt)=stairs(msTNG([ind ; ind(end)+1]),yax,'--','color',cmap(k,:),...
+%         yax=[qfP300(ind,k); qfP300(ind(end),k)];
+%         ddx=(scount-1)*dx;
+%         h(hcnt)=stairs(msTNG([ind ; ind(end)+1])+ddx,yax,'--','color',cmap(k,:),...
 %             'DisplayName',ltag,'linewidth',1.5);
 %         
 %         
-% %         h(hcnt)=stairs(msTNG+0.25,qfP300(:,k),'-.+','color',cmap(k,:),...
-% %             'DisplayName',ltag,'linewidth',1.5);
+%         %         h(hcnt)=stairs(msTNG+0.25,qfP300(:,k),'-.+','color',cmap(k,:),...
+%         %             'DisplayName',ltag,'linewidth',1.5);
 %         % if k==1; hold on; end
+%         scount=scount+1;
 %     end
+%     
+%     
+    %
+    %     for k=kstart:kend
+    %         ltag=sprintf('TNG100 %s',tngTag{k});
+    %         ind=find(~isnan(qfP100(:,k)));
+    %
+    %         hcnt=hcnt+1;
+    %
+    %         yax=[qfP100(ind,k); qfP100(ind(end),k)];
+    %
+    %         h(hcnt)=stairs(msTNG([ind ; ind(end)+1]),yax,'--','color',cmap(k,:),...
+    %             'DisplayName',ltag,'linewidth',1.5);
+    %
+    %
+    % %         h(hcnt)=stairs(msTNG+0.25,qfP300(:,k),'-.+','color',cmap(k,:),...
+    % %             'DisplayName',ltag,'linewidth',1.5);
+    %         % if k==1; hold on; end
+    %     end
     
     
-    % Wetzel
-    fld={'mh12' 'mh125' 'mh13' 'mh135' 'mh14' 'mh145' 'centrals'};
-    wTag={'$11.9-12.4$',...
-        '$12.4-12.8$',...
-        '$12.8-13.3$',...
-        '$13.3-13.8$',...
-        '$13.8-14.3$',...
-        '$14.3-14.8$',...
-        'Centrals'};
+    %% Wetzel
+%     fld={'mh12' 'mh125' 'mh13' 'mh135' 'mh14' 'mh145' 'centrals'};
+%     wTag={'$11.9-12.4$',...
+%         '$12.4-12.8$',...
+%         '$12.8-13.3$',...
+%         '$13.3-13.8$',...
+%         '$13.8-14.3$',...
+%         '$14.3-14.8$',...
+%         'Centrals'};
+%     
+%     for k=wkstart:wkend
+%         
+%         ltag=sprintf('Wetzel %s',wTag{k});
+%         
+%         ms=fig3a.(sprintf('ms_qf_%s',fld{k}))(2,:);
+%         qf=fig3a.(sprintf('ms_qf_%s',fld{k}))(1,:);
+%         ypos=abs(fig3a.(sprintf('ms_qf_%s_errP',fld{k}))(1,:)-qf);
+%         yneg=abs(fig3a.(sprintf('ms_qf_%s_errM',fld{k}))(1,:)-qf);
+%         hcnt=hcnt+1;
+%         h(hcnt)=errorbar(ms,qf,yneg,ypos,':','color',cmap(k,:),...
+%             'Displayname',ltag,'linewidth',1.5);
+%         %if k==1;hold on;end
+%     end
+%     
+    %% martina results
     
-    for k=wkstart:wkend
-        
-        ltag=sprintf('Wetzel %s',wTag{k});
-        
-        ms=fig3a.(sprintf('ms_qf_%s',fld{k}))(2,:);
-        qf=fig3a.(sprintf('ms_qf_%s',fld{k}))(1,:);
-        ypos=abs(fig3a.(sprintf('ms_qf_%s_errP',fld{k}))(1,:)-qf);
-        yneg=abs(fig3a.(sprintf('ms_qf_%s_errM',fld{k}))(1,:)-qf);
-        hcnt=hcnt+1;
-        h(hcnt)=errorbar(ms,qf,yneg,ypos,':','color',cmap(k,:),...
-            'Displayname',ltag,'linewidth',1.5);
-        %if k==1;hold on;end
-    end
-    
-      %% martina results 
-    
-    switch martinaTag
-        case 'hi'
-            h(end+1)=plot(martina_14(2,:),martina_14(1,:),'-','color',cmap(5,:),...
-                'DisplayName','Martina 14');
-            h(end+1)=plot(martina_145(2,:),martina_145(1,:),'-','color',cmap(6,:),...
-                'DisplayName','Martina 14.5');
-            case 'lo'
-            h(end+1)=plot(martina_13(2,:),martina_13(1,:),'-','color',cmap(3,:),...
-                'DisplayName','Martina 13');
-            h(end+1)=plot(martina_135(2,:),martina_135(1,:),'-','color',cmap(4,:),...
-                'DisplayName','Martina 13.5');
-    end
-    
-    
+%     switch martinaTag
+%         case 'hi'
+%             h(end+1)=plot(martina_14(2,:),martina_14(1,:),'-','color',cmap(5,:),...
+%                 'DisplayName','Martina 14');
+%             h(end+1)=plot(martina_145(2,:),martina_145(1,:),'-','color',cmap(6,:),...
+%                 'DisplayName','Martina 14.5');
+%         case 'lo'
+%             h(end+1)=plot(martina_13(2,:),martina_13(1,:),'-','color',cmap(3,:),...
+%                 'DisplayName','Martina 13');
+%             h(end+1)=plot(martina_135(2,:),martina_135(1,:),'-','color',cmap(4,:),...
+%                 'DisplayName','Martina 13.5');
+%     end
+%     
+%     
     
     
     
@@ -331,117 +337,117 @@ for kk=1:3
     
     titlemine(titTag);
     
-    fname=sprintf('qf_comparison_ms_noRPS_fgs%s_%s',simEmulate,ptag);
-    %fname=sprintf('qf_comparison_ms_fgh_fgs%s_%s',simEmulate,ptag);
-    %printout_fig(gcf,fname,'v');
+    %fname=sprintf('qf_comparison_ms_noRPS_fgs%s_%s',simEmulate,ptag);
+    fname=sprintf('qf_fgsSnapComparison_%s',ptag);
+    printout_fig(gcf,fname,'v');
     
 end
- 
-% 
+
+%
 % % pause
-%  
-% 
-% %% sum over all hosts 
-% 
+%
+%
+% %% sum over all hosts
+%
 % qfCH100=squeeze(sum(qFracCenTNG.qbinT100,2)./sum(qFracCenTNG.nbinT100,2));
 % qfCH300=squeeze(sum(qFracCenTNG.qbinT300,2)./sum(qFracCenTNG.nbinT300,2));
-% 
+%
 % qfH100=squeeze(sum(qb100,2)./sum(nb100,2));
 % qfH300=squeeze(sum(qb300,2)./sum(nb300,2));
 % qfPH100=squeeze(sum(qbP100,2)./sum(nbP100,2));
 % qfPH300=squeeze(sum(qbP300,2)./sum(nbP300,2));
-% 
+%
 % RomC_data
-% 
-% 
+%
+%
 % figure
-% 
+%
 % h(1)=stairs(msTNG,[qfPH100 ; qfPH100(end)],'color',cc(1,:),'linestyle','--',...
 %     'DisplayName','100 sat','linewidth',1.5);
 % hold on
 % h(2)=stairs(msTNG,[qfPH300 ; qfPH300(end)],'color',cc(1,:),'linestyle','-',...
 % 'DisplayName','300 sat','linewidth',1.5);
-% 
+%
 % h(3)=stairs(msTNG,[qfCH100 ; qfCH100(end)],'color',cc(2,:),'linestyle','--',...
 % 'DisplayName','100 cen','linewidth',1.5);
-% 
+%
 % h(4)=stairs(msTNG,[qfCH300 ; qfCH300(end)],'color',cc(2,:),'linestyle','-',...
 % 'DisplayName','300 cen','linewidth',1.5);
-% 
+%
 % h(5)=plot(fig3a.ms_qf_centrals(2,:),fig3a.ms_qf_centrals(1,:),...
 %     '-dk','DisplayName','Wetzel Cen');
-% 
+%
 % h(6)=plot(fig3a.ms_qf_mh145(2,:),fig3a.ms_qf_mh145(1,:),...
 %     '-ok','DisplayName','Wetzel sat 14.5');
-% 
-% 
+%
+%
 % h(7)=plot(fig14.massBinC(1:end-1)+0.5.*diff(fig14.massBinC),fig14.qfC,'x-',...
 %     'color',cc(3,:),'DisplayName','RomC');
-% 
+%
 % h(8)=plot(fig14.massBin25(1:end-1)+0.5.*diff(fig14.massBin25),fig14.qf25,'x-',...
 %     'color',cc(4,:),'DisplayName','Rom25');
-% 
+%
 % grid
 % set(gca,'fontsize',14)
-% 
-% 
+%
+%
 % hl=legend(h);
 % set(hl,'Interpreter','latex','Fontsize',12,'location','SouthEast')
-% 
+%
 % xlabelmine('log Stellar Mass');
 % ylabelmine('Quenched Fraction');
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% % by mass ratio 
-% 
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+% % by mass ratio
+%
 % figure
-% 
+%
 % % model
 % h=[];
 % edj=-7:1:-1;
 % for k=1:7
 %     ltag=sprintf('mod. %s',hostTags2{k});
-%     
+%
 %     h(k)=plot(edj(1:end-1)+0.5,qfHost(k).qfMrP,'-o','color',cmap(k,:),...
 %         'DisplayName',ltag,'linewidth',1.5);
 %     if k==1; hold on; end
 % end
-% 
+%
 % ylim([0 1])
 %     grid
-%     
+%
 %     hl=legend(h);
 %     set(hl,'Interpreter','latex','fontsize',10,'Location',loc,'NumColumns',nc);
-%     
-%     
+%
+%
 %     xlabelmine('log stellar Mass / host haloMass');
 %     ylabelmine('Quenched Fraction');
-%     
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
 % % %% vs stellar mass, cut in halos  - 1 Pass
 % % cmap=brewermap(8,'Set1');
 % % cmap=cmap([1 2 3 4 5 7 8],:);

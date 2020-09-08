@@ -49,7 +49,7 @@ for i=1:length(treeStruct.treeLevel)
             cellVal(i)=median(vv(mask));
         case{'minimum','min'}
             % minimum  value
-            cellVal(i)=min((vv(mask));
+            cellVal(i)=min((vv(mask)));
         case{'maximum','max'}
             % maximal value
             cellVal(i)=max(vv(mask));

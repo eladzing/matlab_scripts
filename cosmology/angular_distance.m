@@ -51,7 +51,7 @@ eofz=friedeq(zz,'hub',h0,'Omm',Omm,'Oml',Oml)./(100.*h0);
 
 p1=trapz(zz,1./eofz);
 
-result=(cspeed./km)/(100.*h0)/(1+zend).*p1;
+result=(Units.cspeed./Units.km)/(100.*h0)/(1+zend).*p1;
 
 
 

@@ -10,8 +10,10 @@ centralFlag=false;
 satFlag=false;
 snap=99;
 massThresh=10^9;
+% haloMassThresh=10^11;
 
 gasFlag=false;
+dmFlag=false;
 
 % parse argumnts
 i=1;
@@ -32,9 +34,14 @@ while(i<=length(varargin))
             snap=varargin{i};
         case{'gas','hasgas'}
             gasFlag=true;
+                    case{'dm','hasdm'}
+            dmFlag=true;
         case{'mass','masshresh','thresh','threshold'}
             i=i+1;
             massThresh=varargin{i};
+%         case{'halo','halomass'}
+%             i=i+1;
+%             haloMassThresh=varargin{i};
         otherwise
             error('generateMask - Illegal argument: %s',varargin{i});
     end
@@ -83,12 +90,19 @@ massMask=galMass>massThresh;
 
 res=baseMask & massMask;
 
+% hostMass=fofs.Group_M_Crit200.*simUnits.massUnit;
+% hostMask
+%% gas mask 
 if gasFlag
     res=res & subsInfo.hasGas;
 end
 
 
+if dmFlag
+    res=res & subsInfo.hasDM;
+end
 
+%% centrals or satellite 
 if centralFlag
     res=res & subsInfo.isCentral;
 elseif satFlag

@@ -27,7 +27,7 @@ end
 
 i=1;
 while i<=length(varargin)
-    switch varargin{i}
+    switch lower(varargin{i})
         case {'len','bins'}
             i=i+1;
             len=varargin{i};
@@ -40,7 +40,7 @@ while i<=length(varargin)
             i=i+1;
             wt=varargin{i};
         otherwise
-            error('histogram2d: Illegal argument: %s',varargin{i})
+            error('histogram1d: Illegal argument: %s',varargin{i})
     end
     i=i+1;
 end
@@ -62,7 +62,7 @@ wt=wt(ind);
 vvw=vv.*wt;
 bird=zeros(len,2);
 
-indx=ceil((xx-xxlimH(1))./binsize);
+indx=discretize(xx,xxlimH(1):binsize:xxlimH(2)); ceil((xx-xxlimH(1))./binsize);
 
 
 %tic

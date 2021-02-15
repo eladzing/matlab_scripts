@@ -20,6 +20,7 @@ if ~skip2write
     
     ind=find(done);
     
+    % generate the time bins. 
     %timeFrame=[1 2 5 8 12]
     %   1Gyr    2Gyr  5.2Gyr  8  10.5  12.25
     zz=[0 0.1 0.2  0.5 1 2 4];
@@ -27,27 +28,32 @@ if ~skip2write
     tim=redshift2time(zz,'cosmo',cosmoStruct);
     lookback=tim.lookback;
     
+    % initialize arrays 
     isSatZ=zeros(length(zz)-1,length(done));
     isSatT=zeros(length(time)-1,length(done));
     
     isFarZ=zeros(length(radThresh),length(zz)-1,length(done));
     isFarT=zeros(length(radThresh),length(time)-1,length(done));
-    
+    % set non-centrals to -1 
     isSatZ(:,~done)=-1;
     isFarZ(:,:,~done,:)=-1;
     isSatT(:,~done)=-1;
     isFarT(:,:,~done,:)=-1;
     
+    
+    %% run over galaxies 
     step=10;
     thresh=step;
+    
     for i=1:length(ind)
+        
         
         if floor(100*i/length(ind))>thresh
             fprintf('%s %% completed \n',num2str(thresh));
             thresh=thresh+step;
         end
         
-        
+        % radius normalized by R_200,crit 
         rad=centralHist(ind(i)).radiusToHost./centralHist(ind(i)).hostR200;
         
         isSat0=~centralHist(ind(i)).isCentral';

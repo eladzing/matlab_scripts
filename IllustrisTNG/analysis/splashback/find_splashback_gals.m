@@ -22,6 +22,7 @@ if ~skip2point
         readFlag=true;
     end
     
+    
     if readFlag
         fprintf(' *** Reading data *** \n');
         fofs=illustris.groupcat.loadHalos(bp,snap);

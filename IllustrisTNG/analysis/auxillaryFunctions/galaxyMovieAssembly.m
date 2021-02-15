@@ -7,7 +7,7 @@ mpegFlag=true;
 i=1;
 while i<=length(varargin)
     switch(lower(varargin{i}))
-        case {'frame','frameRate','rate','fr'}
+        case {'frame','framerate','rate','fr'}
             i=i+1;
             frameRate=varargin{i};
         case {'avi','nompfeg'}

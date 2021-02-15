@@ -17,10 +17,10 @@ col='k';
 i=1;
 while i<=length(varargin)
     switch lower(varargin{i})
-        case 'Interpreter'
+        case 'interpreter'
             i=i+1;
             interpret=varargin{i};
-        case {'fontsize','font','fontSize','FontSize','Fontsize'}
+        case {'fontsize','font','size'}
             i=i+1;    
             fontSize=varargin{i};
         case{'color','col','fontcolor'}

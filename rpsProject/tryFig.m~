@@ -175,19 +175,19 @@ cmap=cmap([1 2 3 4 5 7 8],:);
         
         for kk=1:3
              ind=find(~isnan(qfS(kk).qfHost(k).qffP));
-            hcnt=hcnt+1;
+            %hcnt=hcnt+1;
             yax(kk,:)=[qfS(kk).qfHost(k).qffP(ind) qfS(kk).qfHost(k).qffP(ind(end))];
         end    
             
-        h(1)=plot(xax+ddx(1),yax(1,:),'-','color',cmap(1,:),...
+        h(1)=stairs(xax([ind ind(end)+1])+ddx(1),yax(1,:),'-','color',cmap(1,:),...
             'DisplayName','Full Model','linewidth',1.5);
 
         hold on 
 
-        h(2)=plot(xax+ddx(2),yax(2,:),'-','color',cmap(2,:),...
+        h(2)=stairs(xax([ind ind(end)+1])+ddx(2),yax(2,:),'-','color',cmap(2,:),...
             'DisplayName','no RPS','linewidth',1.5);
 
-        h(3)=plot(xax+ddx(3),yax(3,:),'-','color',cmap(3,:),...
+        h(3)=stairs(xax([ind ind(end)+1])+ddx(3),yax(3,:),'-','color',cmap(3,:),...
             'DisplayName','$f_\mathrm{gs}=0.2$','linewidth',1.5);
         
        %% wetzel 
@@ -210,10 +210,17 @@ cmap=cmap([1 2 3 4 5 7 8],:);
         ind=find(~isnan(qfP300(:,k)));          
         
         
-        %yaxx=[qfP300(ind,k); qfP300(ind(end),k)];
+        yaxx=[qfP300(ind,k); qfP300(ind(end),k)];
             ddx=(scount-1)*dx;
-        h(5)=plot(msTNG+ddx,yaxx,'--','color',cmap(k-2,:),...
+        h(5)=stairs(msTNG([ind ; ind(end)+1])+ddx,yaxx,'--','color',cmap(k-2,:),...
             'DisplayName',ltag,'linewidth',1.5);
+        
+        
+        %% martina 
+        
+        h(6)=plot(martina_ms,martina_qf,'-','color',cmap(4,:),...
+            'DisplayName','TNG300 
+        
         
         
     ylim([0 1])

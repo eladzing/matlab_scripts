@@ -1,7 +1,7 @@
-function cvir=cvir_Mvir_200(Mv,zred,varargin)
+function cvir=cvir_Mvir_200(Mv,zred,type,varargin)
 % function to realize the cvir-Mvir relation as presented in
 % Maccio and Dutton 2014
-% Mv should be in solarmass
+% Mv should be in solarmass NOT solarmass h^-1!! 
 % the fitting relation is for Mv h^-1 so the value of h is an
 % optional argument
 
@@ -10,8 +10,16 @@ if nargin<2
 end
 
 %% formula parameters
+switch type
+    case{'200'}
 a=0.52+(0.905 - 0.520)*exp(-0.617.*zred.^1.21);
-b=-0.101+0.0026.*zred;
+b=-0.101+0.026.*zred;
+    case{'vir'}
+a=0.537+(1.025 - 0.537)*exp(-0.718.*zred.^1.08);
+b=-0.097+0.024.*zred;
+    otherwise
+        error('CVIR_MVIR_200 - Illegal type (200,vir): %s',type)
+end
 
 % w=0.029;
 % m=0.097;
@@ -52,7 +60,7 @@ while i<=length(varargin)
     i=i+1;
 end
 
-mv=Mv./hub;
+mv=Mv.*hub;
 
 %cvir=10.^(a.*log10(mv)+b);
 

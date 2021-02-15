@@ -1,4 +1,4 @@
-function res=read_catalog(catalogName,varargin )
+function res=read_hydrogen_catalog(snap,varargin )
 %WRITE_CATALOG write data catalog to hdf files in the same structure as the
 %other TNG values
 %   Detailed explanation goes here
@@ -8,24 +8,24 @@ global simName
 
 %% defaults
 folderName='';
-fullPath='';
-snap='099';
+fullPath=[POSTPROCESSING '/hydrogen/gas_' num2str(snap '.hdf5'];
+% snap='099';
 sim='';
-catPath=POSTPROCESSING;
+
 
 %% parse arguments
 i=1;
 while(i<=length(varargin))
     switch lower(varargin{i})
-        case{'path','catpath','catalogpath','pppath'}
-            i=i+1;
-            catPath=varargin{i};
-            if strcmpi(catPath,'default')
-                catPath=myPOSTPROCESSING;
-            end
-        case{'folder','foldername'}
-            i=i+1;
-            folderName=varargin{i};
+%         case{'path','catpath','catalogpath','pppath'}
+%             i=i+1;
+%             catPath=varargin{i};
+%             if strcmpi(catPath,'default')
+%                 catPath=myPOSTPROCESSING;
+%             end
+%         case{'folder','foldername'}
+%             i=i+1;
+%             folderName=varargin{i};
         case{'snap'}
             i=i+1;
             snap=varargin{i};

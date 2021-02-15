@@ -75,13 +75,13 @@ res.area=area;
 if plotFlag
     figure
     plot(theta,area./(4*pi/length(area)))
-    xlabelmine('$\theta$')
-    ylabelmine('$\mathrm{area}/(4\pi/N))$')
+    xlabelmine('$\theta$');
+    ylabelmine('$\mathrm{area}/(4\pi/N))$');
     
     figure
-    hist(area./(4*pi/length(area)),50)
+    histogram(area./(4*pi/length(area)),50)
     xlabelmine('$\mathrm{area}/(4\pi/N))$');
-    ylabelmine('$N$')
+    ylabelmine('$N$');
     
     
     
@@ -90,9 +90,9 @@ if plotFlag
     hold on
     surf(xx,yy,zz,'faceAlpha',0.75)
     drawSphere(0,0,0,1,'FaceAlpha',0.5)
-    xlabelmine('$X$')
-    ylabelmine('$Y$')
-    zlabelmine('$Z$')
+    xlabelmine('$X$');
+    ylabelmine('$Y$');
+    zlabelmine('$Z$');
     axis equal
     
       

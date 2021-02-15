@@ -1,7 +1,7 @@
 function cvir=cvir_Mvir(Mv,zred,varargin)
 % function to realize the cvir-Mvir relation as presented in
 % Munoz-Cuartas et al. (2010)
-% Mv should be in solarmass
+% Mv should be in solarmass NOT solarmass h^-1 !! 
 % the fitting relation is for Mv h^-1 so the value of h is an
 % optional argument
 
@@ -49,7 +49,7 @@ while i<=length(varargin)
     i=i+1;
 end
 
-mv=Mv./hub;
+mv=Mv.*hub;
 
 cvir=10.^(a.*log10(mv)+b);
 

@@ -1,5 +1,5 @@
 %% This script generates a satellite catalog 
-
+% try this on for size 
 % Based on selection of random vantage point in the simulation and
 % constructing everything compared to it.
 

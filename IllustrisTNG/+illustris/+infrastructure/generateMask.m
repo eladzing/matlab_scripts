@@ -85,7 +85,7 @@ end
 %     end
 % end
 
-galMass= subs.SubhaloMassInRadType(illustris.partTypeNum('stars')+1,:).*simUnits.massUnit; % stellar mass within 2*rhalf
+galMass= illustris.utils.get_stellar_mass(subs);
 massMask=galMass>massThresh;
 
 res=baseMask & massMask;

@@ -16,7 +16,7 @@ sigmaFac=1;%/sqrt(2);
 radFac=2;
 
 
-virType='crit';
+virType='mean';
 %%  read stuff
 
 massThresh=10^9;
@@ -37,10 +37,11 @@ end
 
 if setupFlag
     % define stellar mass
-    massAllGals= double(subs.SubhaloMassInRadType(illustris.partTypeNum('stars')+1,:).*illUnits.massUnit); % stellar mass within 2*rhalf
+    massAllGals= illustris.utils.get_stellar_mass(subs); % stellar mass within 2*rhalf
     
-    sampleMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap);
+    %sampleMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap);
     centralMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'centrals');
+    satMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'sats');
     
     %define host mass and radius
     r200m=double(fofs.Group_R_Mean200(subsInfo.hostFof+1)).*illUnits.lengthUnit;
@@ -51,17 +52,42 @@ if setupFlag
         
     aexp=illustris.utils.snap2aexpn(snap);
 
+    switch virType
+        case 'mean'
+            r200=r200m;
+            m200=m200m;
+            
+        case 'crit'
+            r200=r200c;
+            m200=m200c;
+    end
+    
+    
+    
+    hostMask=m200c>=hostThresh;  % cut hosts by M_200,c 
+
+    cenMask=centralMask & hostMask;
+    mm=centralMask & ~cenMask;
+    satMask(mm)=true;
+    sampleMask= cenMask | satMask;
+    
+    
 end 
 
-switch virType
-    case 'mean'
-        r200=r200m;
-        m200=m200m;
-       
-    case 'crit'
-        r200=r200c;
-        m200=m200c;       
+if fiberFlag
+   % translate 33'' to kpc
+   zz=linspace(0,0.075,100);
+   ang=33/3600*pi/180;
+   angPhys=ang.*angular_distance(zz,'cosmo',cosmoStruct)*1000; % in kpc
+
+   % use hubble law to translate distance to redshift
+   ll=linspace(0,300,1000); % in Mpc
+   zl=ll.*(cosmoStruct.hub*100).*Units.km./Units.cspeed;
+   
+   
 end
+
+
 
 
 v200=sqrt(Units.GG.*m200./r200); % in km/sec;
@@ -88,10 +114,7 @@ cntY(1:3)=1;
 cntZ(1:3)=1;
 cntV(1:3)=1;
 
-hostMask=m200c>=hostThresh;  % cut hosts by M_200,c 
 
-cenMask=centralMask & hostMask;
-sampleMask=sampleMask & ~cenMask;
 
 stp=10;
 prc=10;
@@ -162,14 +185,14 @@ for j=1:length(centralMask)
          pscore=(cosmoStruct.hub.*100).*bigSigma.*pm;
         
          % Masks 
-        satMaskYang=sampleMask & pscore>bValue;
-        satMaskYang(j)=false;  % don'tcount central as satellite. 
+        satMaskYang=satMask & pscore>bValue;
+        %satMaskYang(j)=false;  % don'tcount central as satellite. 
         
-        satMaskVel=sampleMask & distMask & velMask;
-        satMaskVel(j)=false;
+        satMaskVel=satMask & distMask & velMask;
+        %satMaskVel(j)=false;
         
-        satMaskZred=sampleMask & distMask & losLengthMask;
-        satMaskZred(j)=false;
+        satMaskZred=satMask & distMask & losLengthMask;
+        %satMaskZred(j)=false;
         
         if sum(satMaskYang)>0
             inds=cntY(k):cntY(k)+sum(satMaskYang)-1;
@@ -182,6 +205,7 @@ for j=1:length(centralMask)
             satStructY(k).distProj(inds)=rr(satMaskYang);
             satStructY(k).pscore(inds)=pscore(satMaskYang);
             
+         
 
         end
         
@@ -257,7 +281,7 @@ for k=1:3
             listMask(indlist)=true;
         else
             rp=sqrt(satStructZ(k).distProj(indlist).^2+satStructZ(k).zlen.^2);
-            [~,ix]=max(rp);
+            [~,ix]=min(rp);
             listMask(indlist(ix))=true;
             
         end
@@ -284,7 +308,7 @@ for k=1:3
             listMask(indlist)=true;
         else
             rp=sqrt(satStructV(k).distProj(indlist).^2+satStructV(k).vv.^2);
-            [~,ix]=max(rp);
+            [~,ix]=min(rp);
             listMask(indlist(ix))=true;
             
         end

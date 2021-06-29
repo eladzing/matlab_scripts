@@ -1,5 +1,5 @@
 function res = tree2d( xVal,yVal,blCorner,xSide,ySide,splitParam,minLevel )
-%TREE2D - Create an adaptivly sized grid based based on the number of data
+%TREE2D - Create an adaptivly sized grid based on the number of data
 %points per bin 
 % This function generates an adaptive sized grid based such that each
 % recatgular bin contains no more than a given number of data points. 

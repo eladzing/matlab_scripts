@@ -1,4 +1,4 @@
-%% generates mock catalogs of projected satellite-halo catalogs  using three different methods: 
+b%% generates mock catalogs of projected satellite-halo catalogs  using three different methods: 
 % 1) recreating the Yang et al. 2005 method
 % 2) projected radius at 2 X Rvir & velocity cut within 0.5 vvir
 % 3) projected radius at 2 X Rvir & within redshift cylinder set by vvir 
@@ -9,6 +9,7 @@ snap=99;
 illustris.utils.set_illUnits(snap);
 global illUnits
 global cosmoStruct
+global LBox
 units;
 
 
@@ -37,10 +38,11 @@ end
 
 if setupFlag
     % define stellar mass
-    massAllGals= double(subs.SubhaloMassInRadType(illustris.partTypeNum('stars')+1,:).*illUnits.massUnit); % stellar mass within 2*rhalf
+    massAllGals= illustris.utils.get_stellar_mass(subs); % stellar mass within 2*rhalf
     
-    sampleMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap);
+    %sampleMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap);
     centralMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'centrals');
+    satMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'sats');
     
     %define host mass and radius
     r200m=double(fofs.Group_R_Mean200(subsInfo.hostFof+1)).*illUnits.lengthUnit;
@@ -51,17 +53,61 @@ if setupFlag
         
     aexp=illustris.utils.snap2aexpn(snap);
 
+    switch virType
+        case 'mean'
+            r200=r200m;
+            m200=m200m;
+            
+        case 'crit'
+            r200=r200c;
+            m200=m200c;
+    end
+    
+    
+    
+    hostMask=m200c>=hostThresh;  % cut hosts by M_200,c 
+
+    cenMask=centralMask & hostMask;
+    mm=centralMask & ~cenMask;
+    satMask(mm)=true;
+    sampleMask= cenMask | satMask;
+    
+    
 end 
 
-switch virType
-    case 'mean'
-        r200=r200m;
-        m200=m200m;
+if fiberFlag
+   % translate 33'' to kpc
+   zz=linspace(0,0.075,100);
+   ang=33/3600*pi/180;
+   angPhys=ang.*angular_distance(zz,'cosmo',cosmoStruct)*1000; % in kpc
+
+   % use hubble law to translate distance to redshift
+   ll=linspace(0,300,1000); % in Mpc
+   zl=ll.*(cosmoStruct.hub*100).*Units.km./Units.cspeed;
+   
+   kk=[2 3 ; 1 3 ; 1 2];
+   for k=1:3  % loop over projections
        
-    case 'crit'
-        r200=r200c;
-        m200=m200c;       
+       % projected distance
+       pos(1,:)=double(subs.SubhaloPos(kk(k,1),:)./LBox);
+       pos(2,:)=double(subs.SubhaloPos(kk(k,2),:)./LBox);
+       pos3=double(subs.SubhaloPos(k,:).*illUnits.lengthUnit)./1000;
+       %zlen=interp1(ll,zl,pos3,'linear');
+       
+       % constant aperature for z=0.03
+       fibarPar=0.03;
+       lp=interp1(zz,angPhys,fibarPar,'linear')./(LBox.*illUnits.lengthUnit.*(1/(1+fibarPar)));
+       
+       fiber(k)=sdssFiberSelect(pos,massAllGals,lp,sampleMask);
+       
+   end
+else
+    fiber(1).outMask=true(size(massAllGals));
+    fiber(2).outMask=true(size(massAllGals));
+    fiber(3).outMask=true(size(massAllGals));
 end
+
+
 
 
 v200=sqrt(Units.GG.*m200./r200); % in km/sec;
@@ -88,10 +134,7 @@ cntY(1:3)=1;
 cntZ(1:3)=1;
 cntV(1:3)=1;
 
-hostMask=m200c>=hostThresh;  % cut hosts by M_200,c 
 
-cenMask=centralMask & hostMask;
-sampleMask=sampleMask & ~cenMask;
 
 stp=10;
 prc=10;
@@ -100,7 +143,7 @@ cntr=0;
 for j=1:length(centralMask)
     
     % skip
-    if ~cenMask(j)
+    if ~cenMask(j) 
         continue
     end
     cntr=cntr+1;
@@ -128,6 +171,10 @@ for j=1:length(centralMask)
     
     for k=1:3 % generate for each cartesian direction
         
+        if ~fiber(k).outMask(j) % skip if central is removed by fiber 
+            continue
+        end
+        
         kk=carts(carts~=k);
         
         %% transverse distance
@@ -143,7 +190,8 @@ for j=1:length(centralMask)
         zlen=double(newCoords(k,:).*illUnits.lengthUnit);
         
         % redshift cylinder 
-        losLengthMask=abs(zlen)<=0.5.*losLength(j);
+        losLength=comoving_distance(deltaZ(j),'cosmo',cosmoStruct).*1000; % in kpc
+        losLengthMask=abs(zlen)<=0.5.*losLength;
         
         % Hubble flow
         vhub=(cosmoStruct.hub.*100).*(zlen./1000);
@@ -152,7 +200,8 @@ for j=1:length(centralMask)
         vhub(memberMask)=0;
                
         %los velocity
-        vlos=(double(subs.SubhaloVel(k,:))-double(fofs.GroupVel(k,hostInd))./aexp);
+        vsat=double(subs.SubhaloVel(k,:)).*illustris.utils.velocityFactor(snap,'sub')
+        vlos=(-double(fofs.GroupVel(k,hostInd))./aexp);
         vv=vhub+vlos;
         velMask=abs(vv)<=vSigma(j);
         
@@ -161,27 +210,25 @@ for j=1:length(centralMask)
          pscore=(cosmoStruct.hub.*100).*bigSigma.*pm;
         
          % Masks 
-        satMaskYang=sampleMask & pscore>bValue;
-        satMaskYang(j)=false;  % don'tcount central as satellite. 
+        satMaskYang=satMask & pscore>bValue & fiber(k).outMask;
+        %satMaskYang(j)=false;  % don'tcount central as satellite. 
         
-        satMaskVel=sampleMask & distMask & velMask;
-        satMaskVel(j)=false;
+        satMaskVel=satMask & distMask & velMask & fiber(k).outMask;
+        %satMaskVel(j)=false;
         
-        satMaskZred=sampleMask & distMask & losLengthMask;
-        satMaskZred(j)=false;
+        satMaskZred=satMask & distMask & losLengthMask & fiber(k).outMask;
+        %satMaskZred(j)=false;
         
         if sum(satMaskYang)>0
             inds=cntY(k):cntY(k)+sum(satMaskYang)-1;
             
             cntY(k)=inds(end)+1;
             
-            satStructY(k).satID(inds)=find(satMaskY)-1;
+            satStructY(k).satID(inds)=find(satMaskYang)-1;
             satStructY(k).hostID(inds)=hostInd-1;
             satStructY(k).cenID(inds)=j-1;
-            satStructY(k).distProj(inds)=rr(satMaskY);
-            satStructY(k).pscore(inds)=pscore(satMaskY);
-            
-
+            satStructY(k).distProj(inds)=rr(satMaskYang);
+            satStructY(k).pscore(inds)=pscore(satMaskYang);
         end
         
          if sum(satMaskVel)>0
@@ -256,7 +303,7 @@ for k=1:3
             listMask(indlist)=true;
         else
             rp=sqrt(satStructZ(k).distProj(indlist).^2+satStructZ(k).zlen.^2);
-            [~,ix]=max(rp);
+            [~,ix]=min(rp);
             listMask(indlist(ix))=true;
             
         end
@@ -283,7 +330,7 @@ for k=1:3
             listMask(indlist)=true;
         else
             rp=sqrt(satStructV(k).distProj(indlist).^2+satStructV(k).vv.^2);
-            [~,ix]=max(rp);
+            [~,ix]=min(rp);
             listMask(indlist(ix))=true;
             
         end
@@ -313,7 +360,7 @@ for k=1:3
     end
 end
 
-catName=[DEFAULT_MATFILE_DIR '/yangSatSample_sig1_' simDisplayName];
+catName=[DEFAULT_MATFILE_DIR '/yangSatSample_fiber_sig1_' virType '_' simDisplayName];
 save(catName,'satTabX','satTabY','satTabZ');
 
 fprintf('sat catalog written to %s \n',catName);
@@ -335,14 +382,14 @@ for k=1:3
     end
 end
 
-catName=[DEFAULT_MATFILE_DIR '/velSatSample_sig1_' simDisplayName];
+catName=[DEFAULT_MATFILE_DIR '/velSatSample_fiber_sig1_' virType '_' simDisplayName];
 save(catName,'satTabX','satTabY','satTabZ');
 
 fprintf('sat catalog written to %s \n',catName);
 
 %% save information as table and in mat file Vel
 
-for k=1:3
+for k=1:3 
     msk=satStructZ(k).listMask;
     satTab=table(int64(satStructZ(k).satID(msk)'),satStructZ(k).hostID(msk)',satStructZ(k).cenID(msk)',satStructZ(k).distProj(msk)',...
         'variableNames',{'satID','hostID','centralID','Projected_Distance'});
@@ -356,7 +403,7 @@ for k=1:3
     end
 end
 
-catName=[DEFAULT_MATFILE_DIR '/zredSatSample_sig1_' simDisplayName];
+catName=[DEFAULT_MATFILE_DIR '/zredSatSample_fiber_sig1_' virType '_' simDisplayName];
 save(catName,'satTabX','satTabY','satTabZ');
 
 fprintf('sat catalog written to %s \n',catName);

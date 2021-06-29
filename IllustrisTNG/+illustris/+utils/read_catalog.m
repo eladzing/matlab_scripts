@@ -46,7 +46,7 @@ end
 
 if ~exist('catalogName','var')
    
-   [fullName,fullPath]=uigetfile({'*.hdf5'},'Select Catalog',[myPOSTPROCESSING '/'],'multiselect','off');
+   [fullName,fullPath]=uigetfile({'*.hdf5'},'Select Catalog',[POSTPROCESSING '/'],'multiselect','off');
 
 elseif ~isempty(fullPath)
     

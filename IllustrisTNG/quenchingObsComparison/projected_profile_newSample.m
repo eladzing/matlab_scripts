@@ -28,7 +28,7 @@ if readFlag
 end
 %%  load obs sample 
 illustris.utils.set_illUnits(snap);
-load([DEFAULT_MATFILE_DIR '/yangSatSample_sig1_mean_TNG100.mat'])
+load([DEFAULT_MATFILE_DIR '/yangSatSample_fiber_sig1_mean_TNG100.mat'])
 
 %% calculate sSFR
 ssfrBase=double(illustris.utils.calc_ssfr(subs,'base',0));
@@ -123,7 +123,7 @@ for k=1:3
 end
 global DEFAULT_MATFILE_DIR
 global simDisplayName
-fname=[DEFAULT_MATFILE_DIR '/ssfr0_stellarMass_radProfiles_projected_yangSample_' simDisplayName];
+fname=[DEFAULT_MATFILE_DIR '/ssfr0_stellarMass_radProfiles_projected_yangSample_fiber_' simDisplayName];
 fprintf(['writing to: ' fname '\n']);
 save(fname,'profStruct');
 

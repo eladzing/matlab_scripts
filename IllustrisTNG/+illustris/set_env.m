@@ -1,6 +1,5 @@
 function basePath=set_env(varargin)
 
-
 % defaults
 global simDisplayName
 global simName

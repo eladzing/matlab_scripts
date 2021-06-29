@@ -5,9 +5,9 @@ function result = angular_distance(zend,varargin )
 %friedmann equation. Result is in Mpc;
 
 
-if length(zend)>1
-    error('enter only one redshift')
-end
+% if length(zend)>1
+%     error('enter only one redshift')
+% end
 
 %% set defualts: 
 global hub 
@@ -29,6 +29,17 @@ while i<=length(varargin)
         case {'omegal','oml','omega_lambda','lambda'}
             i=i+1;
             Oml=varargin{i};
+        case{'cosmostruct','cosmo','cosmology'}
+            i=i+1;
+            cosmoStruct=varargin{i};
+            if ~isstruct(cosmoStruct)
+                error('comoving distance: cosmology structure must be a structure')
+            end
+            Omm=cosmoStruct.Omm;
+            Oml=cosmoStruct.Oml;
+            h0=cosmoStruct.hub;
+
+        
         otherwise
             error('friedeq - illegal argument: %s',varargin{i})
     end
@@ -43,15 +54,15 @@ if h0>1
     h0=h0./100;
 end
 
+for j=1:length(zend)
 
-zz=0:zend*res:zend;
-
+zz=0:zend(j)*res:zend(j);
 
 eofz=friedeq(zz,'hub',h0,'Omm',Omm,'Oml',Oml)./(100.*h0);
 
 p1=trapz(zz,1./eofz);
 
-result=(Units.cspeed./Units.km)/(100.*h0)/(1+zend).*p1;
+result(j)=(Units.cspeed./Units.km)/(100.*h0)/(1+zend(j)).*p1;
 
 
 

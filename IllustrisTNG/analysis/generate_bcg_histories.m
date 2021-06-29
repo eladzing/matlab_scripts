@@ -8,7 +8,7 @@ if ~skip2point
     snap=99; %z=0
     zmax=4.0;
     
-    bp=illustris.set_env(sim,'draco');
+    bp=illustris.set_env(sim);
     
     global illUnits
     

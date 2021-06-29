@@ -6,13 +6,14 @@ if perlimFlag
     
     global DEFAULT_MATFILE_DIR
     load([DEFAULT_MATFILE_DIR 'cooling_times_z0_TNG100.mat'])
-    load([DEFAULT_MATFILE_DIR 'tng100_z0_fofs_subs.mat'])
+    
+    loadFofSub
     subsInfo = illustris.infrastructure.build_sub_fof_connection(subs,fofs);
     
     centralMask= subsInfo.isCentral(tCoolStruct.galMask);
     ssfr = illustris.utils.calc_ssfr(subs);
     ssfr=ssfr(tCoolStruct.galMask);
-    galMass=tCoolStruct.galMass(tCoolStruct.galMask);
+    galMass=illustris.utils.get_stellar_mass(subs);    %tCoolStruct.galMass(tCoolStruct.galMask);
     
     ssfrLab='$\log \mathrm{sSFR},[\mathrm{yr^{-1}}] $';
     mstarLab='$\log M_\star\,[\mathrm{M_\odot}]$';

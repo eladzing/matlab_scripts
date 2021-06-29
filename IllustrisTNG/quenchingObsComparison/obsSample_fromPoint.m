@@ -30,7 +30,7 @@ global cosmoStruct
 global LBox
 global DEFAULT_MATFILE_DIR
 global simDisplayName;
-
+ 
 zred=illustris.utils.snap2redshift(snap);
 
 % set no. of vantage points (randomly selected)

@@ -306,9 +306,9 @@ fprintf('completed %i vantage points out of %i \n',k,Npoints);
 end
 
 if fiberFlag
-    catName=[DEFAULT_MATFILE_DIR '/yangSatSample_Vpoint_sig1_' virType '_fiber_' simDisplayName];
+    catName=[DEFAULT_MATFILE_DIR '/yangSatSample_Vpoint_m83_sig1_' virType '_fiber_' simDisplayName];
 else
-    catName=[DEFAULT_MATFILE_DIR '/yangSatSample_Vpoint_sig1_' virType '_' simDisplayName];
+    catName=[DEFAULT_MATFILE_DIR '/yangSatSample_Vpoint_m83_sig1_' virType '_' simDisplayName];
 end
 
 save(catName,'satStructY');

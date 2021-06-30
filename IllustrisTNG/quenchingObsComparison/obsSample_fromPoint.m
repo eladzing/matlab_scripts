@@ -61,7 +61,7 @@ if setupFlag
      % define stellar mass
     galMass= illustris.utils.get_stellar_mass(subs); % stellar mass within 2*rhalf
 
-    massThresh=10^9;
+    massThresh=10^8.3;
     hostThresh=10^11;
     centralMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'centrals');
     satMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'sats');

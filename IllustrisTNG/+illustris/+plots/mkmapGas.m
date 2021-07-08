@@ -507,6 +507,17 @@ if typeFlag
             bartag='$\log \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
             slTypeDef='avg';
             printTypeTag='dens';
+			
+		case {'neutralh_dens','neutralhydrogen_dens','h_dens'}
+            cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+            
+            %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
+            cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.densityUnit; % in Msun/kpc^3
+            weight=ones(size(cube));
+            logFlag=true;
+            bartag='$\log \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
+            slTypeDef='avg';
+            printTypeTag='neutH_dens';
             
         case {'numberdensity','n','ndensity'}
             cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);

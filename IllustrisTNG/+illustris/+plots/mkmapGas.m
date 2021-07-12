@@ -536,7 +536,7 @@ if typeFlag
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^3/illUnits.physUnits.mp); % and this changes to atoms/cm^3
             weight=ones(size(cube));
             logFlag=true;
-            bartag='$\log \rho_\mathrm{HI}\,[\mathrm{cm^{-3}}]$';
+            bartag='$\log n_\mathrm{HI}\,[\mathrm{cm^{-3}}]$';
             slTypeDef='avg';
             
             printTypeTag='hiDens';
@@ -545,44 +545,46 @@ if typeFlag
             
             cubeStr=cell2grid(coord,mhi,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
             
-            %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
-            
-            
-            %rhoFac=illUnits.densityUnit.*(Units.Ms/Units.kpc^3/Units.mm); %in cm^-3
-            
             cube=(cubeStr.cube)./(cubeStr.cellArea).*illUnits.surfaceDensityUnit.*... % this is in Msun/kpc^2
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^2/illUnits.physUnits.mp); % and this changes to atoms/cm^2
             weight=ones(size(cube));
             logFlag=true;
-            bartag='$\log \rho_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$';
+            bartag='$\log n_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$';
+            slTypeDef='sum';
+            
+            printTypeTag='hiColDens';
+            
+        case {'h2','h2density'}
+            mh2=gas.mH2_BR(gasMask);
+            
+            cubeStr=cell2grid(coord,mh2,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+            
+            %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
+            
+            
+            cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.densityUnit.*... % this        is in Msun/kpc^3
+                (illUnits.physUnits.Ms/illUnits.physUnits.kpc^3/(2*illUnits.physUnits.mp)); % and this changes to atoms/cm^3
+            weight=ones(size(cube));
+            logFlag=true;
+            bartag='$\log n_\mathrm{HI}\,[\mathrm{cm^{-3}}]$';
+            slTypeDef='avg';
+            
+            printTypeTag='hiDens';
+        case {'h2col','h2coldensity'}
+            mh2=gasStruct.mH2_BR(gasMask);
+            
+            cubeStr=cell2grid(coord,mh2,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+            
+            cube=(cubeStr.cube)./(cubeStr.cellArea).*illUnits.surfaceDensityUnit.*... % this is in Msun/kpc^2
+                (illUnits.physUnits.Ms/illUnits.physUnits.kpc^2/(2*illUnits.physUnits.mp)); % and this changes to atoms/cm^2
+            weight=ones(size(cube));
+            logFlag=true;
+            bartag='$\log n_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$';
             slTypeDef='sum';
             
             printTypeTag='hiColDens';
             
             
-%         case {'neutralh_dens','neutralhydrogen_dens','h_dens'}
-%             cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-%             
-%             %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
-%             cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.densityUnit; % in Msun/kpc^3
-%             weight=ones(size(cube));
-%             logFlag=true;
-%             bartag='$\log \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
-%             slTypeDef='avg';
-%             printTypeTag='neutH_dens';
-% 			
-%         case {'neutralh_col','neutralhydrogen_col','h_col'}
-%             cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-%             
-%             %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
-%             cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits..surfaceDensityUnit; % in Msun/kpc^2
-%             weight=ones(size(cube));
-%             logFlag=true;
-%             bartag='$\log \rho_{gas}\,[\mathrm{M_\odot/kpc^2}]$';
-%             slTypeDef='sum';
-%             printTypeTag='neutH_col';
-% 			
-% 		
         case {'entropy','ent','k','s'}
             if ~isfield(gasStruct,'Entropy')
                 gasStruct=illustris.utils.addEntropy(gasStruct); %in KeV cm^2

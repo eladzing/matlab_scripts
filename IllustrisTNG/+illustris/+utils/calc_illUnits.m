@@ -23,7 +23,7 @@ res.volumeUnit=(res.lengthUnit).^3; % change volume to kpc^3
 res.areaUnit=(res.lengthUnit).^2; % change area to kpc^2
 
 res.densityUnit=res.massUnit./res.volumeUnit; % Change simulation units to solar mass / kpc^3
-res.surfaceDensityUnit=res.massUnit./res.areaUnit; % Change simulation units to solar mass / kpc^3
+res.surfaceDensityUnit=res.massUnit./res.areaUnit; % Change simulation units to solar mass / kpc^2
 
 % some simulation use a strange time unit of 0.978 Gyr / h
 % we convert this to years 
@@ -45,5 +45,5 @@ res.BHEnergyFactor=(res.massUnit.*Units.Ms).*(res.lengthUnit.*Units.kpc).^2./(re
 res.EnergyDissipationUnit=(res.massUnit./res.lengthUnit*Units.Ms/Units.kpc)...
     .*(Units.km)^3.*(res.aexp).^(-1)*Units.yr./1e45; % This is in units of 10^45 erg/year 
 
-
+res.physUnits=Units;
 end

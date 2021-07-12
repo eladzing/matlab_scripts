@@ -21,7 +21,7 @@ if readFlag
     fofs=illustris.groupcat.loadHalos(bp,snap);
     subs=illustris.groupcat.loadSubhalos(bp,snap);
     
-    HydroCat=illustris.utils.read_catalog('gas','snap',99,'folder','hydrogen');
+    HydroCat=illustris.utils.read_catalog('gas','snap',snap,'folder','hydrogen');
     readFlag=false;
     
     
@@ -44,8 +44,7 @@ hih2Struct.galMass=massAllGals;
 hih2Struct.galMask=galMask;
 
 %r200c=fofs.Group_R_Crit200(subsInfo.hostFof+1);
-
-
+len=double(subs.count);
 
 %% initialize to zero
 fprintf('Initializing output... \n');

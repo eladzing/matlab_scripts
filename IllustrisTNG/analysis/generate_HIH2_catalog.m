@@ -73,7 +73,7 @@ for fld=compNames
       
     hih2Struct.(fld).(strcat(fld, 'GasMass'))=zeros(1,len); % All gas Mass
     hih2Struct.(fld).(strcat(fld, 'SfrMass'))=zeros(1,len); % only SF gas 
-    hih2Struct.(fld).(strcat(fld, 'SFR'))(id+1)=zeros(1,len); % SFR in component
+    hih2Struct.(fld).(strcat(fld, 'SFR'))=zeros(1,len); % SFR in component
 end
 
 

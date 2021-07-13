@@ -1,43 +1,75 @@
+function res= generate_profile_from_vantagePoint_Catalog(satCat,fofs,subs,varargin)
+
 illustris.utils.set_illUnits(snap);
 
 global illUnits
 global DEFAULT_MATFILE_DIR
 global simDisplayName
-if readFlag
-    
-    fprintf('Reading in data \n');
-    
-    % read in data
-    loadFofSub
-    subsInfo = illustris.infrastructure.build_sub_fof_connection(subs,fofs);
-    %load('/home/zinger/workProjects/matlab_scripts/IllustrisTNG/matFiles/gasProperties_snp99_TNG300.mat')
-    
-    % define stellar mass
-    massAllGals= illustris.utils.get_stellar_mass(subs); % stellar mass within 2*rhalf
-    
-    
-    
-    % set mask
-    %massThresh=10^9;
-    %satMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'sats');
-%     centralMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'centrals');
-%     
-%     %define host mass and radius
-     r200=double(fofs.Group_R_Mean200(subsInfo.hostFof+1)).*illUnits.lengthUnit;
-%     m200c=log10(double(fofs.Group_M_Crit200(subsInfo.hostFof+1).*illUnits.massUnit));
-    
+
+massThresh=10^9;
+virType='crit200';
+snap=99;
+%% parse arguments 
+i=1;
+while i<=length(varargin)
+    switch(lower(varargin{i}))
+        case{'mass','massthresh','thresh','threshold'}
+           i=i+1;
+            massThresh=varargin{i};
+        case {'crit','crit200','200crit'}
+            virType='crit200';
+        case {'mean','mean200','200mean'}
+            virType='mean200';
+        case {'500','crit500','500crit'}
+            virType='crit500';
+        case 'snap'
+            i=i+1;
+            snap=varargin{i};
+            
+            
+        otherwise
+            error('%s - Illegal argument: %s',current_function().upper,varargin{i}
+    end
+    i=i+1;
 end
-load([DEFAULT_MATFILE_DIR '/yangSatSample_Vpoint_sig1_mean_' simDisplayName '.mat'])
+
+%% Perliminaries  
+
+% read in data
+subsInfo = illustris.infrastructure.build_sub_fof_connection(subs,fofs);
+%load('/home/zinger/workProjects/matlab_scripts/IllustrisTNG/matFiles/gasProperties_snp99_TNG300.mat')
+
+% define stellar mass
+massAllGals= illustris.utils.get_stellar_mass(subs); % stellar mass within 2*rhalf
+
+%% calculate sSFR
+ssfrBase=double(illustris.utils.calc_ssfr(subs,'base',0));
+
+%% set mask
+%satMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'sats');
+%     centralMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'centrals');
+%
+
+
+%% define virial parameters
+switch lower(virType)
+    case 'crit200'
+        rvir=double(fofs.Group_R_Crit200(subsInfo.hostFof+1)).*illUnits.lengthUnit;
+    case 'mean200'
+        rvir=double(fofs.Group_R_Mean200(subsInfo.hostFof+1)).*illUnits.lengthUnit;
+    case 'crit500'
+        rvir=double(fofs.Group_R_Crit500(subsInfo.hostFof+1)).*illUnits.lengthUnit;
+end
+%     m200c=log10(double(fofs.Group_M_Crit200(subsInfo.hostFof+1).*illUnits.massUnit));
+
+
+%load([DEFAULT_MATFILE_DIR '/yangSatSample_Vpoint_sig1_mean_' simDisplayName '.mat'])
 fname=[DEFAULT_MATFILE_DIR '/ssfr0_stellarMass_radProfiles_projected_yangSamplePoint_' simDisplayName];
 
 %%  load obs sample 
 illustris.utils.set_illUnits(snap);
 
-%% calculate sSFR
-ssfrBase=double(illustris.utils.calc_ssfr(subs,'base',0));
-
-
-% bin the distances
+%% bin the distances
 binEdges=0.1:0.2:2;
 %binInd=discretize(radPosition,binEdges);
 %rbin=binEdges(1:end-1)+0.5.*diff(binEdges);
@@ -55,21 +87,31 @@ binEdges=0.1:0.2:2;
 % cmask13=centralMask & m200c>=13 & m200c<14;
 % cmask14=centralMask & m200c>=14 & m200c<15;
 
-xMedian=zeros(length(satStructY),length(binEdges)-1,4);
-xMean=zeros(length(satStructY),length(binEdges)-1,4);
+%% initialize
+xMedian=zeros(length(satCat),length(binEdges)-1,4);
+xMean=zeros(length(satCat),length(binEdges)-1,4);
 
-smassMedian=zeros(length(satStructY),length(binEdges)-1,4);
-smassMean=zeros(length(satStructY),length(binEdges)-1,4);
+smassMedian=zeros(length(satCat),length(binEdges)-1,4);
+smassMean=zeros(length(satCat),length(binEdges)-1,4);
 
-ssfrMedian=zeros(length(satStructY),length(binEdges)-1,4);
-ssfrMean=zeros(length(satStructY),length(binEdges)-1,4);
+ssfrMedian=zeros(length(satCat),length(binEdges)-1,4);
+ssfrMean=zeros(length(satCat),length(binEdges)-1,4);
 
-for k=1:length(satStructY)
-    satInd=satStructY(k).satID+1;
-    hostInd=satStructY(k).hostID+1;  
-    ssfr=ssfrBase(satInd);
+for k=1:length(satCat)
+    satInd=satCat(k).satID+1;
     mass=massAllGals(satInd);
-    radPosition=satStructY(k).distProj./r200c(satInd);
+    % enforce threshold
+    mask=mass>=massThresh;
+    
+    satInd=satInd(mask);
+    mass=massAllGals(satInd);
+    
+    hostInd=satCat(k).hostID+1;  
+    
+    
+    ssfr=ssfrBase(satInd);
+    
+    radPosition=satCat(k).distProj./rvir(satInd);
     hostMass=log10(double(fofs.Group_M_Crit200(hostInd)).*illUnits.massUnit);
     
     hmask=false(4,length(hostMass));        

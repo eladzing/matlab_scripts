@@ -1,0 +1,5 @@
+in one terminal we write:  
+ssh eladzing@gate.mpcdf.mpg.de -L 2002:isaac1.bc.rzg.mpg.de:22 -N
+
+in another we write: 
+scp -P 2002 eladzing@localhost:~/IllustrisTNG/matFiles/gas_id*.mat . or other path... 

@@ -17,22 +17,22 @@ global myPOSTPROCESSING
 global JF_DATA_DIR
 global subBox
 
-
+systemPath='C:\Users\eladz\Documents\workProjects';
 
 DRACO_SIMPATH = '/virgo/simulations/IllustrisTNG';%    '/ptmp/apillepi/IllustrisTNG';
 HOME_SIMPATH = '/home/zinger/sshfsMounts/draco/IllustrisTNG/simulationOutput';
 
 DRACO_PRINTOUT_DIR = '/isaac/ptmp/gc/eladzing/IllustrisTNG/printout';
 %/ptmp/eladzing/TNG/printout';
-HOME_PRINTOUT_DIR = '/home/zinger/workProjects/IllustrisTNG/printout';
+HOME_PRINTOUT_DIR = [ systemPath '/IllustrisTNG/printout'];
 
 DRACO_MATFILE_DIR = '/isaac/ptmp/gc/eladzing/IllustrisTNG/matFiles';
 %'/u/eladzing/IllustrisTNG/matFiles';%/ptmp/eladzing/TNG/matFiles';
-HOME_MATFILE_DIR = '/home/zinger/workProjects/matlab_scripts/IllustrisTNG/matFiles';
+HOME_MATFILE_DIR = [ systemPath '/matlab_scripts/IllustrisTNG/matFiles'];
 
 DRACO_FIG_DIR ='/isaac/ptmp/gc/eladzing/IllustrisTNG/printout/figFiles';
 %'/ptmp/eladzing/TNG/printout/figFiles';
-HOME_FIG_DIR = '/home/zinger/workProjects/IllustrisTNG/printout/figFiles';
+HOME_FIG_DIR = [ systemPath '/IllustrisTNG/printout/figFiles'];
 
 DRACO_myPOSTPROCESSING = '/isaac/ptmp/gc/eladzing/IllustrisTNG/ezPostProcessing';
 %'/ptmp/eladzing/TNG/ezpostprocessing';
@@ -41,7 +41,7 @@ HOME_myPOSTPROCESSING = '/home/zinger/sshfsMounts/draco/IllustrisTNG/postProcess
 DRACO_METHODS = '/isaac/ptmp/gc/eladzing/IllustrisTNG/simulationMethods';
 HOME_METHODS = '/home/zinger/sshfsMounts/draco/IllustrisTNG/simulationMethods';
 
-HOME_JF_DATA_DIR = '/home/zinger/workProjects/IllustrisTNG/jellyFish/zooniverse_data';
+HOME_JF_DATA_DIR = [ systemPath '/IllustrisTNG/jellyFish/zooniverse_data'];
 DRACO_JF_DATA_DIR = 'NOT DEFINED!';
 
 DRACOFLAG=false;

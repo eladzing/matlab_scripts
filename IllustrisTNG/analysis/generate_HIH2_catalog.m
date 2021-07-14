@@ -122,10 +122,10 @@ for id=0:len-1
         firstInd=subset.offsetType(1)+1;
         lastInd=firstInd+int64(subset.lenType(1))-1;
         
-        gas.mH=HydroCat.MH(firstInd:lastInd)';
-        gas.mH2(1,:)=HydroCat.MH2BR(firstInd:lastInd)';
-        gas.mH2(2,:)=HydroCat.MH2GK(firstInd:lastInd)';
-        gas.mH2(3,:)=HydroCat.MH2KMT(firstInd:lastInd)';
+        gas.mH=HydroCat.MH(firstInd:lastInd)'.*illUnits.massUnit;
+        gas.mH2(1,:)=HydroCat.MH2BR(firstInd:lastInd)'.*illUnits.massUnit;
+        gas.mH2(2,:)=HydroCat.MH2GK(firstInd:lastInd)'.*illUnits.massUnit;
+        gas.mH2(3,:)=HydroCat.MH2KMT(firstInd:lastInd)'.*illUnits.massUnit;
         gas.mHi(1,:)=gas.mH-HydroCat.MH2BR(firstInd:lastInd)';
         gas.mHi(2,:)=gas.mH-HydroCat.MH2GK(firstInd:lastInd)';
         gas.mHi(3,:)=gas.mH-HydroCat.MH2KMT(firstInd:lastInd)';
@@ -181,9 +181,9 @@ for id=0:len-1
                 for k=1:3
                     
                     param='HI';
-                    hih2Struct.(fld).(strcat(fld,param,'Mass'))(k,id+1)=sum(gas.mHi(k,mask));
+                    hih2Struct.(fld).(strcat(fld,param,'Mass'))(k,id+1)=sum(gas.mHi(k,mask),2);
                     param='H2';
-                    hih2Struct.(fld).(strcat(fld,param,'Mass'))(k,id+1)=sum(gas.mH2(k,mask));
+                    hih2Struct.(fld).(strcat(fld,param,'Mass'))(k,id+1)=sum(gas.mH2(k,mask),2);
                 end
                 
                 

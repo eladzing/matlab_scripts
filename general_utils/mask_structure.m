@@ -2,10 +2,10 @@ function res = mask_structure(inStr,mask)
 %MASK_STRUCTURE enforce a mask on all arrays of a structure
 %   recursively travel through a strucute and enforce a mask on every
 %   dimension that has the same size as the mask
-current_function='MASK_STRUCT';  % update later with real function
+
 
 if ~isstruct(inStr)
-    error([current_function ' - input argument not a structure'])
+    error('%s - input argument not a structure',current_function().upper)
 end
 
 fnames=fieldnames(inStr);

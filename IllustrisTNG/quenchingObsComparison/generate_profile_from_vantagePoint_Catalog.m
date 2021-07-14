@@ -1,10 +1,10 @@
-function res= generate_profile_from_vantagePoint_Catalog(satCat,fofs,subs,varargin)
+function ssfrMassProfs= generate_profile_from_vantagePoint_Catalog(satCat,fofs,subs,varargin)
 
-illustris.utils.set_illUnits(snap);
+
 
 global illUnits
-global DEFAULT_MATFILE_DIR
-global simDisplayName
+% global DEFAULT_MATFILE_DIR
+% global simDisplayName
 
 massThresh=10^9;
 virType='crit200';
@@ -28,13 +28,13 @@ while i<=length(varargin)
             
             
         otherwise
-            error('%s - Illegal argument: %s',current_function().upper,varargin{i}
+            error('%s - Illegal argument: %s',current_function().upper,varargin{i});
     end
     i=i+1;
 end
 
 %% Perliminaries  
-
+illustris.utils.set_illUnits(snap);
 % read in data
 subsInfo = illustris.infrastructure.build_sub_fof_connection(subs,fofs);
 %load('/home/zinger/workProjects/matlab_scripts/IllustrisTNG/matFiles/gasProperties_snp99_TNG300.mat')
@@ -54,17 +54,20 @@ ssfrBase=double(illustris.utils.calc_ssfr(subs,'base',0));
 %% define virial parameters
 switch lower(virType)
     case 'crit200'
-        rvir=double(fofs.Group_R_Crit200(subsInfo.hostFof+1)).*illUnits.lengthUnit;
+        rvir=double(fofs.Group_R_Crit200(subsInfo.hostFof+1)).*illUnits.lengthUnit; % host rvir for each galaxy
+        mvir=double(fofs.Group_M_Crit200.*illUnits.massUnit);                       % host mvir for each Fof
     case 'mean200'
         rvir=double(fofs.Group_R_Mean200(subsInfo.hostFof+1)).*illUnits.lengthUnit;
+        mvir=double(fofs.Group_M_Mean200.*illUnits.massUnit); 
     case 'crit500'
         rvir=double(fofs.Group_R_Crit500(subsInfo.hostFof+1)).*illUnits.lengthUnit;
+        mvir=double(fofs.Group_M_Crit500.*illUnits.massUnit); 
 end
 %     m200c=log10(double(fofs.Group_M_Crit200(subsInfo.hostFof+1).*illUnits.massUnit));
 
 
 %load([DEFAULT_MATFILE_DIR '/yangSatSample_Vpoint_sig1_mean_' simDisplayName '.mat'])
-fname=[DEFAULT_MATFILE_DIR '/ssfr0_stellarMass_radProfiles_projected_yangSamplePoint_' simDisplayName];
+%fname=[DEFAULT_MATFILE_DIR '/ssfr0_stellarMass_radProfiles_projected_yangSamplePoint_' simDisplayName];
 
 %%  load obs sample 
 illustris.utils.set_illUnits(snap);
@@ -98,21 +101,21 @@ ssfrMedian=zeros(length(satCat),length(binEdges)-1,4);
 ssfrMean=zeros(length(satCat),length(binEdges)-1,4);
 
 for k=1:length(satCat)
+    % enforce mass threshold
     satInd=satCat(k).satID+1;
     mass=massAllGals(satInd);
-    % enforce threshold
-    mask=mass>=massThresh;
+    massMask=mass>=massThresh;
+    tempCat=mask_structure(satCat(k),massMask);
     
-    satInd=satInd(mask);
+    
+    satInd=tempCat.satID+1;
     mass=massAllGals(satInd);
     
-    hostInd=satCat(k).hostID+1;  
-    
-    
+    hostInd=tempCat.hostID+1;  
+        
     ssfr=ssfrBase(satInd);
-    
-    radPosition=satCat(k).distProj./rvir(satInd);
-    hostMass=log10(double(fofs.Group_M_Crit200(hostInd)).*illUnits.massUnit);
+    radPosition=tempCat.distProj./rvir(satInd);
+    hostMass=log10(mvir(hostInd));
     
     hmask=false(4,length(hostMass));        
     hmask(1,:)=hostMass>=11 & hostMass<12;
@@ -130,8 +133,7 @@ for k=1:length(satCat)
     
     
         %% populate arrays for calculating global profile
-    
-    
+      
         xMedian(k,:,j)=starMassProf.xMedian;
         xMean(k,:,j)=starMassProf.xMean;
         
@@ -215,119 +217,8 @@ ssfrMassProfs.ssfrAvgMed=ssfrAvgMed;
 ssfrMassProfs.profStruct=profStruct;
 ssfrMassProfs.quants=quants;
 
-fprintf(['writing to: ' fname '\n']);
-save(fname,'ssfrMassProfs');
 
-% %% add in the obs data
-% global DEFAULT_MATFILE_DIR
-% load([DEFAULT_MATFILE_DIR '/ssfr_rpos_dataGrab.mat'])
-%
-%
-% %% plot
-% global simDisplayName
-% cc=brewermap(8,'Set1');
-% h=[];
-% hf=myFigure; % figure('position',[953   261   938   737])
-%
-% for i=1:4
-%     yy=log10(ssfrAvg(i,:,3));
-%
-%     switch i
-%         case 1
-%             colo=cc(2,:);
-%             nam='11-12, TNG';
-%         case 2
-%             colo=cc(5,:);
-%             nam='12-13, TNG';
-%
-%         case 3
-%             colo=cc(3,:);
-%             nam='13-14, TNG';
-%
-%         case 4
-%             colo=cc(1,:);
-%             nam='14-15, TNG';
-%
-%     end
-%     h(i)=plot(rbin,yy,'color',colo,'DisplayName',nam,"LineStyle","--");
-%     if i==1; hold on; end
-%     plot(0,log10(ssfrAvgC(i)),'s','color',colo)
-% end
-%
-% % obs
-% for i=5:8
-%
-%     switch i
-%         case 5
-%             xx=ssfr_rpos_11_main(2,:);
-%             yy=ssfr_rpos_11_main(1,:);
-%             pos=ssfr_rpos_11_top(1,:)-ssfr_rpos_11_main(1,:);
-%             neg=ssfr_rpos_11_main(1,:)-ssfr_rpos_11_bottom(1,:);
-%             colo=cc(2,:);
-%             nam='11-12, Obs';
-%
-%             ccc=ssfr_rpos_11_central(1,2);
-%             cp=ssfr_rpos_11_central(1,3)-ssfr_rpos_11_central(1,2);
-%             cm=ssfr_rpos_11_central(1,2)-ssfr_rpos_11_central(1,1);
-%         case 6
-%             xx=ssfr_rpos_12_main(2,:);
-%             yy=ssfr_rpos_12_main(1,:);
-%             pos=ssfr_rpos_12_top(1,:)-ssfr_rpos_12_main(1,:);
-%             neg=ssfr_rpos_12_main(1,:)-ssfr_rpos_12_bottom(1,:);
-%             colo=cc(5,:);
-%             nam='12-13, Obs';
-%
-%             ccc=ssfr_rpos_12_central(1,2);
-%             cp=ssfr_rpos_12_central(1,3)-ssfr_rpos_12_central(1,2);
-%             cm=ssfr_rpos_12_central(1,2)-ssfr_rpos_12_central(1,1);
-%
-%         case 7
-%             xx=ssfr_rpos_13_main(2,:);
-%             yy=ssfr_rpos_13_main(1,:);
-%             pos=ssfr_rpos_13_top(1,:)-ssfr_rpos_13_main(1,:);
-%             neg=ssfr_rpos_13_main(1,:)-ssfr_rpos_13_bottom(1,:);
-%             colo=cc(3,:);
-%             nam='13-14, Obs';
-%
-%             ccc=ssfr_rpos_13_central(1,2);
-%             cp=ssfr_rpos_13_central(1,3)-ssfr_rpos_13_central(1,2);
-%             cm=ssfr_rpos_13_central(1,2)-ssfr_rpos_13_central(1,1);
-%
-%         case 8
-%             xx=ssfr_rpos_14_main(2,:);
-%             yy=ssfr_rpos_14_main(1,:);
-%             pos=ssfr_rpos_14_top(1,:)-ssfr_rpos_14_main(1,:);
-%             neg=ssfr_rpos_14_main(1,:)-ssfr_rpos_14_bottom(1,:);
-%             colo=cc(1,:);
-%             nam='14-15, Obs';
-%
-%             ccc=ssfr_rpos_14_central(1,2);
-%             cp=ssfr_rpos_14_central(1,3)-ssfr_rpos_14_central(1,2);
-%             cm=ssfr_rpos_14_central(1,2)-ssfr_rpos_14_central(1,1);
-%
-%     end
-%
-%
-%
-%
-%     h(i)=errorbar(xx,yy,neg,pos,'color',colo,...
-%         'DisplayName',nam);
-%
-%     errorbar(0,ccc,cm,cp,'x','color',colo)
-% end
-%
-% set(gca,'fontsize',14)
-% %hl=legend(h,'location','northwest' );
-% hl=legend(h,'numcolumns',2,'location','northwest' );
-%
-%
-% xlim([-0.06 1.5])
-% ylim([-12.05 -9])
-% xlabelmine('$r/R_\mathrm{200,c}$');
-% ylabelmine('sSFR');
-% titlemine(['Comparison with ' simDisplayName]);
-%
-%
-% %printout_fig(gcf,['obs_compare_ssfr_profile_' simDisplayName])
-%
-%
+% fprintf(['writing to: ' fname '\n']);
+% save(fname,'ssfrMassProfs');    % option to save 
+
+end

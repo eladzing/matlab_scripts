@@ -126,9 +126,10 @@ for id=0:len-1
         gas.mH2(1,:)=HydroCat.MH2BR(firstInd:lastInd)'.*illUnits.massUnit;
         gas.mH2(2,:)=HydroCat.MH2GK(firstInd:lastInd)'.*illUnits.massUnit;
         gas.mH2(3,:)=HydroCat.MH2KMT(firstInd:lastInd)'.*illUnits.massUnit;
-        gas.mHi(1,:)=gas.mH-HydroCat.MH2BR(firstInd:lastInd)';
-        gas.mHi(2,:)=gas.mH-HydroCat.MH2GK(firstInd:lastInd)';
-        gas.mHi(3,:)=gas.mH-HydroCat.MH2KMT(firstInd:lastInd)';
+        for k=1:3
+            gas.mHi(k,:)=gas.mH-gas.mH2(k,:);
+        end
+        
         
         
         % find distance from galaxy center

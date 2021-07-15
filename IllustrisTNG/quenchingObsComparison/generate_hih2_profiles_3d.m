@@ -130,7 +130,7 @@ for j=1:4
             %%hi offset
             if strcmp(comps{k},'Gal')
                 ms=galH_star.xMedian;
-                hm=mgalH_star.yMedian;
+                hm=galH_star.yMedian;
             elseif strcmp(comps{k},'CGMall')
                 ms=cgmH_star.xMedian;
                 hm=cgmH_star.yMedian;

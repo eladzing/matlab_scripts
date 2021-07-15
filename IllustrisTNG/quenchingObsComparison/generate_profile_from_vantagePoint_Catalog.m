@@ -69,7 +69,6 @@ end
 %load([DEFAULT_MATFILE_DIR '/yangSatSample_Vpoint_sig1_mean_' simDisplayName '.mat'])
 %fname=[DEFAULT_MATFILE_DIR '/ssfr0_stellarMass_radProfiles_projected_yangSamplePoint_' simDisplayName];
 
-%%  load obs sample 
 illustris.utils.set_illUnits(snap);
 
 %% bin the distances

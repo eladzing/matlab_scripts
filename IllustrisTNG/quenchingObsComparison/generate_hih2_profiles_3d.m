@@ -36,10 +36,20 @@ subsInfo = illustris.infrastructure.build_sub_fof_connection(subs,fofs);
 % define stellar mass
 gMass= illustris.utils.get_stellar_mass(subs); % stellar mass within 2*rhalf
 
+%% generate 'main-sequence' 
+mmask=hih2Struct.galMask & hih2Struct.Gal.GalHIMass(1,:)>0;
+galH_star=mk_meanMedian_bin(log10(hih2Struct.galMass(mmask)),...
+    log10(hih2Struct.Gal.GalHIMass(1,mmask)),'nb',50);
+
+mmask=hih2Struct.galMask & hih2Struct.CGMall.CGMallHIMass(1,:)>0;
+cgmH_star=mk_meanMedian_bin(log10(hih2Struct.galMass(mmask)),...
+    log10(hih2Struct.CGMall.CGMallHIMass(1,mmask)),'nb',50);
+
 
 %% calculate sSFR
 ssfrBase=double(illustris.utils.calc_ssfr(subs,'base',0));
 ssfr=ssfrBase(sampleMask);
+
 %% set mask
 loc.Gal=mask_structure(hih2Struct.Gal,sampleMask);
 loc.CGMin=mask_structure(hih2Struct.CGMin,sampleMask);
@@ -49,7 +59,6 @@ loc.Sub=mask_structure(hih2Struct.Sub,sampleMask);
 comps=fields(loc);
 gMass=gMass(sampleMask);
 
-list
 %% define virial parameters
 switch lower(virType)
     case 'crit200'
@@ -95,7 +104,7 @@ for j=1:4
     byHost.xMed(:,j)=starMassProf.xMedian;
     byHost.xAvg(:,j)=starMassProf.xMean;
     
-    for k=1:length{comps}
+    for k=1:length(comps)
         hiMass=loc.(comps{k}).(strcat(comps{k},'HIMass'));
         h2Mass=loc.(comps{k}).(strcat(comps{k},'H2Mass'));
         for jj=1:3
@@ -107,6 +116,36 @@ for j=1:4
             
             byHost.(comps{k}).h2MassAvg(jj,:,j)=h2Prof.yMean;
             byHost.(comps{k}).h2MassMed(jj,:,j)=h2Prof.yMedian;
+            
+            % normalized by stellar mass 
+            hiProfN=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask)./gMass(mask),'bins',binEdges);
+            h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
+            
+            byHost.(comps{k}).hiMassAvgN(jj,:,j)=hiProfN.yMean;
+            byHost.(comps{k}).hiMassMedN(jj,:,j)=hiProfN.yMedian;
+            
+            byHost.(comps{k}).h2MassAvgN(jj,:,j)=h2ProfN.yMean;
+            byHost.(comps{k}).h2MassMedN(jj,:,j)=h2ProfN.yMedian;
+
+            %%hi offset
+            if strcmp(comps{k},'Gal')
+                ms=galH_star.xMedian;
+                hm=mgalH_star.yMedian;
+            elseif strcmp(comps{k},'CGMall')
+                ms=cgmH_star.xMedian;
+                hm=cgmH_star.yMedian;
+            end
+            msMass=interp1(ms,hm,log10(gMass(mask)));
+            
+            hiProfD=mk_meanMedian_bin(radPosition(mask),(hiMass(jj,mask)-10.^msMass),'bins',binEdges);
+            %h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
+            
+            byHost.(comps{k}).hiMassAvgD(jj,:,j)=hiProfD.yMean;
+            byHost.(comps{k}).hiMassMedD(jj,:,j)=hiProfD.yMedian;
+            
+            %byHost.(comps{k}).h2MassAvgN(jj,:,j)=h2ProfN.yMean;
+            %byHost.(comps{k}).h2MassMedN(jj,:,j)=h2ProfN.yMedian;
+            
         end
     end
 end
@@ -131,7 +170,7 @@ for j=1:3
     byMass.xMed(:,j)=starMassProf.xMedian;
     byMass.xAvg(:,j)=starMassProf.xMean;
     
-    for k=1:length{comps}
+    for k=1:length(comps)
         hiMass=loc.(comps{k}).(strcat(comps{k},'HIMass'));
         h2Mass=loc.(comps{k}).(strcat(comps{k},'H2Mass'));
         for jj=1:3
@@ -143,6 +182,16 @@ for j=1:3
             
             byMass.(comps{k}).h2MassAvg(jj,:,j)=h2Prof.yMean;
             byMass.(comps{k}).h2MassMed(jj,:,j)=h2Prof.yMedian;
+            
+            % normalized by stellar mass 
+            hiProfN=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask)./gMass(mask),'bins',binEdges);
+            h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
+            
+            byMass.(comps{k}).hiMassAvgN(jj,:,j)=hiProfN.yMean;
+            byMass.(comps{k}).hiMassMedN(jj,:,j)=hiProfN.yMedian;
+            
+            byMass.(comps{k}).h2MassAvgN(jj,:,j)=h2ProfN.yMean;
+            byMass.(comps{k}).h2MassMedN(jj,:,j)=h2ProfN.yMedian;
         end
     end
 end

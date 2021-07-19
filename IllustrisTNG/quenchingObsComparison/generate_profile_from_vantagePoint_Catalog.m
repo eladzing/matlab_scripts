@@ -24,7 +24,7 @@ while i<=length(varargin)
         case 'snap'
             i=i+1;
             snap=varargin{i};
-        case {'hi','hibr','higk','hikmt','h2','h2br','h2gk','h2kmt'}
+        case {'hi','hibr','higk','hikmt','h2','h2br','h2gk','h2kmt','hidef'}
             dataCntr=dataCntr+1;          
             dataName{dataCntr}=varargin{i};
             i=i+1;

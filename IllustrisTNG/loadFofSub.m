@@ -1,4 +1,4 @@
-function [subs,fofs,subsInfo]=loadFofSub(snap)
+%function [subs,fofs,subsInfo]=loadFofSub(snap)
 % load the FOF nad subhalo structures either from a local catalog or from
 % the simulation directory
 

@@ -1,6 +1,4 @@
-function ssfrMassProfs= generate_profile_from_vantagePoint_Catalog(satCat,fofs,subs,varargin)
-
-
+function res= generate_profile_from_vantagePoint_Catalog(satCat,fofs,subs,varargin)
 
 global illUnits
 % global DEFAULT_MATFILE_DIR
@@ -9,6 +7,7 @@ global illUnits
 massThresh=10^9;
 virType='crit200';
 snap=99;
+dataCntr=0;
 %% parse arguments 
 i=1;
 while i<=length(varargin)
@@ -25,8 +24,12 @@ while i<=length(varargin)
         case 'snap'
             i=i+1;
             snap=varargin{i};
-            
-            
+        case {'hi','hibr','higk','hikmt','h2','h2br','h2gk','h2kmt'}
+            dataCntr=dataCntr+1;          
+            dataName{dataCntr}=varargin{i};
+            i=i+1;
+            dataArr(dataCntr,:)=varargin{i};
+          
         otherwise
             error('%s - Illegal argument: %s',current_function().upper,varargin{i});
     end
@@ -69,8 +72,6 @@ end
 %load([DEFAULT_MATFILE_DIR '/yangSatSample_Vpoint_sig1_mean_' simDisplayName '.mat'])
 %fname=[DEFAULT_MATFILE_DIR '/ssfr0_stellarMass_radProfiles_projected_yangSamplePoint_' simDisplayName];
 
-illustris.utils.set_illUnits(snap);
-
 %% bin the distances
 binEdges=0.1:0.2:2;
 %binInd=discretize(radPosition,binEdges);
@@ -99,6 +100,12 @@ smassMean=zeros(length(satCat),length(binEdges)-1,4);
 ssfrMedian=zeros(length(satCat),length(binEdges)-1,4);
 ssfrMean=zeros(length(satCat),length(binEdges)-1,4);
 
+if dataCntr>0
+    dataMedian=zeros(length(satCat),length(binEdges)-1,4,dataCntr);
+    dataMean=zeros(length(satCat),length(binEdges)-1,4,dataCntr);
+end
+
+
 for k=1:length(satCat)
     % enforce mass threshold
     satInd=satCat(k).satID+1;
@@ -109,10 +116,15 @@ for k=1:length(satCat)
     
     satInd=tempCat.satID+1;
     mass=massAllGals(satInd);
-    
-    hostInd=tempCat.hostID+1;  
-        
     ssfr=ssfrBase(satInd);
+    
+    data=[];
+    for i=1:dataCntr
+        data(i,:)=dataArr(i,satInd);
+    end
+        
+    hostInd=tempCat.hostID+1;  
+    
     radPosition=tempCat.distProj./rvir(satInd);
     hostMass=log10(mvir(hostInd));
     
@@ -129,8 +141,14 @@ for k=1:length(satCat)
         
         ssfrAvg(j)=ssfrProf;
         starMass(j)=starMassProf;
-    
-    
+        
+        for i=1:dataCntr
+            dataProf(i)=mk_meanMedian_bin(radPosition(mask),data(i,mask),'bins',binEdges);
+            dataProfs(i,j)=dataProf(i);
+        end
+        
+        
+        
         %% populate arrays for calculating global profile
       
         xMedian(k,:,j)=starMassProf.xMedian;
@@ -138,10 +156,15 @@ for k=1:length(satCat)
         
         smassMedian(k,:,j)=starMassProf.yMedian;
         smassMean(k,:,j)=starMassProf.yMean;
-       
-       
+              
         ssfrMedian(k,:,j)=ssfrProf.yMedian;
         ssfrMean(k,:,j)=ssfrProf.yMean;
+        
+        
+        for i=1:dataCntr
+             dataMedian(k,:,j,i)=dataProf(i).yMedian;
+             dataMean(k,:,j,i)=dataProf(i).yMean;
+        end
     end
     
     
@@ -150,7 +173,7 @@ for k=1:length(satCat)
 %     ssfrAvgC(1)=mk_meanMedian_bin(radPosition(cmask11),(ssfr(cmask11)),'bins',[0 1]);
 %     ssfrAvgC(2)=mk_meanMedian_bin(radPosition(cmask12),(ssfr(cmask12)),'bins',[0 1]);
 %     ssfrAvgC(3)=mk_meanMedian_bin(radPosition(cmask13),(ssfr(cmask13)),'bins',[0 1]);
-%     ssfrAvgC(4)=mk_ssfrMassProfs.rposMed=xmed;meanMedian_bin(radPosition(cmask14),(ssfr(cmask14)),'bins',[0 1]);
+%     ssfrAvgC(4)=mk_res.rposMed=xmed;meanMedian_bin(radPosition(cmask14),(ssfr(cmask14)),'bins',[0 1]);
 %     
 %     starMassC(1)=mk_meanMedian_bin(radPosition(cmask11),(massAllGals(cmask11)),'bins',[0 1]);
 %     starMassC(2)=mk_meanMedian_bin(radPosition(cmask12),(massAllGals(cmask12)),'bins',[0 1]);
@@ -166,7 +189,7 @@ for k=1:length(satCat)
     %profStruct(k).ssfrAvgC=ssfrAvgC;
     profStruct(k).starMass=starMass;
     %profStruct(k).starMassC=starMassC;
-    
+    profStruct(k).dataProfs=dataProfs;
     
     
 %     profStruct(k).maskStruct.mask11=mask11;
@@ -190,6 +213,10 @@ smassAvgMed=zeros(length(quants),length(binEdges)-1,4);
 ssfrMedMed=zeros(length(quants),length(binEdges)-1,4);
 ssfrAvgMed=zeros(length(quants),length(binEdges)-1,4);
 
+for i=1:dataCntr
+    res.([dataName{i} 'MedMed'])=zeros(length(quants),length(binEdges)-1,4);
+    res.([dataName{i} 'AvgMed'])=zeros(length(quants),length(binEdges)-1,4);
+end
 
 for j=1:4
     xmed(:,j)=median(squeeze(xMedian(:,:,j)),1);
@@ -201,23 +228,30 @@ for j=1:4
     ssfrMedMed(:,:,j)=quantile(squeeze(ssfrMedian(:,:,j)),quants,1);
     ssfrAvgMed(:,:,j)=quantile(squeeze(ssfrMean(:,:,j)),quants,1);
     
+    for i=1:dataCntr
+        res.([dataName{i} 'MedMed'])=quantile(squeeze(dataMedian(:,:,j,i)),quants,1);
+        res.([dataName{i} 'AvgMed'])=quantile(squeeze(dataMean(:,:,j,i)),quants,1);
+        
+    end
+    
+    
 end
 
-ssfrMassProfs.rposMed=xmed;
-ssfrMassProfs.rposAvg=xavg;
+res.rposMed=xmed;
+res.rposAvg=xavg;
 
 
-ssfrMassProfs.smassMedMed=smassMedMed;
-ssfrMassProfs.smassAvgMed=smassAvgMed;
+res.smassMedMed=smassMedMed;
+res.smassAvgMed=smassAvgMed;
 
-ssfrMassProfs.ssfrMedMed=ssfrMedMed;
-ssfrMassProfs.ssfrAvgMed=ssfrAvgMed;
+res.ssfrMedMed=ssfrMedMed;
+res.ssfrAvgMed=ssfrAvgMed;
 
-ssfrMassProfs.profStruct=profStruct;
-ssfrMassProfs.quants=quants;
+res.profStruct=profStruct;
+res.quants=quants;
 
 
 % fprintf(['writing to: ' fname '\n']);
-% save(fname,'ssfrMassProfs');    % option to save 
+% save(fname,'res');    % option to save 
 
 end

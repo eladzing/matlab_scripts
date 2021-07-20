@@ -26,7 +26,8 @@ end
 
 %% setup filenames and locations 
 global JF_DATA_DIR
-fileNameBase='jellyfish-galaxies-classifications_';
+%fileNameBase='jellyfish-galaxies-classifications_';
+fileNameBase='cosmological-jellyfish-classifications_';
 
 filename=[JF_DATA_DIR '/'  fileNameBase name '.csv'];
 
@@ -41,7 +42,9 @@ opts.DataLines = dataLines;
 opts.Delimiter = ",";
 
 % Specify column names and types
-opts.VariableNames = ["classification_id", "user_name",  "user_id", "user_ip",     "workflow_id", "workflow_name", "workflow_version", "created_at", "gold_standard", "expert", "metadata", "annotations", "subject_data", "subject_ids"];
+opts.VariableNames = ["classification_id", "user_name",  "user_id", "user_ip", "workflow_id", "workflow_name", "workflow_version", "created_at", "gold_standard", "expert", "metadata", "annotations", "subject_data", "subject_ids"];
+%                      classification_id,   user_name,    user_id,   user_ip,   workflow_id,   workflow_name,   workflow_version,   created_at,   gold_standard,   expert,   metadata,   annotations,   subject_data,   subject_ids
+
 opts.VariableTypes = ["double",            "string",     "double", "categorical", "double",      "double",        "double",           "string",     "string",        "string", "string",   "categorical", "string",       "double"];
 opts = setvaropts(opts, [8, 9, 10, 11, 13], "WhitespaceRule", "preserve");
 opts = setvaropts(opts, 6, "TrimNonNumeric", true);

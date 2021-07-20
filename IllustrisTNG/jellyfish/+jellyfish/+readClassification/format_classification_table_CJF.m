@@ -51,6 +51,8 @@ clsTab.subfind=subhalo.extractBefore('_snap').double;
 % replace hyphens with underscores in user_names
 clsTab.user_name=clsTab.user_name.replace("-","_");
 
+%% replace 'created at' with a datetime. 
+clsTab.created_at=datetime(clsTab.created_at,'InputFormat','yyyy-MM-dd HH:mm:ss ''UTC');
 %% 
 %% get answer 
 %clsTab.question=string(clsTab.annotations).extractBetween('"task_label":"','","value"');

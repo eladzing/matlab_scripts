@@ -1,18 +1,59 @@
-function res=format_classification_table_CJF(clsTab)
+function res=format_classification_table_CJF(clsTab,varargin)
+%% format the classification table
+% option for trimming by dates. 
+
+%% parse arguments 
+
+i=1;
+startDate=datetime('01/01/00 00:00','InputFormat',"dd/MM/yy HH:mm");
+endDate=datetime('31/12/40 23:59','InputFormat',"dd/MM/yy HH:mm");
+
+while(i<=length(vararign))
+    switch(lower(varargin{i})
+        case {'start','starts','startdate','from'}
+            i=i+1;
+            dt=varargin{i};
+            if isdatetime(dt)
+                startDate=dt;
+            else
+                error('%s - start date must be a datetime object',current_function);
+            end
+            
+        case {'end','ends','enddate','to','until','till'}
+            i=i+1;
+            dt=varargin{i};
+            if isdatetime(dt)
+                endDate=dt;
+            else
+                error('%s - start date must be a datetime object',current_function);
+            end
+            
+        otherwise
+            error('%s - Illegal argument: %s',current_function,varargin{i});
+    end
+    i=i+1;
+end
+
 
 
 % focus on the right workflow - not relavent anymore 
 % right_wf=11990;
 % clsTab(~ismember(clsTab.workflow_id,right_wf),:)=[];
 
-% remove unwanted columns 
+%% remove unwanted columns 
 clsTab=removevars(clsTab,{'user_ip','workflow_name','workflow_version',...
     'metadata','gold_standard','expert','workflow_id'});
     
+%% remove classification before startdate and after end date 
+% replace 'created at' with a datetime. 
+clsTab.created_at=datetime(clsTab.created_at,'InputFormat','yyyy-MM-dd HH:mm:ss ''UTC');
+
+dateMask=clsTab.created_at>=startDate & clsTab.created_at<=endDate;
+
+clsTab=clsTab(dateMask,:);
 
 
-
-% add snapshot as column 
+%% add snapshot as column 
 clsTab.snap=clsTab.subject_data.extractAfter('_snap');
 clsTab.snap=clsTab.snap.extractBefore('_');
 clsTab.snap=clsTab.snap.extractAfter('0').double;
@@ -51,8 +92,7 @@ clsTab.subfind=subhalo.extractBefore('_snap').double;
 % replace hyphens with underscores in user_names
 clsTab.user_name=clsTab.user_name.replace("-","_");
 
-%% replace 'created at' with a datetime. 
-clsTab.created_at=datetime(clsTab.created_at,'InputFormat','yyyy-MM-dd HH:mm:ss ''UTC');
+
 %% 
 %% get answer 
 %clsTab.question=string(clsTab.annotations).extractBetween('"task_label":"','","value"');

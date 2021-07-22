@@ -11,7 +11,8 @@ Nsample=200;
 [idList, ia,~]=unique(clsTab.subject_ids);
 
 % create object table
-res=table(idList,clsTab.simName(ia),clsTab.snap(ia),clsTab.subfind(ia),zeros(size(idList)),zeros(size(idList)),...
+res=table(idList,clsTab.simName(ia),clsTab.snap(ia),clsTab.subfind(ia),...
+    zeros(size(idList)),zeros(size(idList)),zeros(size(idList)),...
     'variableNames',{'subject_ids','sim','snap','subfind','clsNum','score','scoreTotal'});
 
 %loop over subject ids and count classifications
@@ -25,9 +26,11 @@ for i=1:length(idList)
     res.scoreTotal(i)=sum(isJel); % number of 'yes' answers
     
     % deal with objects with more than the base number of classifications
-    if Ncls<=clsBase
+    % if all the votes are the same then it doesn't matter 
+    if Ncls<=clsBase || all(isJel) || all(~isJel)
         res.score(i)=sum(isJel);
     else
+        
         for j=1:Nsample
             [~,ix]=sort(rand(1,Ncls));
             scores(j)=sum(isJel(ix(1:clsBase)));

@@ -34,7 +34,7 @@ snaps=unique(objectTable.snap);
 sims=unique(objectTable.sim);
 
 % run over simulations
-for k=1:length(sims)
+for k=2:length(sims)
     bp=illustris.set_env(sims(k),'nomount');
     global simDisplayName
     fprintf('running on simulation %s \n ', sims(k));

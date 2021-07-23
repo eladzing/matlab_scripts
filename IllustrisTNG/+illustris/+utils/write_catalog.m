@@ -98,7 +98,7 @@ if structFlag
     for id = 1:numel(dataSets)
         dataSet   = char(dataSets(id));
         catLength=size(catalog.(dataSets{id}));
-        fprintf('writeCat - id=%i',id);
+        
         h5create([fullPath '/' fullName],['/' dataSet],catLength);%'Datatype','single');
         
         h5write([fullPath '/' fullName], ['/' dataSet], catalog.(dataSet));%,'Datatype','single');

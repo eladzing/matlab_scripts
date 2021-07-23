@@ -8,7 +8,7 @@ i=1;
 startDate=datetime('01/01/00 00:00','InputFormat',"dd/MM/yy HH:mm");
 endDate=datetime('31/12/40 23:59','InputFormat',"dd/MM/yy HH:mm");
 
-while(i<=length(vararign))
+while(i<=length(varargin))
     switch(lower(varargin{i}))
         case {'start','starts','startdate','from'}
             i=i+1;

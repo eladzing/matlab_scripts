@@ -31,7 +31,7 @@ while(i<=length(varargin))
         case{'verbose','verb','v'}
             verboseFlag=true;
         otherwise
-            error('write_catalog - illegal argument: %s',varargin{i})
+            error('%s - illegal argument: %s',current_function.upper,varargin{i})
     end
     i=i+1;
 end
@@ -51,7 +51,7 @@ fullPath=[catPath '/' folderName];
 [s,mess,messid]=mkdir(fullPath);
 
 % build correct file name
-global simName
+%global simName
 
 fullName=[catalogName '_' num2str(snap,'%03d') '.hdf5'];
 
@@ -98,9 +98,12 @@ if structFlag
     for id = 1:numel(dataSets)
         dataSet   = char(dataSets(id));
         catLength=size(catalog.(dataSets{id}));
-        h5create([fullPath '/' fullName],['/' dataSet],catLength);%'Datatype','single');
-        h5write([fullPath '/' fullName], ['/' dataSet], catalog.(dataSet));%,'Datatype','single');
-        %h5write(catPath, ['' catPs.selection_hType '' '/' '' dataSet ''], sHaloes.(sprintf([ dataSet ])), 'WriteMode', 'append');
+        if id==1
+            h5create([fullPath '/' fullName],['/' dataSet],catLength);%'Datatype','single');
+        else
+            h5write([fullPath '/' fullName], ['/' dataSet], catalog.(dataSet));%,'Datatype','single');
+            %h5write(catPath, ['' catPs.selection_hType '' '/' '' dataSet ''], sHaloes.(sprintf([ dataSet ])), 'WriteMode', 'append');
+        end
     end
 else
     

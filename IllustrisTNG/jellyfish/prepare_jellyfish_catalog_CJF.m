@@ -86,7 +86,7 @@ for k=1:length(sims)
         
         outStruct.Score=galScore;
         outStruct.ClassificationNum=galNcls;
-        outstruct.ScoreTotal=galScoreTot;
+        outStruct.ScoreTotal=galScoreTot;
         outStruct.done=int8(galScore~=-1);
         
         

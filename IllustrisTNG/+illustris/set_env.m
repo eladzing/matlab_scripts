@@ -55,7 +55,7 @@ zred0=99;
 i=1;
 while(i<=length(varargin))
     if isstring(varargin{i})
-        varargin{i}=char(varargin{k});
+        varargin{i}=char(varargin{i});
     end
         
     switch(lower(varargin{i}))

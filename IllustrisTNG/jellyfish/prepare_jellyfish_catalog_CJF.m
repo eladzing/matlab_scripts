@@ -64,10 +64,11 @@ for k=1:length(sims)
         
         % find the objects from the right snapshot
         snapMask=objectTable.snap==snaps(i);
-        tabInd=find(simMask & snapMask); % indices in objectTable from the right simulation and snpashot
+        fullMask=snapMask & simMask;
+        tabInd=find(fullMask); % indices in objectTable from the right simulation and snpashot
         
         % find their subfind index in the table
-        subfindInd=objectTable.subfind(snapMask)+1; % subfind is zero based, so index is increases by 1
+        subfindInd=objectTable.subfind(fullMask)+1; % subfind is zero based, so index is increases by 1
         
         %prepare the scores
         galScore(subfindInd)=objectTable.score(tabInd);

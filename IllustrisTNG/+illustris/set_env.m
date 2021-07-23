@@ -54,6 +54,10 @@ zred0=99;
 %% parse arguments
 i=1;
 while(i<=length(varargin))
+    if isstring(varargin{i})
+        varargin{i}=char(varargin{k});
+    end
+        
     switch(lower(varargin{i}))
         case{'100','tng100',100,101,'100-1'}
             simName='L75n1820TNG';

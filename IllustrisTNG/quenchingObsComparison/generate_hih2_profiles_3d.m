@@ -102,7 +102,19 @@ hmask(2,:)=log10(mvir)>=12 & log10(mvir)<13;
 hmask(3,:)=log10(mvir)>=13 & log10(mvir)<14;
 hmask(4,:)=log10(mvir)>=14 & log10(mvir)<15;
 
+ %% split by stellarmass - 3 groups 
+smask3=false(3,length(gMass));
+smask3(1,:)=log10(gMass)>=9 & log10(gMass)<10;
+smask3(2,:)=log10(gMass)>=10 & log10(gMass)<11;
+smask3(3,:)=log10(gMass)>=11 ;
 
+ %% split by stellarmass - 2 groups 
+smask2=false(3,length(gMass));
+smask2(1,:)=log10(gMass)>=9 & log10(gMass)<10.5;
+smask2(2,:)=log10(gMass)>=10.5;
+
+
+%% 
 for j=1:4
     mask=squeeze(hmask(j,:));
     ssfrProf=mk_meanMedian_bin(radPosition(mask),ssfr(mask),'bins',binEdges);
@@ -186,6 +198,11 @@ for j=1:4
         end
     end
 end
+
+%% by host and stellar mask (3 groups)
+
+
+
 
 % %% split by stellarmass
 % smask=false(3,length(gMass));

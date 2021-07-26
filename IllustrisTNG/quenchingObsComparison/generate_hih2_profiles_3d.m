@@ -41,7 +41,7 @@ subsInfo = illustris.infrastructure.build_sub_fof_connection(subs,fofs);
 % define stellar mass
 gMass= illustris.utils.get_stellar_mass(subs); % stellar mass within 2*rhalf
 
-%% generate 'main-sequence' 
+%% generate 'main-sequence'
 switch lower(mainSequenceType)
     case 'central'
         mmaskG=hih2Struct.galMask & hih2Struct.Gal.GalHIMass(1,:)>0 & subsInfo.isCentral;
@@ -50,8 +50,8 @@ switch lower(mainSequenceType)
         mmaskG=hih2Struct.galMask & hih2Struct.Gal.GalHIMass(1,:)>0;
         mmaskC=hih2Struct.galMask & hih2Struct.CGMall.CGMallHIMass(1,:)>0;
 end
-        
-        galH_star=mk_meanMedian_bin(log10(hih2Struct.galMass(mmaskG)),...
+
+galH_star=mk_meanMedian_bin(log10(hih2Struct.galMass(mmaskG)),...
     log10(hih2Struct.Gal.GalHIMass(1,mmaskG)./hih2Struct.galMass(mmaskG)),'bins',8.95:0.05:12.5);
 
 

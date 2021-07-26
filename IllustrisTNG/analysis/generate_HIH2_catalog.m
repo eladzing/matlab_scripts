@@ -27,8 +27,13 @@ if readFlag
     
 end
 
-% assign a lower stellar mass threshold based on the TNG box (only TNG100)
-massThresh=10^9; % threshold for *stellar* mass
+% assign a lower stellar mass threshold based on the TNG box
+switch simDisplayName
+    case('TNG100')
+        massThresh=10^9; % threshold for *stellar* mass
+    case('TNG50')
+        massThresh=10^8.3; % threshold for *stellar* mass
+end
 fprintf('Setting stellar mass threshold to: %0.1e solar mass \n',massThresh);
 
 %% load subsinfo
@@ -70,9 +75,9 @@ for fld=compNames
             end
         end
     end
-      
+    
     hih2Struct.(fld).(strcat(fld, 'GasMass'))=zeros(1,len); % All gas Mass
-    hih2Struct.(fld).(strcat(fld, 'SfrMass'))=zeros(1,len); % only SF gas 
+    hih2Struct.(fld).(strcat(fld, 'SfrMass'))=zeros(1,len); % only SF gas
     hih2Struct.(fld).(strcat(fld, 'SFR'))=zeros(1,len); % SFR in component
 end
 

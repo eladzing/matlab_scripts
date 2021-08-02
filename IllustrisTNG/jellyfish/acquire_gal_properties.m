@@ -8,6 +8,11 @@ snaps=unique(objectTable.snap);
 sims=unique(objectTable.sim);
 %% initialize
 
+% snap & sim and id
+galProps.snap=objectTable.snap;
+galProps.sim=objectTable.sim;
+galProps.subfind=objectTable.subfind;
+
 ngal=length(objectTable.subfind);
 % galProps.sim=zeros(1,ngal);
 % galProps.snap=zeros(1,ngal);
@@ -35,8 +40,8 @@ galProps.hostID=zeros(1,ngal);
 %%run over simulations and snapshots
 for k=1:length(sims)
     
-    bp=illustris.set_env(sims(k),'nomount');
-    global simDisplayName
+    bp=illustris.set_env(sims(k));
+    %global simDisplayName
     global LBox
     fprintf('running on simulation %s \n ', sims(k));
     
@@ -62,10 +67,6 @@ for k=1:length(sims)
         
         %% fill out the properties
         
-        % snap & sim and id
-        galProps.snap(inds)=snap;
-        galProps.sim(inds)=sims(k);
-        galProps.subfind(inds)=objectTable.subfind(inds);
         
         
         % virial properties
@@ -149,7 +150,7 @@ for k=1:length(sims)
     end
 end
 
-fname=sprintf('jf_galProperties_%s.mat',simDisplayName);
+fname=sprintf('jf_galProperties_CJF.mat');
 save([DEFAULT_MATFILE_DIR '/' fname],'galProps','-v7.3')
 
 fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);

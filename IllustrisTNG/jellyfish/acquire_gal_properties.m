@@ -143,7 +143,7 @@ for k=1:length(sims)
        
 %        vrad=sum(vel.*galPos,1)./rpos;
       
-       galProps.vel(inds)=vel;
+       galProps.vel(:,inds)=vel;
        galProps.vrad(inds)=sum(vel.*galPos,1)./rpos;
        
         

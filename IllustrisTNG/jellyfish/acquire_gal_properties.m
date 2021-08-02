@@ -7,7 +7,10 @@ load([DEFAULT_MATFILE_DIR '/cosmic_jellyfish_objectTable.mat'])
 snaps=unique(objectTable.snap);
 sims=unique(objectTable.sim);
 %% initialize
+
 ngal=length(objectTable.subfind);
+% galProps.sim=zeros(1,ngal);
+% galProps.snap=zeros(1,ngal);
 galProps.stellarMass=zeros(1,ngal);
 galProps.hostM200c=zeros(1,ngal);
 galProps.hostR200c=zeros(1,ngal);
@@ -21,7 +24,7 @@ galProps.pos=zeros(3,ngal);
 galProps.vel=zeros(3,ngal);
 galProps.rpos=zeros(1,ngal);
 galProps.vrad=zeros(1,ngal);
-galProps.vtan=zeros(1,ngal);
+%galProps.vtan=zeros(1,ngal);
 galProps.galBHMass=zeros(1,ngal);
 galProps.hostID=zeros(1,ngal);
 %galProps.nSatHost=zeros(1,ngal);
@@ -51,16 +54,22 @@ for k=1:length(sims)
         
         % find indices of gals from the snapshot
         snapMask=objectTable.snap==snap;
-        fullMask=snapMask & simMask;
-        inds=find(fullMask);
+        %fullMask=snapMask & simMask;
+        inds=find(snapMask & simMask);
         
         galInds=objectTable.subfind(inds)+1; % indices in the catalogs 
-        hostInds=subsInfo.hostFof(inds)+1;% indices in the catalogs 
+        hostInds=subsInfo.hostFof(galInds)+1;% indices in the catalogs 
         
         %% fill out the properties
         
+        % snap & sim and id
+        galProps.snap(inds)=snap;
+        galProps.sim(inds)=sims(k);
+        galProps.subfind(inds)=objectTable.subfind(inds);
+        
+        
         % virial properties
-        galProps.hostID(inds)=subsInfo.hostFof(inds);
+        galProps.hostID(inds)=subsInfo.hostFof(galInds);
         
         galProps.hostM200c(inds)=illUnits.massUnit.*...
              double(fofs.Group_M_Crit200(hostInds));
@@ -95,23 +104,58 @@ for k=1:length(sims)
         
        %% position data 
        galPos=double(subs.SubhaloPos(:,galInds)); % global position in simulation box, in simulation units 
-       hostPos=double(fofs.GroupPos(:,hostInds);
+       hostPos=double(fofs.GroupPos(:,hostInds));% global position of host in simulation box, in simulation units 
+       
+       
+       % apply periodic boundary conditions to calculate the actual radial
+       % position 
+       galProps.pos(:,inds)=galPos; 
+       
+       rpos=findDistance(galPos,hostPos,LBox,3);
+       galProps.rpos(inds)=rpos.*illUnits.lengthUnit;
        
        
        
-       galProps.pos=zeros(3,ngal);
-galProps.vel=zeros(3,ngal)
+       % leave this for now till we test.
+       for ii=1:3
+          mask=abs(galPos(ii,:)-hostPos(ii,:))>0.5.*LBox;
+          
+          if any(mask)
+            mask1=mask & hostPos(ii,:)>0.5*LBox;
+            mask2=mask & hostPos(ii,:)<=0.5*LBox;
+            
+            galPos(ii,mask1)=galPos(ii,mask1)+LBox;
+            galPos(ii,mask2)=galPos(ii,mask2)-LBox;
+          end
+          
+          galPos(ii,:)=galPos(ii,:)-hostPos(ii,:);
+             
+       end
+       
+       % velocity w.r.t host
+       vsat=double(subs.SubhaloVel(:,galInds)).*illustris.utils.velocityFactor(snap,'sub'); % 3d velocity for each galaxy 
+       vhost=double(fofs.GroupVel(:,hostInds)).*illustris.utils.velocityFactor(snap,'host');% 3d velocity of host for each galaxy 
+        
+       vel=vsat-vhost;
+              
+       
+       
+%        vrad=sum(vel.*galPos,1)./rpos;
+      
+       galProps.vel(inds)=vel;
+       galProps.vrad(inds)=sum(vel.*galPos,1)./rpos;
        
         
     end
-    
-    fname=sprintf('jf_galProperties_%s.mat',simDisplayName);
-    save([DEFAULT_MATFILE_DIR '/' fname],'galProps','-v7.3')
-    
-    fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
-    
-    
-    
+end
+
+fname=sprintf('jf_galProperties_%s.mat',simDisplayName);
+save([DEFAULT_MATFILE_DIR '/' fname],'galProps','-v7.3')
+
+fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
+
+
+
     
     
     % galProps.vel(inds,3)=...

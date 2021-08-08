@@ -91,7 +91,7 @@ end
 
 
 if len==1
-    res=outptutStruct.(name);
+    res=outputStruct.(name);
 elseif len>1
     res=outputStruct;
 else

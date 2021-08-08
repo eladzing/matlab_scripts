@@ -28,7 +28,7 @@ for i=1:length(idList)
     % deal with objects with more than the base number of classifications
     % if all the votes are the same then it doesn't matter 
     if Ncls<=clsBase || all(isJel) || all(~isJel)
-        res.score(i)=sum(isJel);
+        res.score(i)=min(sum(isJel),clsBase);
     else
         
         for j=1:Nsample

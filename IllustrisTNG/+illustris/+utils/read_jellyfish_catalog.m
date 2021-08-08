@@ -1,4 +1,4 @@
-function res=read_catalog(catalogName,varargin )
+function res=read_jellyfish_catalog(catalogName,varargin )
 %WRITE_CATALOG write data catalog to hdf files in the same structure as the
 %other TNG values
 %   Detailed explanation goes here

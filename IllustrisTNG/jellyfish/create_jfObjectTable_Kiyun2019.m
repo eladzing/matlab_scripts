@@ -31,4 +31,4 @@ end
 objectTable=table(subfindID,snapArr,scoreArr,...
     'variableNames',{'subfind','snap','score'});
 global DEFAULT_MATFILE_DIR
-save([DEFAULT_MATFILE_DIR '/KiyunObjectTable.mat'],'objectTable');
+save([DEFAULT_MATFILE_DIR '/yun19_jellyfish_objectTable.mat'],'objectTable','jfStruct');

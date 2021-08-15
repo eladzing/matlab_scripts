@@ -97,21 +97,22 @@ radPosition = findDistance(subs.SubhaloPos(:,sampleMask),fofs.GroupPos(:,subsInf
 
 %% split by hostmass
 hmask=false(4,length(mvir));
-hmask(1,:)=log10(mvir)>=11 & log10(mvir)<12;
+hmask(1,:)=log10(mvir)>=10.7 & log10(mvir)<12;
 hmask(2,:)=log10(mvir)>=12 & log10(mvir)<13;
 hmask(3,:)=log10(mvir)>=13 & log10(mvir)<14;
 hmask(4,:)=log10(mvir)>=14 & log10(mvir)<15;
 
 %% split by stellarmass - 3 groups
+lgMass=log10(gMass);
 smask3=false(3,length(gMass));
-smask3(1,:)=log10(gMass)>=9 & log10(gMass)<10;
-smask3(2,:)=log10(gMass)>=10 & log10(gMass)<11;
-smask3(3,:)=log10(gMass)>=11 ;
+smask3(1,:)=lgMass>=9 & lgMass<10;
+smask3(2,:)=lgMass>=10 & lgMass<11;
+smask3(3,:)=lgMass>=11 ;
 
 %% split by stellarmass - 2 groups
-smask2=false(3,length(gMass));
-smask2(1,:)=log10(gMass)>=9 & log10(gMass)<10.5;
-smask2(2,:)=log10(gMass)>=10.5;
+smask2=false(2,length(gMass));
+smask2(1,:)=lgMass>=9 & lgMass<10.5;
+smask2(2,:)=lgMass>=10.5;
 
 
 %% by Host mass only
@@ -294,7 +295,7 @@ end
 for i=1:3
     
     for j=1:4
-        mask=squeeze(hmask(j,:)) & squeeze(smask2(i,:));
+        mask=squeeze(hmask(j,:)) & squeeze(smask3(i,:));
         ssfrProf=mk_meanMedian_bin(radPosition(mask),ssfr(mask),'bins',binEdges);
         starMassProf=mk_meanMedian_bin(radPosition(mask),gMass(mask),'bins',binEdges);
         

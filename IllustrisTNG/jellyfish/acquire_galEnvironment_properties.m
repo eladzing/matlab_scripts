@@ -9,7 +9,7 @@ sims=unique(objectTable.sim);
 
 %% set aperatures 
 
-aper=[];
+aper=[50 100];  % in physical kpc 
 
 
 %%  set FOF gas fields, 
@@ -60,9 +60,10 @@ for k=1:length(sims)
         % find indices of gals from the snapshot
         snapMask=objectTable.snap==snap;
         %fullMask=snapMask & simMask;
-        inds=find(snapMask & simMask);
+        tabInds=find(snapMask & simMask);
         
-        galInds=objectTable.subfind(inds)+1; % indices in the catalogs 
+        galInds=objectTable.subfind(tabInds)+1; % indices in the catalogs 
+        
         hostInds=subsInfo.hostFof(galInds)+1;% indices in the catalogs 
         
         hostList=unique(hostInds); % list of hosts in this particular snapshot/sim
@@ -72,65 +73,106 @@ for k=1:length(sims)
             
             hind=hostList(j);
             % find the relavant sat's in this particular host 
+            localGalList=galInds(hostInds==hind);
+            localTabInds=tabInds(hostInds==hind);  
             
             
             % load FOF gas for a host 
-            gas=illustris.snapshot.loadHalo(bp,snap,hind,'gas',fields);
+            gas=illustris.snapshot.loadHalo(bp,snap,hind-1,'gas',fields);
         
             % calculate temperature & entropy 
             gas=illustris.utils.addTemperature(gas);
             gas=illustris.utils.addEntropy( gas );
             
             % center coordinates around host position
-            gas.newCoord = illustris.utils.centerObject(gas.CenterOfMass,fofs.GroupPos(:,hind));
+            %gas.newCoord = illustris.utils.centerObject(gas.CenterOfMass,fofs.GroupPos(:,hind));
             
             
-            % fix velocities
+            % fix velocities and center. 
             hostVel=fofs.GroupVel(:,hind).*illustris.utils.velocityFactor(snap,'host');
-            gas.Velocities=gas.Velocities.*illustris.utils.velocityFactor(snap,'gas');
+            gas.newVel=gas.Velocities.*illustris.utils.velocityFactor(snap,'gas');
             for kk=1:3
-                gas.Velocities(kk,:)=gas.Velocities(kk,:)-hostVel(kk);
+                gas.newVel(kk,:)=gas.newVel(kk,:)-hostVel(kk);
             end
             
+            %% loop of local galaxies
+            for j=1:length(localGalList)
+                
+                % find index of galaxy in objectTable 
+                locInd=localTabInds(j);
+                
+                %center fof gas around galaxy
+                locCoord=illustris.utils.centerObject(gas.CenterOfMass,subs.SubhaloPos(:,localGalList(j)));
+                gasDist=sqrt( sum(double(locCoord).^2,1)).*illUnits.lengthUnit;  %distance in physical kpc
+                
+                galVel=subs.SubhaloVel(:,localGalList(j)).*illustris.utils.velocityFactor(snap,'sub');
+                
+                %% loop over aperatures
+                for ii=1:length(aperatures)
+                    
+                    aper=apertures(ii);
+                    
+                    % generate mask around object
+                    mask=gasDist<=aper;
+                    
+                    % local density 
+                    rhoLocal=mean(gas.Density(mask));
+                    galFoFProps.rhoLocal(ii,locInd)=rhoLocal;
+                    
+                    % local Velocity
+                    for kk=1:3
+                        velLocal(kk)=sum(gas.Masses(mask).*gas.newVel(kk,mask));
+                    end
+                    velLocal=velLocal./sum(gas.Masses(mask));
+                    galFoFProps.velMedium(ii,:,locInd)=velLocal;
+                    
+                    % ram Pressure 
+                    galFoFProps.ramPress(ii,locInd)=rhoLocal.*sum((galVel-velLocal).^2);
+                    
+                    
+                    %% fill out the properties
+        
+            % local density
             
-            
-            
-        %% fill out the properties
+        
+        
+        
+        
         
         
         
         % virial properties
-        galFoFProps.hostID(inds)=subsInfo.hostFof(galInds);
+        galFoFProps.hostID(tabInds)=subsInfo.hostFof(galInds);
         
-        galFoFProps.hostM200c(inds)=illUnits.massUnit.*...
+        galFoFProps.hostM200c(tabInds)=illUnits.massUnit.*...
              double(fofs.Group_M_Crit200(hostInds));
         
-        galFoFProps.hostR200c(inds)=illUnits.lengthUnit.*...
+        galFoFProps.hostR200c(tabInds)=illUnits.lengthUnit.*...
              double(fofs.Group_R_Crit200(hostInds));
         
-        galFoFProps.hostM200m(inds)=illUnits.massUnit.*...
+        galFoFProps.hostM200m(tabInds)=illUnits.massUnit.*...
              double(fofs.Group_M_Mean200(hostInds));
         
-        galFoFProps.hostR200m(inds)=illUnits.lengthUnit.*...
+        galFoFProps.hostR200m(tabInds)=illUnits.lengthUnit.*...
              double(fofs.Group_R_Mean200(hostInds));
         
         % gal/subfind properties
-        galFoFProps.stellarMass(inds)=illUnits.massUnit.*...
+        galFoFProps.stellarMass(tabInds)=illUnits.massUnit.*...
              double(subs.SubhaloMassType(illustris.partTypeNum('stars')+1,galInds));
         
-        galFoFProps.galStellarMass(inds)=illUnits.massUnit.*...
+        galFoFProps.galStellarMass(tabInds)=illUnits.massUnit.*...
              double(subs.SubhaloMassInRadType(illustris.partTypeNum('stars')+1,galInds));
         
-        galFoFProps.gasMass(inds)=illUnits.massUnit.*...
+        galFoFProps.gasMass(tabInds)=illUnits.massUnit.*...
              double(subs.SubhaloMassType(illustris.partTypeNum('gas')+1,galInds));
         
-        galFoFProps.galGasMass(inds)=illUnits.massUnit.*...
+        galFoFProps.galGasMass(tabInds)=illUnits.massUnit.*...
              double(subs.SubhaloMassInRadType(illustris.partTypeNum('gas')+1,galInds));
         
-        galFoFProps.galBHMass(inds)=illUnits.massUnit.*...
+        galFoFProps.galBHMass(tabInds)=illUnits.massUnit.*...
              double(subs.SubhaloMassInRadType(illustris.partTypeNum('BH')+1,galInds));
         
-        galFoFProps.galSFR(inds)=...
+        galFoFProps.galSFR(tabInds)=...
              double(subs.SubhaloSFRinRad(galInds));
         
        %% position data 
@@ -140,10 +182,10 @@ for k=1:length(sims)
        
        % apply periodic boundary conditions to calculate the actual radial
        % position 
-       galFoFProps.pos(:,inds)=galPos; 
+       galFoFProps.pos(:,tabInds)=galPos; 
        
        rpos=findDistance(galPos,hostPos,LBox,3);
-       galFoFProps.rpos(inds)=rpos.*illUnits.lengthUnit;
+       galFoFProps.rpos(tabInds)=rpos.*illUnits.lengthUnit;
        
        
        
@@ -173,14 +215,14 @@ for k=1:length(sims)
        
 %        vrad=sum(vel.*galPos,1)./rpos;
       
-       galFoFProps.vel(:,inds)=vel;
-       galFoFProps.vrad(inds)=sum(vel.*galPos,1)./rpos;
+       galFoFProps.vel(:,tabInds)=vel;
+       galFoFProps.vrad(tabInds)=sum(vel.*galPos,1)./rpos;
        
         
     end
 end
 
-fname=sprintf('jf_galProperties_CJF.mat');
+fname=sprintf('jf_galEnvironmentProperties_CJF.mat');
 save([DEFAULT_MATFILE_DIR '/' fname],'galFoFProps','-v7.3')
 
 fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);

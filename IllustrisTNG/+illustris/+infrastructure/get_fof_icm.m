@@ -42,7 +42,7 @@ for i=2:length(subIDs)
             error('particle ids do not match up')
         end
     catch
-        fprintf('subhalo ID %i',subIDs(i))
+        error('subhalo ID %i \n',subIDs(i))
     end
 end
 

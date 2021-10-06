@@ -1,4 +1,4 @@
-function outMask = get_fof_icm(id,snap)
+function outMask = get_fof_icm(fofs,id,snap)
 %GET_FOF_ICM find the indices of the fof which correspond to the main subhalo
 %and "fuzz"
 %   For a given fof, get a list of gas cells which are either part of the

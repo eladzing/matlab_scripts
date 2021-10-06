@@ -16,7 +16,7 @@ groupFirstInd=groupOffset.offsetType(1)+1;
 outMask=true(1,groupOffset.lenType(1));
 
 %% test
-fofGas=illustris.snapshot.loadHalo(bp, snap, id, 'gas',{'ParticleIDs'});
+fofGas=illustris.snapshot.loadHalo(BASEPATH, snap, id, 'gas',{'ParticleIDs'});
 
 
 %% generate a list of subhalos 
@@ -35,7 +35,7 @@ for i=2:length(subIDs)
     outMask(inds)=false;
     
     %% test 
-    satGas=illustris.snapshot.loadSubhalo(bp, snap, subIDs(i), 'gas',{'ParticleIDs'});
+    satGas=illustris.snapshot.loadSubhalo(BASEPATH, snap, subIDs(i), 'gas',{'ParticleIDs'});
     if any(satGas~=fofGas(inds))
         error('particle ids do not match up')
     end

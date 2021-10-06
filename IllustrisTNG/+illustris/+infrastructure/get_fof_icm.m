@@ -11,8 +11,8 @@ function outMask = get_fof_icm(fofs,id,snap)
 global BASEPATH
 groupOffset = illustris.snapshot.getSnapOffsets(BASEPATH,snap,id,'Group');% get the relevant particle indices
 
-if groupOffset.lenType(1)
-    fprintf('%s - FoF ID %i has no gas elements \n',current_function().upper,id);
+if groupOffset.lenType(1)==0
+    fprintf('%s - FoF ID %i has no gas elements \n',upper(current_function),id);
     return
 end
 

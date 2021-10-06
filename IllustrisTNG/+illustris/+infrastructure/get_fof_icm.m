@@ -30,7 +30,8 @@ for i=2:length(subIDs)
     subFirstInd=subOffset.offsetType(1)+1;
     subLastInd=subFirstInd+int64(subOffset.lenType(1))-1;
     
-    inds=subFirstInd:subLastInd-groupFirstInd +1 ;
+    inds=subFirstInd:subLastInd ; 
+    inds=inds - groupFirstInd +1 ;
     
     outMask(inds)=false;
     

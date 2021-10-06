@@ -1,4 +1,4 @@
-function [outputArg1,outputArg2] = get_fof_icm(id,snap)
+function outMask = get_fof_icm(id,snap)
 %GET_FOF_ICM find the indices of the fof which correspond to the main subhalo
 %and "fuzz"
 %   For a given fof, get a list of gas cells which are either part of the
@@ -9,24 +9,38 @@ function [outputArg1,outputArg2] = get_fof_icm(id,snap)
 %% get cell indices of all FOF cells
 
 global BASEPATH
-fofCells = illustris.snapshot.getSnapOffsets(BASEPATH,snap,id,'Group');% get the relevant particle indices
+groupOffset = illustris.snapshot.getSnapOffsets(BASEPATH,snap,id,'Group');% get the relevant particle indices
+groupFirstInd=groupOffset.offsetType(1)+1;
+%groupLastInd=groupFirstInd+int64(groupOffset.lenType(1))-1;
+
+outMask=true(1,groupOffset.lenType(1));
+
+%% test
+fofGas=illustris.snapshot.loadHalo(bp, snap, id, 'gas',{'ParticleIDs'});
+
 
 %% generate a list of subhalos 
 subIDs=fofs.GroupFirstSub(id+1) + (0:fofs.GroupNsubs(id+1)-1);
 
-%% loop over list 
-for i=1:length(subIDs)
+%% loop over list except for main sub
+for i=2:length(subIDs)
            
 
-    subCells= illustris.snapshot.getSnapOffsets(BASEPATH,snap,subIDs(i),'Subhalo');% get the relevant particle indices
+    subOffset= illustris.snapshot.getSnapOffsets(BASEPATH,snap,subIDs(i),'Subhalo');% get the relevant particle indices
+    subFirstInd=subOffset.offsetType(1)+1;
+    subLastInd=subFirstInd+int64(subOffset.lenType(1))-1;
+    
+    inds=subFirstInd:subLastInd-groupFirstInd +1 ;
+    
+    outMask(inds)=false;
+    
+    %% test 
+    satGas=illustris.snapshot.loadSubhalo(bp, snap, subIDs(i), 'gas',{'ParticleIDs'});
+    if any(satGas~=fofGas(inds))
+        error('particle ids do not match up')
+    end
+end
 
-% if subhalo is main subhalo include the particles 
 
-% if part of satellite subhalo, remove it 
-
-
-
-outputArg1 = inputArg1;
-outputArg2 = inputArg2;
 end
 

@@ -12,7 +12,7 @@ global BASEPATH
 groupOffset = illustris.snapshot.getSnapOffsets(BASEPATH,snap,id,'Group');% get the relevant particle indices
 
 if groupOffset.lenType(1)
-    fprintf('FoF ID %i has no gas elements \n',current_function().upper,id);
+    fprintf('%s - FoF ID %i has no gas elements \n',current_function().upper,id);
     return
 end
 

@@ -6,6 +6,8 @@ function res = calcMode(arr,nbins)
 
 %nbinsDef=20;
 
+
+
 if ~exist('nbins','var')
     [nc,edges]=histcounts(arr);
 else

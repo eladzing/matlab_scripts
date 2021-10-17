@@ -8,16 +8,19 @@ snaps=unique(objectTable.snap);
 sims=unique(objectTable.sim);
 
 %% set aperatures 
+% positive values in physical kpc, negative values are in units of stellar half mass radius 
+aper=[50 100 -20];  
 
-aper=[50 100];  % in physical kpc 
 
-
+units
 %%  set FOF gas fields, 
 fields={'Masses','Density','Coordinates','NeutralHydrogenAbundance','StarFormationRate',...
     'ElectronAbundance','EnergyDissipation','InternalEnergy',...
     'Machnumber','Velocities'}; %% add metalicity
 
-
+% factor for c_sonic calculation
+gamma=5/3;
+csFac=sqrt(gamma.*Units.kb./Units.muMass./Units.mp)./Units.km;
 %% initialize
 
 % snap & sim and id
@@ -29,12 +32,19 @@ ngal=length(objectTable.subfind);
 
 galFoFProps.hostID=zeros(1,ngal);
 galFoFProps.nSatHost=zeros(1,ngal); % no of satellites in host
-galFoFProps.rhoLocal=zeros(length(aper),size(objectTable.subfind));
-galFoFProps.ramPress=zeros(length(aper),size(objectTable.subfind));
-galFoFProps.mach=zeros(length(aper),size(objectTable.subfind));
-galFoFProps.velMedium=zeros(length(aper),3,size(objectTable.subfind));
-galFoFProps.csonic=zeros(length(aper),size(objectTable.subfind));
 
+% full signifies that values are calculated over all relavent gas cells 
+galFoFProps.full.rhoLocal=zeros(length(aper),size(objectTable.subfind));
+galFoFProps.full.ramPress=zeros(length(aper),size(objectTable.subfind));
+galFoFProps.full.mach=zeros(length(aper),size(objectTable.subfind));
+galFoFProps.full.velMedium=zeros(length(aper),3,size(objectTable.subfind));
+galFoFProps.full.csonic=zeros(length(aper),size(objectTable.subfind));
+
+% icm signifies that values are calculated over gas cells from main subhalo
+% and fuzz, after excising other satellites. 
+galFoFProps.icm=galFoFProps.full;
+
+typeTag={'full','icm'};
 %%run over simulations and snapshots
 for k=1:length(sims)
     
@@ -45,7 +55,7 @@ for k=1:length(sims)
     
     simMask=strcmp(objectTable.sim,sims(k));
     
-    for i=1:length(snaps)
+    for i=1:length(snaps)  % run over snaps 
         
         snap=snaps(i);
         
@@ -64,11 +74,12 @@ for k=1:length(sims)
         
         galInds=objectTable.subfind(tabInds)+1; % indices in the catalogs 
         
-        hostInds=subsInfo.hostFof(galInds)+1;% indices in the catalogs 
+        hostInds=subsInfo.hostFof(galInds)+1;% indices in the catalogs
         
         hostList=unique(hostInds); % list of hosts in this particular snapshot/sim
         
-        %% loop over hosts 
+        %% loop over hosts
+        fprintf('looping over hosts \n');
         for j=1:length(hostList)
             
             hind=hostList(j);
@@ -80,6 +91,9 @@ for k=1:length(sims)
             % load FOF gas for a host 
             gas=illustris.snapshot.loadHalo(bp,snap,hind-1,'gas',fields);
         
+            % generate mask for ICM gas (main subhalo and 'fuzz')    
+            icmMask= get_fof_icm(fofs,hind-1,snap);
+            
             % calculate temperature & entropy 
             gas=illustris.utils.addTemperature(gas);
             gas=illustris.utils.addEntropy( gas );
@@ -96,38 +110,49 @@ for k=1:length(sims)
             end
             
             %% loop of local galaxies
-            for j=1:length(localGalList)
+            for jj=1:length(localGalList)
                 
                 % find index of galaxy in objectTable 
-                locInd=localTabInds(j);
+                locInd=localTabInds(jj);
                 
                 %center fof gas around galaxy
-                locCoord=illustris.utils.centerObject(gas.CenterOfMass,subs.SubhaloPos(:,localGalList(j)));
+                locCoord=illustris.utils.centerObject(gas.CenterOfMass,subs.SubhaloPos(:,localGalList(jj)));
                 gasDist=sqrt( sum(double(locCoord).^2,1)).*illUnits.lengthUnit;  %distance in physical kpc
                 
-                galVel=subs.SubhaloVel(:,localGalList(j)).*illustris.utils.velocityFactor(snap,'sub');
+                galVel=subs.SubhaloVel(:,localGalList(jj)).*illustris.utils.velocityFactor(snap,'sub');
                 
                 %% loop over aperatures
                 for ii=1:length(aperatures)
                     
                     aper=apertures(ii);
-                    
+                    for kk=1:length(typeTag)
+                        
                     % generate mask around object
-                    mask=gasDist<=aper;
+                    switch typeTag{kk}
+                        case 'full'
+                            mask=gasDist<=aper;
+                        case 'icm'
+                            mask=gasDist<=aper & icmMask;
+                    end
+                    
+                    
                     
                     % local density 
                     rhoLocal=mean(gas.Density(mask));
-                    galFoFProps.rhoLocal(ii,locInd)=rhoLocal;
+                    galFoFProps.(typeTag{kk}).rhoLocal(ii,locInd)=rhoLocal;
                     
                     % local Velocity
                     for kk=1:3
                         velLocal(kk)=sum(gas.Masses(mask).*gas.newVel(kk,mask));
                     end
                     velLocal=velLocal./sum(gas.Masses(mask));
-                    galFoFProps.velMedium(ii,:,locInd)=velLocal;
+                    galFoFProps.(typeTag{kk}).velMedium(ii,:,locInd)=velLocal;
                     
                     % ram Pressure 
-                    galFoFProps.ramPress(ii,locInd)=rhoLocal.*sum((galVel-velLocal).^2);
+                    galFoFProps.(typeTag{kk}).ramPress(ii,locInd)=rhoLocal.*sum((galVel-velLocal).^2);
+                    
+                    % sonic velocity 
+                    csonic=csFac.*sqrt(gas.Temperature(mask));
                     
                     
                     %% fill out the properties

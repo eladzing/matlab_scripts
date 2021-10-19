@@ -297,9 +297,9 @@ end
 
 %% by host and stellar mass 4 groups 
 
-for i=1:4
+for i=1:4  % in stellar mass bins 
     
-    for j=1:4
+    for j=1:4 % in host mass bins 
         mask=squeeze(hmask(j,:)) & squeeze(smask4(i,:));
         ssfrProf=mk_meanMedian_bin(radPosition(mask),ssfr(mask),'bins',binEdges);
         starMassProf=mk_meanMedian_bin(radPosition(mask),gMass(mask),'bins',binEdges);

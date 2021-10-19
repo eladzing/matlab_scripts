@@ -102,6 +102,9 @@ hmask(2,:)=log10(mvir)>=12 & log10(mvir)<13;
 hmask(3,:)=log10(mvir)>=13 & log10(mvir)<14;
 hmask(4,:)=log10(mvir)>=14 & log10(mvir)<15;
 
+res.hostNums=sum(hmask,2);
+res.hostHeader='Host Mass bins: 10.7, 12, 13, 14, 15';
+
 %% split by stellarmass - 4 groups
 lgMass=log10(gMass);
 smask4=false(4,length(gMass));
@@ -109,12 +112,12 @@ smask4(1,:)=lgMass>=8 & lgMass<9;
 smask4(2,:)=lgMass>=9 & lgMass<10;
 smask4(3,:)=lgMass>=10 & lgMass<11;
 smask4(4,:)=lgMass>=11 ;
-
+res.byHostStar4.massHeader='stellar mass bins: 8 9 10 11 and above';
 %% split by stellarmass - 2 groups
 smask2=false(2,length(gMass));
 smask2(1,:)=lgMass>=8 & lgMass<10.5;
 smask2(2,:)=lgMass>=10.5;
-
+res.byHostStar2.massHeader='stellar mass bins: 8 10.5 and above';
 
 %% by Host mass only
 for j=1:4

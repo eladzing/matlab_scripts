@@ -1,6 +1,6 @@
 %% radial profiles of HI and H2 for TNG100 & TNG50 
 
-binEdges=0.1:0.3:2.2;
+binEdges=0.1:0.2:2.2;
 
 %% load important things TNG50
 bp=illustris.set_env(50,'nomount');

@@ -53,7 +53,7 @@ figPos=[ 800          42        1062         954];
 % in stellar mass bins 
 hf=figure('color','w','position',figPos);
 
-titlemine('Gal');
+%titlemine('Gal');
 h=[];
 yl=[1 800];
 xl=[0 2.4];
@@ -91,9 +91,55 @@ for k=1:4
     
 end
 
+
+% average number of satellites per host 
+hf=figure('color','w','position',figPos);
+titlemine('Average number of satellites per host');
+
+h=[];
+yl=[0.0005 0.2];
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=semilogy(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).count(:,j)./hprofs50.hostNums(j),'-o',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
+        if j==1;hold on;end
+        h(end+1)=semilogy(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).count(:,j)./hprofs100.hostNums(j),'--x',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
+     end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','southeast','interpreter','latex');
+    end
+    
+    
+    
+    xlim(xl);
+    ylim(yl);
+    grid
+    text(xl(1)+0.6.*diff(xl),yl(1)+0.5.*diff(yl),...
+        ['$ M_\mathrm{*} =' mtag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+   
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('No. of Satetllites',16);
+    
+end
+
+
+
 % in host mass bins 
 hf=figure('color','w','position',figPos);
 h=[];
+yl=[1 1000];
+xl=[0 2.4];
 for k=1:4
     subplot(2,2,k);
     
@@ -108,13 +154,15 @@ for k=1:4
      end
     
     if k==1
-        legend(h(1:2:8),'fontsize',14,'location','southwest','interpreter','latex');
+        legend(h(1:2:8),'fontsize',14,'location','northeast','interpreter','latex');
     elseif k==2
         legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
     end
     
-    yl=ylim;
-    xl=xlim;
+    %yl=ylim;
+    %xl=xlim;
+    xlim(xl)
+    ylim(yl)
      grid
     text(xl(1)+0.05.*diff(xl),yl(1)+0.5.*diff(yl),...
         ['$ M_\mathrm{h} =' htag{k} '$'],'interpreter','latex',...
@@ -130,7 +178,122 @@ end
 
 
 %% sSFR 
+% ssfrmed in stellar mass bins 
+hf=figure('color','w','position',figPos);
+h=[];
+yl=[1e-15 2e-10];
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=semilogy(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).ssfrMed(:,j),'-o',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
+        if j==1;hold on;end
+        h(end+1)=semilogy(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).ssfrMed(:,j),'--x',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
+     end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','southeast','interpreter','latex');
+    end
+    
+    
+    
+    xlim(xl);
+    ylim(yl);
+    grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.5.*diff(yl),...
+        ['$ M_\mathrm{*} =' mtag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+   
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('sSFR [1/yr]',16);
+    
+end
 
+% ssfravg in stellar mass bins
+hf=figure('color','w','position',figPos);
+h=[];
+yl=[1e-15 2e-10];
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=semilogy(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).ssfrAvg(:,j),'-o',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
+        if j==1;hold on;end
+        h(end+1)=semilogy(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).ssfrAvg(:,j),'--x',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
+     end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','southeast','interpreter','latex');
+    end
+    
+    
+    
+    xlim(xl);
+    ylim(yl);
+    grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.5.*diff(yl),...
+        ['$ M_\mathrm{*} =' mtag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+   
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('sSFR [1/yr]',16);
+    
+end
+
+%  ssfrmed in host mass bins 
+hf=figure('color','w','position',figPos);
+h=[];
+yl=[1e-15 2e-10];
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=semilogy(hprofs50.byHostStar4(j).xMed(:,k),hprofs50.byHostStar4(j).ssfrMed(:,k),'-o',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j} );
+        if j==1;hold on;end
+        h(end+1)=semilogy(hprofs100.byHostStar4(j).xMed(:,k),hprofs100.byHostStar4(j).ssfrMed(:,k),'--x',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j});
+     end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','northeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+    %yl=ylim;
+    %xl=xlim;
+    xlim(xl)
+    ylim(yl)
+     grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.5.*diff(yl),...
+        ['$ M_\mathrm{h} =' htag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+   
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+      ylabelmine('No. of Satetllites',16);
+    
+end
 
 
 %% normalized HI mass
@@ -178,6 +341,8 @@ end
 % in host mass bins 
 hf=figure('color','w','position',figPos);
 h=[];
+yl=[0 0.5];
+xl=[0 2.4];
 for k=1:4
     subplot(2,2,k);
     
@@ -188,6 +353,162 @@ for k=1:4
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j} );
         if j==1;hold on;end
         h(end+1)=plot(hprofs100.byHostStar4(j).xMed(:,k),hprofs100.byHostStar4(j).Gal.hiMassMedN(1,:,k),'--',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j});
+     end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+    xlim(xl)
+    ylim(yl)
+     grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
+        ['$ M_\mathrm{h} =' htag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+   
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$',16);
+    
+end
+
+
+%% normalized HI mass in CGM 
+
+
+% in stellar mass bins 
+hf=figure('color','w','position',figPos);
+titlemine('Gal');
+h=[];
+yl=[0 2];
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=plot(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).CGMall.hiMassMedN(1,:,j),'-',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
+        if j==1;hold on;end
+        h(end+1)=plot(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).CGMall.hiMassMedN(1,:,j),'--',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
+     end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+    
+    
+    xlim(xl);
+    ylim(yl);
+    grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
+        ['$ M_\mathrm{*} =' mtag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+   
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$',16);
+    
+end
+
+% in host mass bins 
+hf=figure('color','w','position',figPos);
+h=[];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=plot(hprofs50.byHostStar4(j).xMed(:,k),hprofs50.byHostStar4(j).CGMall.hiMassMedN(1,:,k),'-',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j} );
+        if j==1;hold on;end
+        h(end+1)=plot(hprofs100.byHostStar4(j).xMed(:,k),hprofs100.byHostStar4(j).CGMall.hiMassMedN(1,:,k),'--',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j});
+     end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+     xlim(xl);
+    ylim(yl);
+     grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
+        ['$ M_\mathrm{h} =' htag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+   
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$',16);
+    
+end
+
+%% normalized HI mass vs ssfr 
+
+% in stellar mass bins 
+hf=figure('color','w','position',figPos);
+titlemine('Gal');
+h=[];
+yl=[0 0.5];
+xl=[1e-15 2e-10];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=plot(hprofs50.byHostStar4(k).xsfrMed(:,j),hprofs50.byHostStar4(k).Gal.hiMassMedN(1,:,j),'-',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
+        if j==1;hold on;end
+        h(end+1)=plot(hprofs100.byHostStar4(k).xsfrMed(:,j),hprofs100.byHostStar4(k).Gal.hiMassMedN(1,:,j),'--',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
+     end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+    
+    
+    xlim(xl);
+    ylim(yl);
+    grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
+        ['$ M_\mathrm{*} =' mtag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+   
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$',16);
+    
+end
+
+% in host mass bins 
+hf=figure('color','w','position',figPos);
+h=[];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=plot(hprofs50.byHostStar4(j).xsfrMed(:,k),hprofs50.byHostStar4(j).Gal.hiMassMedN(1,:,k),'-',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j} );
+        if j==1;hold on;end
+        h(end+1)=plot(hprofs100.byHostStar4(j).xsfrMed(:,k),hprofs100.byHostStar4(j).Gal.hiMassMedN(1,:,k),'--',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j});
      end
     
@@ -209,6 +530,8 @@ for k=1:4
     ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$',16);
     
 end
+
+
 
 
 

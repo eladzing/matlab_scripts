@@ -307,7 +307,7 @@ for k=1:4
     
     set(gca,'fontsize',14)
     xlabelmine('$r/R_\mathrm{vir}$',16);
-    ylabelmine('No. of Satetllites',16);
+     ylabelmine('sSFR [1/yr]',16);
     
 end
 
@@ -495,10 +495,10 @@ end
 
 % in stellar mass bins
 hf=figure('color','w','position',figPos);
-titlemine('Gal');
+%titlemine('Gal');
 h=[];
-yl=[0 0.5];
-xl=[1e-15 2e-10];
+yl=[0 0.8];
+xl=log10([1e-15 5e-9]);
 for k=1:4
     subplot(2,2,k);
     
@@ -513,15 +513,15 @@ for k=1:4
     end
     
     if k==1
-        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+        legend(h(1:2:8),'fontsize',14,'location','southwest','interpreter','latex');
     elseif k==2
-        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','southwest','interpreter','latex');
     end
     
     
     
-  %  xlim(xl);
-  %  ylim(yl);
+   xlim(xl);
+   ylim(yl);
     grid
     text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
         ['$ M_\mathrm{*} =' mtag{k} '$'],'interpreter','latex',...
@@ -555,13 +555,13 @@ for k=1:4
     end
     
     if k==1
-        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+        legend(h(1:2:8),'fontsize',14,'location','southwest','interpreter','latex');
     elseif k==2
-        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','southwest','interpreter','latex');
     end
     
-   % yl=ylim;
-   % xl=xlim;
+    xlim(xl);
+    ylim(yl);
     grid
     text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
         ['$ M_\mathrm{h} =' htag{k} '$'],'interpreter','latex',...
@@ -584,11 +584,12 @@ end
 
 %% normalized HI mass in CGM  vs ssfr
 % in stellar mass bins
+% in stellar mass bins
 hf=figure('color','w','position',figPos);
-titlemine('Gal');
+%titlemine('Gal');
 h=[];
-yl=[0 0.5];
-xl=[1e-15 2e-10];
+yl=[0 1.5];
+xl=log10([1e-15 5e-9]);
 for k=1:4
     subplot(2,2,k);
     
@@ -603,15 +604,15 @@ for k=1:4
     end
     
     if k==1
-        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+        legend(h(1:2:8),'fontsize',14,'location','southwest','interpreter','latex');
     elseif k==2
-        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','southwest','interpreter','latex');
     end
     
     
     
-  %  xlim(xl);
-  %  ylim(yl);
+   xlim(xl);
+   ylim(yl);
     grid
     text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
         ['$ M_\mathrm{*} =' mtag{k} '$'],'interpreter','latex',...
@@ -622,6 +623,8 @@ for k=1:4
     ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$',16);
     
 end
+
+
 if printFlag
     fname=sprintf('hiProfs_%s_%sSplit_%sBins','cgmHIMassBySFR','stellarMass','hostMass');
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
@@ -645,13 +648,13 @@ for k=1:4
     end
     
     if k==1
-        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+        legend(h(1:2:8),'fontsize',14,'location','southwest','interpreter','latex');
     elseif k==2
-        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','southwest','interpreter','latex');
     end
     
-   % yl=ylim;
-   % xl=xlim;
+    xlim(xl);
+    ylim(yl);
     grid
     text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
         ['$ M_\mathrm{h} =' htag{k} '$'],'interpreter','latex',...
@@ -662,7 +665,6 @@ for k=1:4
     ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$',16);
     
 end
-
 
 if printFlag
     fname=sprintf('hiProfs_%s_%sSplit_%sBins','cgmHIMassBySFR','hostMass','stellarMass');

@@ -102,6 +102,9 @@ for k=1:length(sims)
         
         galProps.galSFR(inds)=...
              double(subs.SubhaloSFRinRad(galInds));
+         
+         galProps.SFR(inds)=...
+             double(subs.SubhaloSFR(galInds));
         
        %% position data 
        galPos=double(subs.SubhaloPos(:,galInds)); % global position in simulation box, in simulation units 

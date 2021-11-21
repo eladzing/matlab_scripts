@@ -8,7 +8,9 @@ global illUnits
 virType='crit200';
 sampleMask=hih2Struct.galMask;
 binEdges=0.1:0.1:2;
+sfrBinEdges=-13:0.5:-8;
 mainSequenceType='all';
+modelType='br';
 %% parse arguments
 i=1;
 while i<=length(varargin)
@@ -22,17 +24,31 @@ while i<=length(varargin)
         case {'binedges','bins'}
             i=i+1;
             binEdges=varargin{i};
+        case {'sfrbins','sfrbinedges'}
         case 'mask'
             i=i+1;
             sampleMask=varargin{i};
         case 'mainsequence'
             i=i+1;
             mainSequenceType=varargin{i};
-            
+        case 'model'
+            i=i+1;
+            modelType=varargin{i};
+        case {'br','gk','kmt'}
+            modelType=varargin{i};
         otherwise
             error('%s - Illegal argument: %s',current_function().upper,varargin{i});
     end
     i=i+1;
+end
+
+switch lower(modelType)
+    case 'br'
+        kmodel=1;
+    case 'gk'
+        kmodel=2;
+    case 'kmt'
+        kmodel=3;
 end
 
 %% Perliminaries
@@ -44,23 +60,23 @@ gMass= illustris.utils.get_stellar_mass(subs); % stellar mass within 2*rhalf
 %% generate 'main-sequence'
 switch lower(mainSequenceType)
     case 'central'
-        mmaskG=hih2Struct.galMask & hih2Struct.Gal.GalHIMass(1,:)>0 & subsInfo.isCentral;
-        mmaskC=hih2Struct.galMask & hih2Struct.CGMall.CGMallHIMass(1,:)>0 & subsInfo.isCentral;
+        mmaskG=hih2Struct.galMask & hih2Struct.Gal.GalHIMass(kmodel,:)>0 & subsInfo.isCentral;
+        mmaskC=hih2Struct.galMask & hih2Struct.CGMall.CGMallHIMass(kmodel,:)>0 & subsInfo.isCentral;
     case 'all'
-        mmaskG=hih2Struct.galMask & hih2Struct.Gal.GalHIMass(1,:)>0;
-        mmaskC=hih2Struct.galMask & hih2Struct.CGMall.CGMallHIMass(1,:)>0;
+        mmaskG=hih2Struct.galMask & hih2Struct.Gal.GalHIMass(kmodel,:)>0;
+        mmaskC=hih2Struct.galMask & hih2Struct.CGMall.CGMallHIMass(kmodel,:)>0;
 end
 
 galH_star=mk_meanMedian_bin(log10(hih2Struct.galMass(mmaskG)),...
-    log10(hih2Struct.Gal.GalHIMass(1,mmaskG)./hih2Struct.galMass(mmaskG)),'bins',8.95:0.05:12.5);
+    log10(hih2Struct.Gal.GalHIMass(kmodel,mmaskG)./hih2Struct.galMass(mmaskG)),'bins',8.29:0.05:12.5);
 
 
 cgmH_star=mk_meanMedian_bin(log10(hih2Struct.galMass(mmaskC)),...
-    log10(hih2Struct.CGMall.CGMallHIMass(1,mmaskC)./hih2Struct.galMass(mmaskC)),'bins',8.95:0.05:12.5);
+    log10(hih2Struct.CGMall.CGMallHIMass(kmodel,mmaskC)./hih2Struct.galMass(mmaskC)),'bins',8.29:0.05:12.5);
 
 
 %% calculate sSFR
-ssfrBase=double(illustris.utils.calc_ssfr(subs,'base',1e-15));
+ssfrBase=double(illustris.utils.calc_ssfr(subs,'base',1e-13));
 ssfr=ssfrBase(sampleMask);
 
 %% set mask
@@ -170,8 +186,8 @@ for j=1:4
             hm=hm(~isnan(ms));
             msMass=interp1(ms,hm,log10(gMass(mask)));
             
-            hiProfD=mk_meanMedian_bin(radPosition(mask),(hiMass(jj,mask)./gMass(mask)-10.^msMass),'bins',binEdges);
-            hiProfDN=mk_meanMedian_bin(radPosition(mask),(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',binEdges);
+            hiProfD=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask)-10.^msMass),'bins',binEdges);
+            hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',binEdges);
             
             %h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
             
@@ -261,8 +277,8 @@ for i=1:2
                 hm=hm(~isnan(ms));
                 msMass=interp1(ms,hm,log10(gMass(mask)));
                 
-                hiProfD=mk_meanMedian_bin(radPosition(mask),(hiMass(jj,mask)./gMass(mask)-10.^msMass),'bins',binEdges);
-                hiProfDN=mk_meanMedian_bin(radPosition(mask),(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',binEdges);
+                hiProfD=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask)-10.^msMass),'bins',binEdges);
+                hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',binEdges);
                 
                 %h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
                 
@@ -353,8 +369,8 @@ for i=1:4  % in stellar mass bins
                 hm=hm(~isnan(ms));
                 msMass=interp1(ms,hm,log10(gMass(mask)));
                 
-                hiProfD=mk_meanMedian_bin(radPosition(mask),(hiMass(jj,mask)./gMass(mask)-10.^msMass),'bins',binEdges);
-                hiProfDN=mk_meanMedian_bin(radPosition(mask),(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',binEdges);
+                hiProfD=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask)-10.^msMass),'bins',binEdges);
+                hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',binEdges);
                 
                 %h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
                 

@@ -1,7 +1,7 @@
 %% radial profiles of HI and H2 for TNG100 & TNG50
 %% setup
 if setupFlag
-    binEdges=0.1:0.2:2.2;
+    binEdges=0.1:0.25:2.2;
     
     %% load important things TNG50
     bp=illustris.set_env(50,'nomount');
@@ -192,7 +192,7 @@ end
 % ssfrmed in stellar mass bins
 hf=figure('color','w','position',figPos);
 h=[];
-yl=[1e-15 2e-10];
+yl=[1e-13 2e-10];
 xl=[0 2.4];
 for k=1:4
     subplot(2,2,k);
@@ -236,7 +236,7 @@ end
 % ssfravg in stellar mass bins
 hf=figure('color','w','position',figPos);
 h=[];
-yl=[1e-15 2e-10];
+yl=[1e-13 2e-10];
 xl=[0 2.4];
 for k=1:4
     subplot(2,2,k);
@@ -275,7 +275,7 @@ end
 %  ssfrmed in host mass bins
 hf=figure('color','w','position',figPos);
 h=[];
-yl=[1e-15 2e-10];
+yl=[1e-13 2e-10];
 xl=[0 2.4];
 for k=1:4
     subplot(2,2,k);
@@ -329,10 +329,10 @@ for k=1:4
     h=[];
     for j=1:4
         
-        h(end+1)=plot(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).Gal.hiMassMedN(1,:,j),'-',...
+        h(end+1)=semilogy(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).Gal.hiMassMedN(1,:,j),'-',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
         if j==1;hold on;end
-        h(end+1)=plot(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).Gal.hiMassMedN(1,:,j),'--',...
+        h(end+1)=semilogy(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).Gal.hiMassMedN(1,:,j),'--',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
     end
     
@@ -373,10 +373,10 @@ for k=1:4
     h=[];
     for j=1:4
         
-        h(end+1)=plot(hprofs50.byHostStar4(j).xMed(:,k),hprofs50.byHostStar4(j).Gal.hiMassMedN(1,:,k),'-',...
+        h(end+1)=semilogy(hprofs50.byHostStar4(j).xMed(:,k),hprofs50.byHostStar4(j).Gal.hiMassMedN(1,:,k),'-',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j} );
         if j==1;hold on;end
-        h(end+1)=plot(hprofs100.byHostStar4(j).xMed(:,k),hprofs100.byHostStar4(j).Gal.hiMassMedN(1,:,k),'--',...
+        h(end+1)=semilogy(hprofs100.byHostStar4(j).xMed(:,k),hprofs100.byHostStar4(j).Gal.hiMassMedN(1,:,k),'--',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j});
     end
     
@@ -419,10 +419,10 @@ for k=1:4
     h=[];
     for j=1:4
         
-        h(end+1)=plot(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).CGMall.hiMassMedN(1,:,j),'-',...
+        h(end+1)=semilogy(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).CGMall.hiMassMedN(1,:,j),'-',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
         if j==1;hold on;end
-        h(end+1)=plot(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).CGMall.hiMassMedN(1,:,j),'--',...
+        h(end+1)=semilogy(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).CGMall.hiMassMedN(1,:,j),'--',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
     end
     
@@ -461,10 +461,10 @@ for k=1:4
     h=[];
     for j=1:4
         
-        h(end+1)=plot(hprofs50.byHostStar4(j).xMed(:,k),hprofs50.byHostStar4(j).CGMall.hiMassMedN(1,:,k),'-',...
+        h(end+1)=semilogy(hprofs50.byHostStar4(j).xMed(:,k),hprofs50.byHostStar4(j).CGMall.hiMassMedN(1,:,k),'-',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j} );
         if j==1;hold on;end
-        h(end+1)=plot(hprofs100.byHostStar4(j).xMed(:,k),hprofs100.byHostStar4(j).CGMall.hiMassMedN(1,:,k),'--',...
+        h(end+1)=semilogy(hprofs100.byHostStar4(j).xMed(:,k),hprofs100.byHostStar4(j).CGMall.hiMassMedN(1,:,k),'--',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j});
     end
     
@@ -491,6 +491,371 @@ if printFlag
     fname=sprintf('hiProfs_%s_%sSplit_%sBins','cgmHI','hostMass','stellarMass');
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
 end
+
+
+%% HI deficiency Gal 
+
+% in stellar mass bins
+hf=figure('color','w','position',figPos);
+titlemine('Gal');
+h=[];
+yl=[-0.1 0.2];
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=plot(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).Gal.hiMassMedD(1,:,j),'-',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
+        if j==1;hold on;end
+        h(end+1)=plot(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).Gal.hiMassMedD(1,:,j),'--',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
+    end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+    
+    
+    xlim(xl);
+    ylim(yl);
+    grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
+        ['$ M_\mathrm{*} =' mtag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+    
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('HI deficiency',16);
+    
+    
+end
+
+if printFlag
+    fname=sprintf('hiProfs_%s_%sSplit_%sBins','galHIDef','stellarMass','hostMass');
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
+end
+
+% in host mass bins
+hf=figure('color','w','position',figPos);
+h=[];
+yl=[-0.1 0.2];
+
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=plot(hprofs50.byHostStar4(j).xMed(:,k),hprofs50.byHostStar4(j).Gal.hiMassMedD(1,:,k),'-',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j} );
+        if j==1;hold on;end
+        h(end+1)=plot(hprofs100.byHostStar4(j).xMed(:,k),hprofs100.byHostStar4(j).Gal.hiMassMedD(1,:,k),'--',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j});
+    end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+    xlim(xl)
+    ylim(yl)
+    grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
+        ['$ M_\mathrm{h} =' htag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+    
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('HI deficiency',16);
+end
+
+if printFlag
+    fname=sprintf('hiProfs_%s_%sSplit_%sBins','galHIDef','hostMass','stellarMass');
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
+end
+
+
+%% HI deficiency CGM 
+
+% in stellar mass bins
+hf=figure('color','w','position',figPos);
+titlemine('Gal');
+h=[];
+yl=[-0.6 1.6];
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=plot(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).CGMall.hiMassMedD(1,:,j),'-',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
+        if j==1;hold on;end
+        h(end+1)=plot(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).CGMall.hiMassMedD(1,:,j),'--',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
+    end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+    
+    
+    xlim(xl);
+    ylim(yl);
+    grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
+        ['$ M_\mathrm{*} =' mtag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+    
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+     ylabelmine('HI deficiency',16);
+    
+end
+
+if printFlag
+    fname=sprintf('hiProfs_%s_%sSplit_%sBins','cgmHIDef','stellarMass','hostMass');
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
+end
+
+% in host mass bins
+hf=figure('color','w','position',figPos);
+h=[];
+yl=[-0.6 1.6];
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=plot(hprofs50.byHostStar4(j).xMed(:,k),hprofs50.byHostStar4(j).CGMall.hiMassMedD(1,:,k),'-',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j} );
+        if j==1;hold on;end
+        h(end+1)=plot(hprofs100.byHostStar4(j).xMed(:,k),hprofs100.byHostStar4(j).CGMall.hiMassMedD(1,:,k),'--',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j});
+    end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+    xlim(xl)
+    ylim(yl)
+    grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
+        ['$ M_\mathrm{h} =' htag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+    
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+     ylabelmine('HI deficiency',16);
+    
+end
+
+if printFlag
+    fname=sprintf('hiProfs_%s_%sSplit_%sBins','cgmHIDef','hostMass','stellarMass');
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
+end
+
+
+%% HI normalized deficiency Gal 
+
+% in stellar mass bins
+hf=figure('color','w','position',figPos);
+titlemine('Gal');
+h=[];
+yl=[-1 1]*10;
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=plot(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).Gal.hiMassMedDN(1,:,j),'-',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
+        if j==1;hold on;end
+        h(end+1)=plot(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).Gal.hiMassMedDN(1,:,j),'--',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
+    end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+    
+    
+    xlim(xl);
+    ylim(yl);
+    grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
+        ['$ M_\mathrm{*} =' mtag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+    
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$',16);
+    
+end
+
+if printFlag
+    fname=sprintf('hiProfs_%s_%sSplit_%sBins','galHIDefN','stellarMass','hostMass');
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
+end
+
+% in host mass bins
+hf=figure('color','w','position',figPos);
+h=[];
+yl=[-1 1].*0.2;
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=plot(hprofs50.byHostStar4(j).xMed(:,k),hprofs50.byHostStar4(j).Gal.hiMassMedD(1,:,k),'-',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j} );
+        if j==1;hold on;end
+        h(end+1)=plot(hprofs100.byHostStar4(j).xMed(:,k),hprofs100.byHostStar4(j).Gal.hiMassMedD(1,:,k),'--',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j});
+    end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+    xlim(xl)
+    ylim(yl)
+    grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
+        ['$ M_\mathrm{h} =' htag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+    
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$',16);
+    
+end
+
+if printFlag
+    fname=sprintf('hiProfs_%s_%sSplit_%sBins','galHIDefN','hostMass','stellarMass');
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
+end
+
+
+%% HI normalized deficiency CGM 
+
+% in stellar mass bins
+hf=figure('color','w','position',figPos);
+titlemine('Gal');
+h=[];
+yl=[-1 1]*0.2;
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=plot(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).CGMall.hiMassMedD(1,:,j),'-',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
+        if j==1;hold on;end
+        h(end+1)=plot(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).CGMall.hiMassMedD(1,:,j),'--',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
+    end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+    
+    
+    xlim(xl);
+    ylim(yl);
+    grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
+        ['$ M_\mathrm{*} =' mtag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+    
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$',16);
+    
+end
+
+if printFlag
+    fname=sprintf('hiProfs_%s_%sSplit_%sBins','cgmHIDefN','stellarMass','hostMass');
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
+end
+
+% in host mass bins
+hf=figure('color','w','position',figPos);
+h=[];
+yl=[-1 1].*0.2;
+xl=[0 2.4];
+for k=1:4
+    subplot(2,2,k);
+    
+    h=[];
+    for j=1:4
+        
+        h(end+1)=plot(hprofs50.byHostStar4(j).xMed(:,k),hprofs50.byHostStar4(j).CGMall.hiMassMedD(1,:,k),'-',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j} );
+        if j==1;hold on;end
+        h(end+1)=plot(hprofs100.byHostStar4(j).xMed(:,k),hprofs100.byHostStar4(j).CGMall.hiMassMedD(1,:,k),'--',...
+            'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j});
+    end
+    
+    if k==1
+        legend(h(1:2:8),'fontsize',14,'location','southeast','interpreter','latex');
+    elseif k==2
+        legend(h(end-1:end),{'TNG50' 'TNG100'},'fontsize',14,'location','northeast','interpreter','latex');
+    end
+    
+    xlim(xl)
+    ylim(yl)
+    grid
+    text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
+        ['$ M_\mathrm{h} =' htag{k} '$'],'interpreter','latex',...
+        'fontsize',16);
+    
+    set(gca,'fontsize',14)
+    xlabelmine('$r/R_\mathrm{vir}$',16);
+    ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$',16);
+    
+end
+
+if printFlag
+    fname=sprintf('hiProfs_%s_%sSplit_%sBins','cgmHIDefN','hostMass','stellarMass');
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
+end
+
+
+
+
 %% normalized HI mass vs ssfr
 
 % in stellar mass bins
@@ -498,17 +863,17 @@ hf=figure('color','w','position',figPos);
 %titlemine('Gal');
 h=[];
 yl=[0 0.8];
-xl=log10([1e-15 5e-9]);
+xl=log10([1e-13 5e-9]);
 for k=1:4
     subplot(2,2,k);
     
     h=[];
     for j=1:4
         
-        h(end+1)=plot(hprofs50.byHostStar4(k).xsfrMed(:,j),hprofs50.byHostStar4(k).Gal.hiMassSFRMedN(1,:,j),'-',...
+        h(end+1)=semilogy(hprofs50.byHostStar4(k).xsfrMed(:,j),hprofs50.byHostStar4(k).Gal.hiMassSFRMedN(1,:,j),'-',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
         if j==1;hold on;end
-        h(end+1)=plot(hprofs100.byHostStar4(k).xsfrMed(:,j),hprofs100.byHostStar4(k).Gal.hiMassSFRMedN(1,:,j),'--',...
+        h(end+1)=semilogy(hprofs100.byHostStar4(k).xsfrMed(:,j),hprofs100.byHostStar4(k).Gal.hiMassSFRMedN(1,:,j),'--',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
     end
     
@@ -547,10 +912,10 @@ for k=1:4
     h=[];
     for j=1:4
         
-        h(end+1)=plot(hprofs50.byHostStar4(j).xsfrMed(:,k),hprofs50.byHostStar4(j).Gal.hiMassSFRMedN(1,:,k),'-',...
+        h(end+1)=semilogy(hprofs50.byHostStar4(j).xsfrMed(:,k),hprofs50.byHostStar4(j).Gal.hiMassSFRMedN(1,:,k),'-',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j} );
         if j==1;hold on;end
-        h(end+1)=plot(hprofs100.byHostStar4(j).xsfrMed(:,k),hprofs100.byHostStar4(j).Gal.hiMassSFRMedN(1,:,k),'--',...
+        h(end+1)=semilogy(hprofs100.byHostStar4(j).xsfrMed(:,k),hprofs100.byHostStar4(j).Gal.hiMassSFRMedN(1,:,k),'--',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j});
     end
     
@@ -588,18 +953,18 @@ end
 hf=figure('color','w','position',figPos);
 %titlemine('Gal');
 h=[];
-yl=[0 1.5];
-xl=log10([1e-15 5e-9]);
+yl=([0 1.5]);
+xl=log10([1e-13 5e-9]);
 for k=1:4
     subplot(2,2,k);
     
     h=[];
     for j=1:4
         
-        h(end+1)=plot(hprofs50.byHostStar4(k).xsfrMed(:,j),hprofs50.byHostStar4(k).CGMall.hiMassSFRMedN(1,:,j),'-',...
+        h(end+1)=semilogy(hprofs50.byHostStar4(k).xsfrMed(:,j),hprofs50.byHostStar4(k).CGMall.hiMassSFRMedN(1,:,j),'-',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
         if j==1;hold on;end
-        h(end+1)=plot(hprofs100.byHostStar4(k).xsfrMed(:,j),hprofs100.byHostStar4(k).CGMall.hiMassSFRMedN(1,:,j),'--',...
+        h(end+1)=semilogy(hprofs100.byHostStar4(k).xsfrMed(:,j),hprofs100.byHostStar4(k).CGMall.hiMassSFRMedN(1,:,j),'--',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j});
     end
     
@@ -640,10 +1005,10 @@ for k=1:4
     h=[];
     for j=1:4
         
-        h(end+1)=plot(hprofs50.byHostStar4(j).xsfrMed(:,k),hprofs50.byHostStar4(j).CGMall.hiMassSFRMedN(1,:,k),'-',...
+        h(end+1)=semilogy(hprofs50.byHostStar4(j).xsfrMed(:,k),hprofs50.byHostStar4(j).CGMall.hiMassSFRMedN(1,:,k),'-',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j} );
         if j==1;hold on;end
-        h(end+1)=plot(hprofs100.byHostStar4(j).xsfrMed(:,k),hprofs100.byHostStar4(j).CGMall.hiMassSFRMedN(1,:,k),'--',...
+        h(end+1)=semilogy(hprofs100.byHostStar4(j).xsfrMed(:,k),hprofs100.byHostStar4(j).CGMall.hiMassSFRMedN(1,:,k),'--',...
             'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',mtag{j});
     end
     

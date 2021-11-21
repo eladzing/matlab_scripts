@@ -11,7 +11,7 @@ printoutDir=DEFAULT_PRINTOUT_DIR;
 verboseflag=false ;
 figFlag=false;
 epsFlag=false;
-pdfFlag=true;
+pdfFlag=false;
 pngFlag=true;
 
 i=1;

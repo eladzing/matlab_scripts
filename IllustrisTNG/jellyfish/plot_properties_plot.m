@@ -1,9 +1,46 @@
 %% batch plot properties
 printFlag=true;
 
+if setupFlag
 units;
 sims={'TNG50','TNG100'};
 
+
+%% load data 
+global DEFAULT_MATFILE_DIR
+% load object table
+load([ DEFAULT_MATFILE_DIR '\cosmic_jellyfish_objectTable.mat']);
+
+% load galaxy properties
+load([DEFAULT_MATFILE_DIR '\jf_galProperties_CJF.mat']);
+
+% Define JF
+threshJF=16;
+fprintf('JF Threshold set to %i and above. \n', threshJF);
+
+maskJF=objectTable.score>=16;
+maskNJF=objectTable.score<=5;
+
+% list snaps and redshifts
+snaps=unique(objectTable.snap);
+zreds=round(10.*illustris.utils.snap2redshift(snaps))./10;
+
+% define masks
+nObject=height(objectTable);
+fprintf('Total number of objects = %i \n',nObject);
+fprintf('Total number of JF = %i (%4.2f %%) \n',sum(maskJF),sum(maskJF)/nObject*100);
+
+mask100=objectTable.sim=="TNG100";
+mask50=~mask100;
+fprintf('TNG100 number of objects = %i (%4.2f %%) \n',sum(mask100),sum(mask100)/nObject*100);
+fprintf('TNG50 number of objects = %i (%4.2f %%) \n',sum(mask50),sum(mask50)/nObject*100);
+
+fprintf('TNG100 number of JFs = %i (%4.2f %%) \n',sum(maskJF & mask100),sum(maskJF & mask100)/sum(mask100)*100);
+fprintf('TNG50 number of JFs = %i (%4.2f %%) \n',sum(maskJF & mask50),sum(maskJF & mask50)/sum(mask50)*100);
+
+end
+
+%% properties to plot 
 
 xfields={'galStellarMass','hostM200c','rpos','vrad','vel','galGasMass','massRatio','radiality'};
 xlab={'log Stellar Mass $[\mathrm{M_\odot}]$',...
@@ -31,13 +68,19 @@ ylab={'$\log M_\mathrm{200,c}\, [\mathrm{M_\odot}]$',...
     '$\log M_\mathrm{sat}/M_\mathrm{host}$',...
     '$v_\mathrm{rad}/|\vec{v}|$'};
 
-skip=false(length(xfields),length(yfields));
-skip(:,1)=true;
-skip(4,2:4)=true;
-skip(5,2)=true;
-skip(6,1:4)=true;
-skip(7,1:4)=true;
-skip(8,[1:4 6 9])=true;
+ skip=false(length(xfields),length(yfields));
+% % skip(:,1)=true;
+%  skip(4,2:4)=true;
+%  skip(5,2)=true;
+% % skip(6,1:4)=true;
+%  skip(7,1:4)=true;
+%  skip(8,[1:4 6 9])=true;
+% %skip=false(length(xfields),length(yfields));
+% skip(:,[5 6 7])=true;
+% skip(6,:)=true;
+% skip(:,8)=true;
+% 
+
 
 
 
@@ -54,7 +97,11 @@ vr=galProps.vrad./vvir;
 rp=galProps.rpos./rv;
 cgmMass=galProps.gasMass-galProps.galGasMass;
 massRatio=galProps.galStellarMass./mv;
-radiality=galProps.vrad./vv;
+radiality=vr./vv;
+
+
+
+
 
 
 %% plotting defaults 
@@ -64,7 +111,8 @@ njfCol=[0.89,0.1,0.11];
 cols=cat(1,njfCol,jfCol);
 otherCol=brewermap(8,'Set1');
 
-outdir='jellyfish';
+global DEFAULT_PRINTOUT_DIR
+outdir=[DEFAULT_PRINTOUT_DIR '/jellyfish/jfProperties'];
 
 
 for k=1:length(sims)
@@ -77,7 +125,7 @@ for k=1:length(sims)
     end
     
     if k==1
-        startwithI=3;
+        startwithI=1;
     else
         startwithI=1;
     end
@@ -105,14 +153,18 @@ for k=1:length(sims)
         xx=xx0(simMask);
         xxJF=xx0(simMask & maskJF);
         xxNJF=xx0(simMask & ~maskJF);
-        
+                
         if i==1
             startwith=1;
         else
             startwith=1;
         end
         
-        for j=startwith:length(yfields)
+        % set limit. 
+         xl0=[min(xx(~isinf(xx))) max(xx(~isinf(xx)))];
+         xl0=xl0+abs(xl0).*[-0.01 0.01];
+         
+        for j= startwith:length(yfields)
             if strcmp(xfields{i},yfields{j})
                 continue
             end
@@ -138,11 +190,10 @@ for k=1:length(sims)
                 case 'radiality'
                     yy0=radiality;
                 otherwise
-                    yy0=galProps.(yfields{i});
+                    yy0=galProps.(yfields{j});
             end
            
-            if ylog(j)
-                
+            if ylog(j)             
                 yy0=log10(yy0);
             end
             
@@ -152,14 +203,16 @@ for k=1:length(sims)
             
                         
             %% prepare data 
-            xl0=[min(xx) max(xx)].*[0.99 1.01];
-            yl0=[min(yy) max(yy)].*[0.99 1.01];
+            
+            yl0=[min(yy(~isinf(yy))) max(yy(~isinf(yy)))];
+            yl0=yl0+abs(yl0).*[-0.01 0.01];
             
             [bird, binsize, xl,yl]= histogram2d(xxNJF,yyNJF,ones(size(xxNJF)),...
                 'xlim',xl0,'ylim',yl0,'len',50);
             
             filt=fspecial('disk',15);
-            popCont=plot_population_contour(xxJF,yyJF,'smooth',filt,'noplot');
+            popCont=plot_population_contour(xxJF,yyJF,'smooth',filt,'noplot',...
+                'xlim',xl,'ylim',yl);
             
             jfscore=maskJF(simMask);
             
@@ -172,6 +225,9 @@ for k=1:length(sims)
             indx=ceil((xxJF-x0)./lx); indy=ceil((yyJF-y0)./ly);
             outScore=ones(size(indx));
             for ii=1:length(xxJF)
+                if isinf(indy(ii)) || isinf(indx(ii))
+                    continue
+                end
                 outScore(ii)=popCont.popContour(indy(ii),indx(ii));
             end
 
@@ -238,7 +294,7 @@ for k=1:length(sims)
             
             %% print figure 
             fname=sprintf('jfProps_%s_%s_%s',xfields{i},yfields{j},sims{k});
-            if  printFlag; printout_fig(gcf,fname,'nopdf','v'); end
+            if  printFlag; printout_fig(gcf,fname,'nopdf','v','dir',outdir); end
     
             
         end

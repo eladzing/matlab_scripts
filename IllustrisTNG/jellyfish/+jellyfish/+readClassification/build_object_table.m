@@ -35,7 +35,7 @@ for i=1:length(idList)
             [~,ix]=sort(rand(1,Ncls));
             scores(j)=sum(isJel(ix(1:clsBase)));
         end
-        res.score(i)=median(scores);
+        res.score(i)=round(median(scores));
     end
     
     

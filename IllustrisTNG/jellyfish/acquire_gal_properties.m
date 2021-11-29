@@ -52,7 +52,7 @@ for k=1:length(sims)
         snap=snaps(i);
         
         fprintf('Loading catalogs of snap %i \n',snap);
-        loadFofSub;
+        [subs,fofs,subsInfo]=illustris.loadFofSub(snap);
         illustris.utils.set_illUnits(snap);
                 
         fprintf('Getting galaxy properties \n');

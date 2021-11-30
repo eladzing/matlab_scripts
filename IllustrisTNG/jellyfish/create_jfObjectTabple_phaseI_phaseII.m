@@ -39,6 +39,30 @@ objectTableP2=objectTableP2(5:end,:);  % remove first 4 objects with only 1 clas
 % table(idList,clsTab.simName(ia),clsTab.snap(ia),clsTab.subfind(ia),zeros(size(idList)),zeros(size(idList)),...
 %     'variableNames',{'subject_ids','sim','snap','subfind','Ncls','Ycls'});
 
+%% add 20 excluded galaxis to phase I 
+for i=1:20
+    if i<18
+        ex20.sim(i,1)="TNG50";
+    else
+        ex20.sim(i,1)="TNG100";
+    end
+end
+ex20.snap(1:5,1)=33;
+ex20.snap(6:12,1)=40;
+ex20.snap(13:15,1)=[50;67;72];
+ex20.snap(16:17,1)=78;
+ex20.snap(18,1)=50;
+ex20.snap(19:20,1)=59;
+ex20.subfind=[21560, 50698, 90630, 127581, 138654,...
+102, 126, 158, 36250, 66110, 112204, 163074, 79623, ...
+ 356638, 91931, 226474, 451164 10011, 301337, 301338]';
+
+ex20Tab=table(zeros(20,1),ex20.sim,ex20.snap,ex20.subfind,...
+    zeros(20,1),zeros(20,1),zeros(20,1),...
+    'variableNames',{'subject_ids','sim','snap','subfind','clsNum','score','scoreTotal'});
+
+
+%%
 ngalP1=height(objectTableP1);
 ngalP2=height(objectTableP2);
 fprintf('there are %i objects in Phase I\n',ngalP1)
@@ -92,8 +116,8 @@ doubleTable.Properties.VariableNames(6)={'scoreI'};
 doubleTable.scoreII=objectTableP2.score(doubleIndP2);
 
 %% save object table 
-
-
+global DEFAULT_MATFILE_DIR
+save([DEFAULT_MATFILE_DIR '/cosmic_jellyfish_objectTable.mat'],'objectTable','doubleTable');
 
 
 

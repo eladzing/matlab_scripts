@@ -22,12 +22,16 @@ clsTabP2=jellyfish.readClassification.format_classification_table_CJF(clsTab,'st
 %% Generate object tables for the two phases 
 
 % number of objects
-[idListP1, ~,~]=unique(clsTabP1.subject_ids);
+%[idListP1, ~,~]=unique(clsTabP1.subject_ids);
+[idListP1, ~,~]=unique(clsTabP1.tag);
 ngalP1=length(idListP1);
 
 fprintf('there are %i objects in Phase I\n',ngalP1)
 
 [idListP2,~,~]=unique(clsTabP2.subject_ids);
+ngalP2=length(idListP2);
+
+[idListP2,~,~]=unique(clsTabP2.tag);
 ngalP2=length(idListP2);
 fprintf('there are %i objects in Phase II\n',ngalP2)
 
@@ -47,20 +51,27 @@ for i=1:20
         ex20.sim(i,1)="TNG100";
     end
 end
-ex20.snap(1:5,1)=33;
-ex20.snap(6:12,1)=40;
-ex20.snap(13:15,1)=[50;67;72];
-ex20.snap(16:17,1)=78;
-ex20.snap(18,1)=50;
-ex20.snap(19:20,1)=59;
-ex20.subfind=[21560, 50698, 90630, 127581, 138654,...
-102, 126, 158, 36250, 66110, 112204, 163074, 79623, ...
- 356638, 91931, 226474, 451164 10011, 301337, 301338]';
+ex20.snap(1:5,1)="033";
+ex20.snap(6:12,1)="040";
+ex20.snap(13:15,1)=["050";"067";"072"];
+ex20.snap(16:17,1)="078";
+ex20.snap(18,1)="050";
+ex20.snap(19:20,1)="059";
+ex20.subfind=["00021560", "00050698", "00090630", "00127581", "00138654",...
+"00000102", "00000126","00000158", "00036250", "00066110", "00112204", "00163074", "00079623", ...
+ "00356638", "00091931", "00226474", "00451164", "00010011", "00301337", "00301338"]';
 
-ex20Tab=table(zeros(20,1),ex20.sim,ex20.snap,ex20.subfind,...
-    zeros(20,1),zeros(20,1),zeros(20,1),...
-    'variableNames',{'subject_ids','sim','snap','subfind','clsNum','score','scoreTotal'});
+tg1(1:length(ex20.snap),1)="snp";
+tg2(1:length(ex20.snap),1)="subid";
+tg3(1:length(ex20.snap),1)="typ:";
+tg4(1:length(ex20.snap),1)="rand";
 
+ex20.tag=join([ex20.sim tg1 ex20.snap tg2 ex20.subfind tg3 tg4],'');
+
+ex20Tab=table(zeros(20,1),ex20.sim,ex20.snap,ex20.subfind,ex20.tag,...
+    zeros(20,1),zeros(20,1),zeros(20,1),tg4,...
+    'variableNames',{'subject_ids','sim','snap','subfind','tag','clsNum','score','scoreTotal','type'});
+objectTableP1=[objectTableP1 ; ex20Tab];
 
 %%
 ngalP1=height(objectTableP1);
@@ -75,49 +86,27 @@ zredsP1=round(10.*illustris.utils.snap2redshift(snapsP1))./10;
 snapsP2=unique(objectTableP2.snap);
 zredsP2=round(10.*illustris.utils.snap2redshift(snapsP2))./10;
 
-%% Identify doubles objects in phase II 
+%% build random orientation table 
 
-doubleIndP1=[];
-doubleIndP2=[];
+msk1=objectTableP1.type=="rand";
+msk2=objectTableP2.type=="rand";
+objectTable=[objectTableP1(msk1,:) ; objectTableP2(msk2,:)];
+objectTablePref=[objectTableP1(~msk1,:) ; objectTableP2(~msk2,:)];
 
-cnt=0;
-for i=1:height(objectTableP1)
-    
-%     if mod(i,1000)==0
-%         fprintf('%i ',i/1000);
-%     end
-    
-    msk=strcmp(objectTableP1.sim(i),objectTableP2.sim) & objectTableP2.snap==objectTableP1.snap(i);
-    ii=find(msk & objectTableP2.subfind==objectTableP1.subfind(i));
-    
-    if ~isempty(ii)
-        cnt=cnt+1;
-        doubleIndP1(cnt)=i;  % index of object in table 
-        doubleIndP2(cnt)=ii; % index of object in table 
-        
-    end
-    
+objectTableComp=objectTablePerf(:,[1:5 7]);
+objectTableComp.Properties.VariableNames(6)={'scorePref'};
+
+for i=1:height(objectTableComp)
+   ii=find(objectTable.tag.extractBefore("typ:")==objectTablePref.tag(i).extractBefore("typ:"));
+   objectTableComp.scoreRand(i)=objectTable.score(ii);
 end
 
-dp1=objectTableP1.score(doubleIndP1);
-dp2=objectTableP2.score(doubleIndP2);
 
-%% stitch togehter both object table after removing doubles 
-msk=true(height(objectTableP2),1);
-msk(doubleIndP2)=false;
-tempTab=objectTableP2(msk,:); % nondouble copy of the phase II table 
 
-objectTable=[objectTableP1 ; tempTab];
-
-%% generate double tables 
-doubleTable=objectTableP1(doubleIndP1,1:6);
-
-doubleTable.Properties.VariableNames(6)={'scoreI'};
-doubleTable.scoreII=objectTableP2.score(doubleIndP2);
 
 %% save object table 
 global DEFAULT_MATFILE_DIR
-save([DEFAULT_MATFILE_DIR '/cosmic_jellyfish_objectTable.mat'],'objectTable','doubleTable');
+save([DEFAULT_MATFILE_DIR '/cosmic_jellyfish_objectTable.mat'],'objectTable','objectTablePref','objectTableComp');
 
 
 

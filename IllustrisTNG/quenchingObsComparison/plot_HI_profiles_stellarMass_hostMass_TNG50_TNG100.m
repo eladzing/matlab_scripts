@@ -1039,512 +1039,512 @@ end
 
 close all
 
-%% scrath
-
-
-hf=figure('color','w');
-h=[];
-for k=1:4
-    subplot(2,2,k);
-    
-    
-    for j=1:4
-        
-        h(end+1)=plot(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).Gal.hiMassMedN(1,:,j),'-',...
-            'color',colors(cind(j),:),'DisplayName',htag{j});
-        if j==1;hold on;end
-        h(end+1)=plot(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).Gal.hiMassMedN(1,:,j),'--',...
-            'color',colors(cind(j),:),'DisplayName',htag{j});
-        
-    end
-    
-    xlabelmine('$r/R_\mathrm{vir}$');
-    ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$');
-    
-    
-    
-end
-
-
-
-
-
-
-%% plot by HI host mass
-
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs50.byHost.xMed(:,j),hprofs50.byHost.Gal.hiMassMedN(1,:,j),'-',...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    h(end+1)=plot(hprofs100.byHost.xMed(:,j),hprofs100.byHost.Gal.hiMassMedN(1,:,j),'--',...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    %     h(end+1)=plot(hprofs.byHostStar2(1).xMed(:,j),hprofs.byHostStar2(1).Gal.hiMassMed(1,:,j),'--',...
-    %         'color',colors(cind(j),:),'DisplayName',[htag{j} ', low']);
-    %     h(end+1)=plot(hprofs.byHostStar2(2).xMed(:,j),hprofs.byHostStar2(2).Gal.hiMassMed(1,:,j),':',...
-    %         'color',colors(cind(j),:),'DisplayName',[htag{j} ', high']);
-    %
-end
-
-legend(h,'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('HI mass / stellar Mass  ');
-titlemine('Gal');
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs50.byHost.xMed(:,j),hprofs50.byHost.CGMall.hiMassMedN(1,:,j),'-',...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    h(end+1)=plot(hprofs100.byHost.xMed(:,j),hprofs100.byHost.CGMall.hiMassMedN(1,:,j),'--',...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    %     h(end+1)=plot(hprofs.byHostStar2(1).xMed(:,j),hprofs.byHostStar2(1).Gal.hiMassMed(1,:,j),'--',...
-    %         'color',colors(cind(j),:),'DisplayName',[htag{j} ', low']);
-    %     h(end+1)=plot(hprofs.byHostStar2(2).xMed(:,j),hprofs.byHostStar2(2).Gal.hiMassMed(1,:,j),':',...
-    %         'color',colors(cind(j),:),'DisplayName',[htag{j} ', high']);
-    %
-end
-
-legend(h,'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('HI mass  / stellar Mass');
-titlemine('CGM');
-
-
-
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMall.hiMassMed(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.hiMassMed(1,:,j),'--',...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.hiMassMed(1,:,j),':',...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    
-    
-end
-
-legend(h(1:3:12),'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('HI mass $[\mathrm{M_\odot}]$');
-titlemine('CGM');
-
-% normalized
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.Gal.hiMassMedN(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-end
-
-legend(h,'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('HI mass/stellar mass ');
-titlemine('Gal');
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMall.hiMassMedN(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.hiMassMedN(1,:,j),'--',...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.hiMassMedN(1,:,j),':',...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    
-    
-end
-
-legend(h(1:3:12),'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('HI mass / stellar mass');
-titlemine('CGM');
-
-
-%% plot h2 mass
-
-
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.Gal.h2MassMed(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-end
-
-legend(h,'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('H2 mass $[\mathrm{M_\odot}]$');
-titlemine('H2 Gal');
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMall.h2MassMed(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.h2MassMed(1,:,j),'--',...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.h2MassMed(1,:,j),':',...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    
-    
-end
-
-legend(h(1:3:12),'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('H2 mass $[\mathrm{M_\odot}]$');
-titlemine(' H2 CGM');
-
-% normalized
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.Gal.h2MassMedN(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-end
-
-legend(h,'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('H2 mass/stellar mass ');
-titlemine('H2 Gal');
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMall.h2MassMedN(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.h2MassMedN(1,:,j),'--',...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.h2MassMedN(1,:,j),':',...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    
-    
-end
-
-legend(h(1:3:12),'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('H2 mass / stellar mass');
-titlemine(' H2 CGM');
-
-%% plot offset by host
-
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.Gal.hiMassSFRMedN(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.Gal.hiMassAvgDN(1,:,j),'--',...
-    %     'color',colors(cind(j),:),'DisplayName',htag{j});
-end
-
-legend(h,'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('HI mass offset ');
-titlemine('Gal');
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMall.hiMassMedDN(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.CGMall.hiMassAvgDN(1,:,j),'--',...
-    %     'color',colors(cind(j),:),'DisplayName',htag{j});
-    
-    % h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.hiMassMed(1,:,j),'--',...
-    %     'color',colors(cind(j),:),'DisplayName',htag{j});
-    %
-    % h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.hiMassMed(1,:,j),':',...
-    %     'color',colors(cind(j),:),'DisplayName',htag{j});
-    
-    
-end
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('HI mass offset ');
-titlemine('CGM');
-
-
-%% plot by host mass vs ssfr
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xsfrMed(:,j),hprofs.byHost.Gal.hiMassSFRMedN(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.Gal.hiMassAvgDN(1,:,j),'--',...
-    %     'color',colors(cind(j),:),'DisplayName',htag{j});
-end
-
-legend(h,'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('log sSFR');
-ylabelmine('HI mass /stellar mass ');
-titlemine('Gal');
-
-h=[];
-figure
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xsfrMed(:,j),hprofs.byHost.CGMall.hiMassSFRMedN(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.Gal.hiMassAvgDN(1,:,j),'--',...
-    %     'color',colors(cind(j),:),'DisplayName',htag{j});
-end
-
-legend(h,'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('log sSFR');
-ylabelmine('HI mass /stellar mass ');
-titlemine('CGM');
-
-
-%% plot H2 by host mass vs. SSFR
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xsfrMed(:,j),hprofs.byHost.Gal.h2MassSFRMedN(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.Gal.hiMassAvgDN(1,:,j),'--',...
-    %     'color',colors(cind(j),:),'DisplayName',htag{j});
-end
-
-legend(h,'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('log sSFR');
-ylabelmine('H2 mass /stellar mass ');
-titlemine(' H2 Gal');
-
-h=[];
-figure
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xsfrMed(:,j),hprofs.byHost.CGMall.h2MassSFRMedN(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.Gal.hiMassAvgDN(1,:,j),'--',...
-    %     'color',colors(cind(j),:),'DisplayName',htag{j});
-end
-
-legend(h,'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('log sSFR');
-ylabelmine('H2 mass /stellar mass ');
-titlemine('H2 CGM');
-
-
-%% compare to mock observations Gal
-
-% prepare deficiency data
-ms=(galHI_star(1).xMedian);
-hm=galHI_star(1).yMedian;
-ms=ms(~isnan(ms));
-hm=hm(~isnan(ms));
-msMass=interp1(ms,hm,log10(hih2Struct.galMass));
-
-hiDef=(hih2Struct.Gal.GalHIMass(1,:)./hih2Struct.galMass)./10.^(msMass)-1;
-
-res= generate_profile_from_vantagePoint_Catalog(satStructY,fofs,subs,'mean200','mass',massThresh,'hiDef',hiDef);
-
-
-%% plot
-
-
-
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.Gal.hiMassMedDN(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    %    h(end+1)=plot(res.rposMed(:,j),res.hiDefMedMed(3,:),'--',...
-    %        'color',colors(cind(j),:),'DisplayName',[htag{j} ' Mock']);
-    % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.Gal.hiMassAvgDN(1,:,j),'--',...
-    %     'color',colors(cind(j),:),'DisplayName',htag{j});
-end
-
-legend(h,'fontsize',14,'location','northwest','interpreter','latex');
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('HI mass offset ');
-titlemine('Gal');
-
-
-%% cgpm
-
-
-figure
-h=[];
-
-for j=1:4
-    h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMall.hiMassMedDN(1,:,j),...
-        'color',colors(cind(j),:),'DisplayName',htag{j});
-    if j==1;hold on;end
-    % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.CGMall.hiMassAvgDN(1,:,j),'--',...
-    %     'color',colors(cind(j),:),'DisplayName',htag{j});
-    
-    % h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.hiMassMed(1,:,j),'--',...
-    %     'color',colors(cind(j),:),'DisplayName',htag{j});
-    %
-    % h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.hiMassMed(1,:,j),':',...
-    %     'color',colors(cind(j),:),'DisplayName',htag{j});
-    
-    
-end
-xlabelmine('$r/R_\mathrm{vir}$');
-ylabelmine('HI mass offset ');
-titlemine('CGM');
-
-
-%% plot by stellar mass
-
+% %% scrath
+% 
+% 
+% hf=figure('color','w');
+% h=[];
+% for k=1:4
+%     subplot(2,2,k);
+%     
+%     
+%     for j=1:4
+%         
+%         h(end+1)=plot(hprofs50.byHostStar4(k).xMed(:,j),hprofs50.byHostStar4(k).Gal.hiMassMedN(1,:,j),'-',...
+%             'color',colors(cind(j),:),'DisplayName',htag{j});
+%         if j==1;hold on;end
+%         h(end+1)=plot(hprofs100.byHostStar4(k).xMed(:,j),hprofs100.byHostStar4(k).Gal.hiMassMedN(1,:,j),'--',...
+%             'color',colors(cind(j),:),'DisplayName',htag{j});
+%         
+%     end
+%     
+%     xlabelmine('$r/R_\mathrm{vir}$');
+%     ylabelmine('$M_\mathrm{HI}/M_\mathrm{*}$');
+%     
+%     
+%     
+% end
+% 
+% 
+% 
+% 
+% 
+% 
+% %% plot by HI host mass
+% 
+% 
 % figure
 % h=[];
-%
-% for j=1:3
-%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.Gal.hiMassMed(1,:,j),...
-%         'color',colors(cind(j),:),'DisplayName',mtag{j});
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs50.byHost.xMed(:,j),hprofs50.byHost.Gal.hiMassMedN(1,:,j),'-',...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
 %     if j==1;hold on;end
+%     h(end+1)=plot(hprofs100.byHost.xMed(:,j),hprofs100.byHost.Gal.hiMassMedN(1,:,j),'--',...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     %     h(end+1)=plot(hprofs.byHostStar2(1).xMed(:,j),hprofs.byHostStar2(1).Gal.hiMassMed(1,:,j),'--',...
+%     %         'color',colors(cind(j),:),'DisplayName',[htag{j} ', low']);
+%     %     h(end+1)=plot(hprofs.byHostStar2(2).xMed(:,j),hprofs.byHostStar2(2).Gal.hiMassMed(1,:,j),':',...
+%     %         'color',colors(cind(j),:),'DisplayName',[htag{j} ', high']);
+%     %
 % end
-%
+% 
 % legend(h,'fontsize',14,'location','northwest','interpreter','latex');
 % xlabelmine('$r/R_\mathrm{vir}$');
-% ylabelmine('HI mass $[\mathrm{M_\odot}]$');
+% ylabelmine('HI mass / stellar Mass  ');
 % titlemine('Gal');
-%
+% 
 % figure
 % h=[];
-%
-% for j=1:3
-%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMall.hiMassMed(1,:,j),...
-%         'color',colors(cind(j),:),'DisplayName',mtag{j});
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs50.byHost.xMed(:,j),hprofs50.byHost.CGMall.hiMassMedN(1,:,j),'-',...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
 %     if j==1;hold on;end
-%
-%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMin.hiMassMed(1,:,j),'--',...
-%         'color',colors(cind(j),:),'DisplayName',mtag{j});
-%
-%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMout.hiMassMed(1,:,j),':',...
-%         'color',colors(cind(j),:),'DisplayName',mtag{j});
-%
-%
+%     h(end+1)=plot(hprofs100.byHost.xMed(:,j),hprofs100.byHost.CGMall.hiMassMedN(1,:,j),'--',...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     %     h(end+1)=plot(hprofs.byHostStar2(1).xMed(:,j),hprofs.byHostStar2(1).Gal.hiMassMed(1,:,j),'--',...
+%     %         'color',colors(cind(j),:),'DisplayName',[htag{j} ', low']);
+%     %     h(end+1)=plot(hprofs.byHostStar2(2).xMed(:,j),hprofs.byHostStar2(2).Gal.hiMassMed(1,:,j),':',...
+%     %         'color',colors(cind(j),:),'DisplayName',[htag{j} ', high']);
+%     %
 % end
-%
-% legend(h(1:3:9),'fontsize',14,'location','northwest','interpreter','latex');
+% 
+% legend(h,'fontsize',14,'location','northwest','interpreter','latex');
+% xlabelmine('$r/R_\mathrm{vir}$');
+% ylabelmine('HI mass  / stellar Mass');
+% titlemine('CGM');
+% 
+% 
+% 
+% 
+% figure
+% h=[];
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMall.hiMassMed(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     if j==1;hold on;end
+%     
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.hiMassMed(1,:,j),'--',...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.hiMassMed(1,:,j),':',...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     
+%     
+% end
+% 
+% legend(h(1:3:12),'fontsize',14,'location','northwest','interpreter','latex');
 % xlabelmine('$r/R_\mathrm{vir}$');
 % ylabelmine('HI mass $[\mathrm{M_\odot}]$');
 % titlemine('CGM');
-%
+% 
 % % normalized
-%
+% 
 % figure
 % h=[];
-%
-% for j=1:3
-%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.Gal.hiMassMedN(1,:,j),...
-%         'color',colors(cind(j),:),'DisplayName',mtag{j});
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.Gal.hiMassMedN(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
 %     if j==1;hold on;end
 % end
-%
+% 
 % legend(h,'fontsize',14,'location','northwest','interpreter','latex');
 % xlabelmine('$r/R_\mathrm{vir}$');
-% ylabelmine('HI mass / stellaer mass');
+% ylabelmine('HI mass/stellar mass ');
 % titlemine('Gal');
-%
+% 
 % figure
 % h=[];
-%
-% for j=1:3
-%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMall.hiMassMedN(1,:,j),...
-%         'color',colors(cind(j),:),'DisplayName',mtag{j});
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMall.hiMassMedN(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
 %     if j==1;hold on;end
-%
-%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMin.hiMassMedN(1,:,j),'--',...
-%         'color',colors(cind(j),:),'DisplayName',mtag{j});
-%
-%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMout.hiMassMedN(1,:,j),':',...
-%         'color',colors(cind(j),:),'DisplayName',mtag{j});
-%
-%
+%     
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.hiMassMedN(1,:,j),'--',...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.hiMassMedN(1,:,j),':',...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     
+%     
 % end
-%
-% legend(h(1:3:9),'fontsize',14,'location','northwest','interpreter','latex');
+% 
+% legend(h(1:3:12),'fontsize',14,'location','northwest','interpreter','latex');
 % xlabelmine('$r/R_\mathrm{vir}$');
-% ylabelmine('HI mass / stellaer mass');
+% ylabelmine('HI mass / stellar mass');
 % titlemine('CGM');
-%
-%
-%% plot offset by mass
-
-%
+% 
+% 
+% %% plot h2 mass
+% 
+% 
+% 
 % figure
 % h=[];
-%
-% for j=1:3
-%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.Gal.hiMassMedN(1,:,j),...
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.Gal.h2MassMed(1,:,j),...
 %         'color',colors(cind(j),:),'DisplayName',htag{j});
 %     if j==1;hold on;end
-%     h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byMass.Gal.hiMassAvgD(1,:,j),'--',...
-%         'color',colors(cind(j),:),'DisplayName',htag{j});
 % end
-%
+% 
+% legend(h,'fontsize',14,'location','northwest','interpreter','latex');
+% xlabelmine('$r/R_\mathrm{vir}$');
+% ylabelmine('H2 mass $[\mathrm{M_\odot}]$');
+% titlemine('H2 Gal');
+% 
+% figure
+% h=[];
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMall.h2MassMed(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     if j==1;hold on;end
+%     
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.h2MassMed(1,:,j),'--',...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.h2MassMed(1,:,j),':',...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     
+%     
+% end
+% 
+% legend(h(1:3:12),'fontsize',14,'location','northwest','interpreter','latex');
+% xlabelmine('$r/R_\mathrm{vir}$');
+% ylabelmine('H2 mass $[\mathrm{M_\odot}]$');
+% titlemine(' H2 CGM');
+% 
+% % normalized
+% 
+% figure
+% h=[];
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.Gal.h2MassMedN(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     if j==1;hold on;end
+% end
+% 
+% legend(h,'fontsize',14,'location','northwest','interpreter','latex');
+% xlabelmine('$r/R_\mathrm{vir}$');
+% ylabelmine('H2 mass/stellar mass ');
+% titlemine('H2 Gal');
+% 
+% figure
+% h=[];
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMall.h2MassMedN(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     if j==1;hold on;end
+%     
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.h2MassMedN(1,:,j),'--',...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.h2MassMedN(1,:,j),':',...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     
+%     
+% end
+% 
+% legend(h(1:3:12),'fontsize',14,'location','northwest','interpreter','latex');
+% xlabelmine('$r/R_\mathrm{vir}$');
+% ylabelmine('H2 mass / stellar mass');
+% titlemine(' H2 CGM');
+% 
+% %% plot offset by host
+% 
+% 
+% figure
+% h=[];
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.Gal.hiMassSFRMedN(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     if j==1;hold on;end
+%     % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.Gal.hiMassAvgDN(1,:,j),'--',...
+%     %     'color',colors(cind(j),:),'DisplayName',htag{j});
+% end
+% 
 % legend(h,'fontsize',14,'location','northwest','interpreter','latex');
 % xlabelmine('$r/R_\mathrm{vir}$');
 % ylabelmine('HI mass offset ');
 % titlemine('Gal');
-%
+% 
 % figure
 % h=[];
-%
-% for j=1:3
-%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMall.hiMassMedDN(1,:,j),...
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMall.hiMassMedDN(1,:,j),...
 %         'color',colors(cind(j),:),'DisplayName',htag{j});
 %     if j==1;hold on;end
-%     h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byMass.CGMall.hiMassAvgDN(1,:,j),'--',...
-%         'color',colors(cind(j),:),'DisplayName',htag{j});
-%
+%     % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.CGMall.hiMassAvgDN(1,:,j),'--',...
+%     %     'color',colors(cind(j),:),'DisplayName',htag{j});
+%     
 %     % h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.hiMassMed(1,:,j),'--',...
 %     %     'color',colors(cind(j),:),'DisplayName',htag{j});
 %     %
 %     % h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.hiMassMed(1,:,j),':',...
 %     %     'color',colors(cind(j),:),'DisplayName',htag{j});
-%
-%
+%     
+%     
 % end
 % xlabelmine('$r/R_\mathrm{vir}$');
 % ylabelmine('HI mass offset ');
 % titlemine('CGM');
+% 
+% 
+% %% plot by host mass vs ssfr
+% 
+% figure
+% h=[];
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xsfrMed(:,j),hprofs.byHost.Gal.hiMassSFRMedN(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     if j==1;hold on;end
+%     % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.Gal.hiMassAvgDN(1,:,j),'--',...
+%     %     'color',colors(cind(j),:),'DisplayName',htag{j});
+% end
+% 
+% legend(h,'fontsize',14,'location','northwest','interpreter','latex');
+% xlabelmine('log sSFR');
+% ylabelmine('HI mass /stellar mass ');
+% titlemine('Gal');
+% 
+% h=[];
+% figure
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xsfrMed(:,j),hprofs.byHost.CGMall.hiMassSFRMedN(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     if j==1;hold on;end
+%     % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.Gal.hiMassAvgDN(1,:,j),'--',...
+%     %     'color',colors(cind(j),:),'DisplayName',htag{j});
+% end
+% 
+% legend(h,'fontsize',14,'location','northwest','interpreter','latex');
+% xlabelmine('log sSFR');
+% ylabelmine('HI mass /stellar mass ');
+% titlemine('CGM');
+% 
+% 
+% %% plot H2 by host mass vs. SSFR
+% 
+% figure
+% h=[];
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xsfrMed(:,j),hprofs.byHost.Gal.h2MassSFRMedN(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     if j==1;hold on;end
+%     % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.Gal.hiMassAvgDN(1,:,j),'--',...
+%     %     'color',colors(cind(j),:),'DisplayName',htag{j});
+% end
+% 
+% legend(h,'fontsize',14,'location','northwest','interpreter','latex');
+% xlabelmine('log sSFR');
+% ylabelmine('H2 mass /stellar mass ');
+% titlemine(' H2 Gal');
+% 
+% h=[];
+% figure
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xsfrMed(:,j),hprofs.byHost.CGMall.h2MassSFRMedN(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     if j==1;hold on;end
+%     % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.Gal.hiMassAvgDN(1,:,j),'--',...
+%     %     'color',colors(cind(j),:),'DisplayName',htag{j});
+% end
+% 
+% legend(h,'fontsize',14,'location','northwest','interpreter','latex');
+% xlabelmine('log sSFR');
+% ylabelmine('H2 mass /stellar mass ');
+% titlemine('H2 CGM');
+% 
+% 
+% %% compare to mock observations Gal
+% 
+% % prepare deficiency data
+% ms=(galHI_star(1).xMedian);
+% hm=galHI_star(1).yMedian;
+% ms=ms(~isnan(ms));
+% hm=hm(~isnan(ms));
+% msMass=interp1(ms,hm,log10(hih2Struct.galMass));
+% 
+% hiDef=(hih2Struct.Gal.GalHIMass(1,:)./hih2Struct.galMass)./10.^(msMass)-1;
+% 
+% res= generate_profile_from_vantagePoint_Catalog(satStructY,fofs,subs,'mean200','mass',massThresh,'hiDef',hiDef);
+% 
+% 
+% %% plot
+% 
+% 
+% 
+% 
+% figure
+% h=[];
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.Gal.hiMassMedDN(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     if j==1;hold on;end
+%     %    h(end+1)=plot(res.rposMed(:,j),res.hiDefMedMed(3,:),'--',...
+%     %        'color',colors(cind(j),:),'DisplayName',[htag{j} ' Mock']);
+%     % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.Gal.hiMassAvgDN(1,:,j),'--',...
+%     %     'color',colors(cind(j),:),'DisplayName',htag{j});
+% end
+% 
+% legend(h,'fontsize',14,'location','northwest','interpreter','latex');
+% xlabelmine('$r/R_\mathrm{vir}$');
+% ylabelmine('HI mass offset ');
+% titlemine('Gal');
+% 
+% 
+% %% cgpm
+% 
+% 
+% figure
+% h=[];
+% 
+% for j=1:4
+%     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMall.hiMassMedDN(1,:,j),...
+%         'color',colors(cind(j),:),'DisplayName',htag{j});
+%     if j==1;hold on;end
+%     % h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byHost.CGMall.hiMassAvgDN(1,:,j),'--',...
+%     %     'color',colors(cind(j),:),'DisplayName',htag{j});
+%     
+%     % h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.hiMassMed(1,:,j),'--',...
+%     %     'color',colors(cind(j),:),'DisplayName',htag{j});
+%     %
+%     % h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.hiMassMed(1,:,j),':',...
+%     %     'color',colors(cind(j),:),'DisplayName',htag{j});
+%     
+%     
+% end
+% xlabelmine('$r/R_\mathrm{vir}$');
+% ylabelmine('HI mass offset ');
+% titlemine('CGM');
+% 
+% 
+% %% plot by stellar mass
+% 
+% % figure
+% % h=[];
+% %
+% % for j=1:3
+% %     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.Gal.hiMassMed(1,:,j),...
+% %         'color',colors(cind(j),:),'DisplayName',mtag{j});
+% %     if j==1;hold on;end
+% % end
+% %
+% % legend(h,'fontsize',14,'location','northwest','interpreter','latex');
+% % xlabelmine('$r/R_\mathrm{vir}$');
+% % ylabelmine('HI mass $[\mathrm{M_\odot}]$');
+% % titlemine('Gal');
+% %
+% % figure
+% % h=[];
+% %
+% % for j=1:3
+% %     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMall.hiMassMed(1,:,j),...
+% %         'color',colors(cind(j),:),'DisplayName',mtag{j});
+% %     if j==1;hold on;end
+% %
+% %     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMin.hiMassMed(1,:,j),'--',...
+% %         'color',colors(cind(j),:),'DisplayName',mtag{j});
+% %
+% %     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMout.hiMassMed(1,:,j),':',...
+% %         'color',colors(cind(j),:),'DisplayName',mtag{j});
+% %
+% %
+% % end
+% %
+% % legend(h(1:3:9),'fontsize',14,'location','northwest','interpreter','latex');
+% % xlabelmine('$r/R_\mathrm{vir}$');
+% % ylabelmine('HI mass $[\mathrm{M_\odot}]$');
+% % titlemine('CGM');
+% %
+% % % normalized
+% %
+% % figure
+% % h=[];
+% %
+% % for j=1:3
+% %     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.Gal.hiMassMedN(1,:,j),...
+% %         'color',colors(cind(j),:),'DisplayName',mtag{j});
+% %     if j==1;hold on;end
+% % end
+% %
+% % legend(h,'fontsize',14,'location','northwest','interpreter','latex');
+% % xlabelmine('$r/R_\mathrm{vir}$');
+% % ylabelmine('HI mass / stellaer mass');
+% % titlemine('Gal');
+% %
+% % figure
+% % h=[];
+% %
+% % for j=1:3
+% %     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMall.hiMassMedN(1,:,j),...
+% %         'color',colors(cind(j),:),'DisplayName',mtag{j});
+% %     if j==1;hold on;end
+% %
+% %     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMin.hiMassMedN(1,:,j),'--',...
+% %         'color',colors(cind(j),:),'DisplayName',mtag{j});
+% %
+% %     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMout.hiMassMedN(1,:,j),':',...
+% %         'color',colors(cind(j),:),'DisplayName',mtag{j});
+% %
+% %
+% % end
+% %
+% % legend(h(1:3:9),'fontsize',14,'location','northwest','interpreter','latex');
+% % xlabelmine('$r/R_\mathrm{vir}$');
+% % ylabelmine('HI mass / stellaer mass');
+% % titlemine('CGM');
+% %
+% %
+% %% plot offset by mass
+% 
+% %
+% % figure
+% % h=[];
+% %
+% % for j=1:3
+% %     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.Gal.hiMassMedN(1,:,j),...
+% %         'color',colors(cind(j),:),'DisplayName',htag{j});
+% %     if j==1;hold on;end
+% %     h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byMass.Gal.hiMassAvgD(1,:,j),'--',...
+% %         'color',colors(cind(j),:),'DisplayName',htag{j});
+% % end
+% %
+% % legend(h,'fontsize',14,'location','northwest','interpreter','latex');
+% % xlabelmine('$r/R_\mathrm{vir}$');
+% % ylabelmine('HI mass offset ');
+% % titlemine('Gal');
+% %
+% % figure
+% % h=[];
+% %
+% % for j=1:3
+% %     h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byMass.CGMall.hiMassMedDN(1,:,j),...
+% %         'color',colors(cind(j),:),'DisplayName',htag{j});
+% %     if j==1;hold on;end
+% %     h(end+1)=plot(hprofs.byHost.xAvg(:,j),hprofs.byMass.CGMall.hiMassAvgDN(1,:,j),'--',...
+% %         'color',colors(cind(j),:),'DisplayName',htag{j});
+% %
+% %     % h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMin.hiMassMed(1,:,j),'--',...
+% %     %     'color',colors(cind(j),:),'DisplayName',htag{j});
+% %     %
+% %     % h(end+1)=plot(hprofs.byHost.xMed(:,j),hprofs.byHost.CGMout.hiMassMed(1,:,j),':',...
+% %     %     'color',colors(cind(j),:),'DisplayName',htag{j});
+% %
+% %
+% % end
+% % xlabelmine('$r/R_\mathrm{vir}$');
+% % ylabelmine('HI mass offset ');
+% % titlemine('CGM');

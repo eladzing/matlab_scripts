@@ -11,14 +11,21 @@ Nsample=200;
 [idList, ia,~]=unique(clsTab.subject_ids);
 
 % create object table
-res=table(idList,clsTab.simName(ia),clsTab.snap(ia),clsTab.subfind(ia),...
+res=table(idList,clsTab.simName(ia),clsTab.snap(ia),clsTab.subfind(ia),clsTab.tag(ia),...
     zeros(size(idList)),zeros(size(idList)),zeros(size(idList)),...
-    'variableNames',{'subject_ids','sim','snap','subfind','clsNum','score','scoreTotal'});
+    'variableNames',{'subject_ids','sim','snap','subfind','tag','clsNum','score','scoreTotal'});
+
 
 %loop over subject ids and count classifications
 for i=1:length(idList)
     inds=find(clsTab.subject_ids==idList(i));
     
+    % test
+    if any(clsTab.tag(inds)~=res.tag(i))
+        error([current_function().upper ' -wrong tag at index' num2str(i)]);
+    end
+    
+       
     Ncls=length(inds);
     res.clsNum(i)=Ncls; % total number of classifications
     
@@ -40,6 +47,9 @@ for i=1:length(idList)
     
     
 end
+
+res.type=res.tag.extractAfter("typ:");
+
 
 end
 

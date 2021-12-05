@@ -12,8 +12,12 @@ sims=unique(objectTable.sim);
 galProps.snap=objectTable.snap;
 galProps.sim=objectTable.sim;
 galProps.subfind=objectTable.subfind;
+galProps.tag=objectTable.tag;
 
 ngal=length(objectTable.subfind);
+
+
+
 % galProps.sim=zeros(1,ngal);
 % galProps.snap=zeros(1,ngal);
 galProps.stellarMass=zeros(1,ngal);
@@ -45,22 +49,32 @@ for k=1:length(sims)
     global LBox
     fprintf('running on simulation %s \n ', sims(k));
     
+    fprintf('going over %i snapshots ',length(snaps));
     simMask=strcmp(objectTable.sim,sims(k));
     
     for i=1:length(snaps)
         
         snap=snaps(i);
         
-        fprintf('Loading catalogs of snap %i \n',snap);
-        [subs,fofs,subsInfo]=illustris.loadFofSub(snap);
-        illustris.utils.set_illUnits(snap);
-                
-        fprintf('Getting galaxy properties \n');
-        
         % find indices of gals from the snapshot
         snapMask=objectTable.snap==snap;
         %fullMask=snapMask & simMask;
         inds=find(snapMask & simMask);
+        
+        if isempty(inds) % skip snapshot with no relevant objects
+            fprintf(' .... no objects \n');
+            continue
+        else
+            fprintf(' ... %i objects \n',length(inds));
+        end
+        
+        fprintf('   Loading catalogs of snap %i \n',snap);
+        [subs,fofs,subsInfo]=illustris.loadFofSub(snap);
+        illustris.utils.set_illUnits(snap);
+                
+        fprintf('   Getting galaxy properties \n');
+        
+        
         
         galInds=objectTable.subfind(inds)+1; % indices in the catalogs 
         hostInds=subsInfo.hostFof(galInds)+1;% indices in the catalogs 

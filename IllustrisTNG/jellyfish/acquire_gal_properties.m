@@ -55,7 +55,7 @@ for k=1:length(sims)
     for i=1:length(snaps)
         
         snap=snaps(i);
-        fprintf('snap %i ',snap);
+        fprintf('%i )  snap %i ',i,snap);
         % find indices of gals from the snapshot
         snapMask=objectTable.snap==snap;
         %fullMask=snapMask & simMask;

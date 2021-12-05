@@ -49,13 +49,13 @@ for k=1:length(sims)
     global LBox
     fprintf('running on simulation %s \n ', sims(k));
     
-    fprintf('going over %i snapshots ',length(snaps));
+    fprintf('going over %i snapshots \n',length(snaps));
     simMask=strcmp(objectTable.sim,sims(k));
     
     for i=1:length(snaps)
         
         snap=snaps(i);
-        
+        fprintf('snap %i ',snap);
         % find indices of gals from the snapshot
         snapMask=objectTable.snap==snap;
         %fullMask=snapMask & simMask;

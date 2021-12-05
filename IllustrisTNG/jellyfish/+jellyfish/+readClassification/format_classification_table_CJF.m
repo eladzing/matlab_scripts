@@ -54,9 +54,9 @@ clsTab=clsTab(dateMask,:);
 
 
 %% add snapshot as column 
-clsTab.snap=clsTab.subject_data.extractAfter('_snap');
-clsTab.snap=clsTab.snap.extractBefore('_');
-clsTab.snap=clsTab.snap.extractAfter('0').double;
+snp=clsTab.subject_data.extractAfter('_snap');
+snp=snp.extractBefore('_');
+clsTab.snap=snp.extractAfter('0').double;
 
 simBase=clsTab.subject_data.lower.extractAfter('filename":"');
 simBase1=clsTab.subject_data.lower.extractAfter('filename1":"');
@@ -87,13 +87,26 @@ clsTab.simName=sim;
 
 %clsTab.host=clsTab.subject_data.extractBetween("HostFofID_","_SubfindID").double;
 subhalo=simBase.extractAfter("subhalo");
-clsTab.subfind=subhalo.extractBefore('_snap').double;
+sid=subhalo.extractBefore('_snap');
+clsTab.subfind=sid.double;
 
 % replace hyphens with underscores in user_names
 clsTab.user_name=clsTab.user_name.replace("-","_");
 
+%% find image type (preferred or random) 
 
-%% 
+filename=clsTab.subject_data.lower.extractBetween('filename":"','.png');
+prefMask=filename.contains(lower('_SubhaloVel_in_image_plane'));
+imgType(1:height(clsTab))="rand";
+imgType(prefMask)="pref";
+
+
+%% build tag
+tg1(1:length(sid),1)="snp";
+tg2(1:length(sid),1)="subid";
+tg3(1:length(sid),1)="typ:";
+clsTab.tag=join([sim tg1 snp tg2 sid tg3 imgType'],'');
+ 
 %% get answer 
 %clsTab.question=string(clsTab.annotations).extractBetween('"task_label":"','","value"');
 answer=string(clsTab.annotations).lower.extractAfter('value');

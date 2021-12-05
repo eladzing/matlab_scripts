@@ -68,7 +68,7 @@ tg4(1:length(ex20.snap),1)="rand";
 
 ex20.tag=join([ex20.sim tg1 ex20.snap tg2 ex20.subfind tg3 tg4],'');
 
-ex20Tab=table(zeros(20,1),ex20.sim,ex20.snap,ex20.subfind,ex20.tag,...
+ex20Tab=table(zeros(20,1),ex20.sim,ex20.snap.double,ex20.subfind.double,ex20.tag,...
     zeros(20,1),zeros(20,1),zeros(20,1),tg4,...
     'variableNames',{'subject_ids','sim','snap','subfind','tag','clsNum','score','scoreTotal','type'});
 objectTableP1=[objectTableP1 ; ex20Tab];
@@ -93,7 +93,7 @@ msk2=objectTableP2.type=="rand";
 objectTable=[objectTableP1(msk1,:) ; objectTableP2(msk2,:)];
 objectTablePref=[objectTableP1(~msk1,:) ; objectTableP2(~msk2,:)];
 
-objectTableComp=objectTablePerf(:,[1:5 7]);
+objectTableComp=objectTablePref(:,[1:5 7]);
 objectTableComp.Properties.VariableNames(6)={'scorePref'};
 
 for i=1:height(objectTableComp)

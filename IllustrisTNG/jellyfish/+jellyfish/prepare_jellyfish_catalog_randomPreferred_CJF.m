@@ -14,7 +14,7 @@ outStruct=struct('count',[],'Simulation',[],'Snapshot',[],'SubfindID',[],...
 
 outStruct.count=height(objectTableComp);
 
-outStruct.Simulation=objectTableComp.sim;
+outStruct.Simulation=str2double(objectTableComp.sim.extractAfter("TNG"));
 outStruct.Snapshot=objectTableComp.snap;
 outStruct.SubfindID=objectTableComp.subfind;
 outStruct.ScoreRandom=objectTableComp.scoreRand;

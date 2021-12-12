@@ -2,52 +2,52 @@
 printFlag=true;
 
 if setupFlag
-units;
-sims={'TNG50','TNG100'};
-
-
-%% load data 
-global DEFAULT_MATFILE_DIR
-% load object table
-load([ DEFAULT_MATFILE_DIR '\cosmic_jellyfish_objectTable.mat']);
-
-% load galaxy properties
-load([DEFAULT_MATFILE_DIR '\jf_galProperties_CJF.mat']);
-
-% Define JF
-threshJF=16;
-fprintf('JF Threshold set to %i and above. \n', threshJF);
-
-maskJF=objectTable.score>=16;
-maskNJF=objectTable.score<=5;
-
-% list snaps and redshifts
-snaps=unique(objectTable.snap);
-zreds=round(10.*illustris.utils.snap2redshift(snaps))./10;
-
-% define masks
-nObject=height(objectTable);
-fprintf('Total number of objects = %i \n',nObject);
-fprintf('Total number of JF = %i (%4.2f %%) \n',sum(maskJF),sum(maskJF)/nObject*100);
-
-mask100=objectTable.sim=="TNG100";
-mask50=~mask100;
-fprintf('TNG100 number of objects = %i (%4.2f %%) \n',sum(mask100),sum(mask100)/nObject*100);
-fprintf('TNG50 number of objects = %i (%4.2f %%) \n',sum(mask50),sum(mask50)/nObject*100);
-
-fprintf('TNG100 number of JFs = %i (%4.2f %%) \n',sum(maskJF & mask100),sum(maskJF & mask100)/sum(mask100)*100);
-fprintf('TNG50 number of JFs = %i (%4.2f %%) \n',sum(maskJF & mask50),sum(maskJF & mask50)/sum(mask50)*100);
-
+    units;
+    sims={'TNG50','TNG100'};
+    
+    
+    %% load data
+    global DEFAULT_MATFILE_DIR
+    % load object table
+    load([ DEFAULT_MATFILE_DIR '\cosmic_jellyfish_objectTable.mat']);
+    
+    % load galaxy properties
+    load([DEFAULT_MATFILE_DIR '\jf_galProperties_CJF.mat']);
+    
+    % Define JF
+    threshJF=16;
+    fprintf('JF Threshold set to %i and above. \n', threshJF);
+    
+    maskJF=objectTable.score>=16;
+    maskNJF=objectTable.score<=5;
+    
+    % list snaps and redshifts
+    snaps=unique(objectTable.snap);
+    zreds=round(10.*illustris.utils.snap2redshift(snaps))./10;
+    
+    % define masks
+    nObject=height(objectTable);
+    fprintf('Total number of objects = %i \n',nObject);
+    fprintf('Total number of JF = %i (%4.2f %%) \n',sum(maskJF),sum(maskJF)/nObject*100);
+    
+    mask100=objectTable.sim=="TNG100";
+    mask50=~mask100;
+    fprintf('TNG100 number of objects = %i (%4.2f %%) \n',sum(mask100),sum(mask100)/nObject*100);
+    fprintf('TNG50 number of objects = %i (%4.2f %%) \n',sum(mask50),sum(mask50)/nObject*100);
+    
+    fprintf('TNG100 number of JFs = %i (%4.2f %%) \n',sum(maskJF & mask100),sum(maskJF & mask100)/sum(mask100)*100);
+    fprintf('TNG50 number of JFs = %i (%4.2f %%) \n',sum(maskJF & mask50),sum(maskJF & mask50)/sum(mask50)*100);
+    
 end
 
-%% properties to plot 
+%% properties to plot
 
 xfields={'galStellarMass','hostM200c','rpos','vrad','vel','galGasMass','massRatio','radiality'};
 xlab={'log Stellar Mass $[\mathrm{M_\odot}]$',...
     '$\log M_\mathrm{200,c}\, [\mathrm{M_\odot}]$',...
     'Radial Position $[R_\mathrm{200,c}]$',...
-    'Radial Velocity $[V_\mathrm{200,c}]$',... 
-    'log Velocity $[V_\mathrm{200,c}]$',... 
+    'Radial Velocity $[V_\mathrm{200,c}]$',...
+    'log Velocity $[V_\mathrm{200,c}]$',...
     'log Gas Mass $[\mathrm{M_\odot}]$',...
     '$\log M_\mathrm{sat}/M_\mathrm{host}$',...
     '$v_\mathrm{rad}/|\vec{v}|$'};
@@ -68,7 +68,7 @@ ylab={'$\log M_\mathrm{200,c}\, [\mathrm{M_\odot}]$',...
     '$\log M_\mathrm{sat}/M_\mathrm{host}$',...
     '$v_\mathrm{rad}/|\vec{v}|$'};
 
- skip=false(length(xfields),length(yfields));
+skip=false(length(xfields),length(yfields));
 % % skip(:,1)=true;
 %  skip(4,2:4)=true;
 %  skip(5,2)=true;
@@ -79,7 +79,7 @@ ylab={'$\log M_\mathrm{200,c}\, [\mathrm{M_\odot}]$',...
 % skip(:,[5 6 7])=true;
 % skip(6,:)=true;
 % skip(:,8)=true;
-% 
+%
 
 
 
@@ -104,7 +104,7 @@ radiality=vr./vv;
 
 
 
-%% plotting defaults 
+%% plotting defaults
 cmap=brewermap(256,'Reds');
 jfCol=[0.1,0.1,0.89];
 njfCol=[0.89,0.1,0.11];
@@ -149,21 +149,21 @@ for k=1:length(sims)
         if xlog(i)
             xx0=log10(xx0);
         end
-            
+        
         xx=xx0(simMask);
         xxJF=xx0(simMask & maskJF);
         xxNJF=xx0(simMask & ~maskJF);
-                
+        
         if i==1
             startwith=1;
         else
             startwith=1;
         end
         
-        % set limit. 
-         xl0=[min(xx(~isinf(xx))) max(xx(~isinf(xx)))];
-         xl0=xl0+abs(xl0).*[-0.01 0.01];
-         
+        % set limit.
+        xl0=[min(xx(~isinf(xx))) max(xx(~isinf(xx)))];
+        xl0=xl0+abs(xl0).*[-0.01 0.01];
+        
         for j= startwith:length(yfields)
             if strcmp(xfields{i},yfields{j})
                 continue
@@ -192,8 +192,8 @@ for k=1:length(sims)
                 otherwise
                     yy0=galProps.(yfields{j});
             end
-           
-            if ylog(j)             
+            
+            if ylog(j)
                 yy0=log10(yy0);
             end
             
@@ -201,8 +201,8 @@ for k=1:length(sims)
             yyJF=yy0(simMask & maskJF);
             yyNJF=yy0(simMask & ~maskJF);
             
-                        
-            %% prepare data 
+            
+            %% prepare data
             
             yl0=[min(yy(~isinf(yy))) max(yy(~isinf(yy)))];
             yl0=yl0+abs(yl0).*[-0.01 0.01];
@@ -230,13 +230,13 @@ for k=1:length(sims)
                 end
                 outScore(ii)=popCont.popContour(indy(ii),indx(ii));
             end
-
-            %% plot 
+            
+            %% plot
             
             figure('position',[1432 421 1000 750],'Color','w')
             
-            %% underlying hist 
-
+            %% underlying hist
+            
             hh=scatterhist(xx,yy,'Group',jfscore,...
                 'location','northeast','direction','out','legend','off','color',cols,...
                 'markersize',1);
@@ -252,7 +252,7 @@ for k=1:length(sims)
             hh(3).Children(1).LineWidth=1.5; hh(3).Children(2).LineWidth=1.5;
             xlim(xl);ylim(yl);
             
-            %% map 
+            %% map
             
             ax1=axes;
             axPos=get(hh(1),'position');
@@ -263,7 +263,7 @@ for k=1:length(sims)
             
             colormap(cmap)
             
-            %% JF contour 
+            %% JF contour
             
             hold on
             [~,h(1)]=contour(popCont.xx,popCont.yy,popCont.popContour,'ShowText','off','LineColor',[0 0 1],...
@@ -284,18 +284,18 @@ for k=1:length(sims)
                 'Interpreter','latex','fontsize',17,'fontweight','bold','color','k')
             
             xlim(xl);ylim(yl);
-
+            
             
             xlabelmine(xlab{i},16);
             ylabelmine(ylab{j},16);
-
-
-            linkaxes([hh(1),ax1]) 
             
-            %% print figure 
+            
+            linkaxes([hh(1),ax1])
+            
+            %% print figure
             fname=sprintf('jfProps_%s_%s_%s',xfields{i},yfields{j},sims{k});
             if  printFlag; printout_fig(gcf,fname,'nopdf','v','dir',outdir); end
-    
+            
             
         end
         close all

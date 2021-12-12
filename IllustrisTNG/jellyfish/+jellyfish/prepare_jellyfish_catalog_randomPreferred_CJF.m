@@ -21,7 +21,7 @@ outStruct.ScoreRandom=objectTableComp.scoreRand;
 outStruct.ScorePreferred=objectTableComp.scorePref;
 
 %% write to catalog
-catName='cosmic_jellyfish_viewingAngle_comparison';
+catName='cosmic_jellyfish_viewingAngle_comparison.hdf5';
 
 folder='jellyfish_flags';
 

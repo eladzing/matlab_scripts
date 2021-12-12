@@ -8,6 +8,7 @@ global  myPOSTPROCESSING
 %% defaults
 catalogName ='';
 folderName='';
+fullName='';
 catPath=myPOSTPROCESSING;
 structFlag=isstruct(catalog);
 verboseFlag=false;
@@ -28,6 +29,9 @@ while(i<=length(varargin))
         case{'folder','foldername'}
             i=i+1;
             folderName=varargin{i};
+        case 'fullname'
+            i=i+1;
+            fullName=varargin{i};
         case{'verbose','verb','v'}
             verboseFlag=true;
         otherwise
@@ -53,8 +57,9 @@ fullPath=[catPath '/' folderName];
 % build correct file name
 %global simName
 
-fullName=[catalogName '_' num2str(snap,'%03d') '.hdf5'];
-
+if isempty(fullName)
+    fullName=[catalogName '_' num2str(snap,'%03d') '.hdf5'];
+end
 
 %% get info about catalog
 if structFlag % Catalog is a structure

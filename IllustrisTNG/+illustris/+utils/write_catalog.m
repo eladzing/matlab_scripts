@@ -104,7 +104,7 @@ if structFlag
         dataSet   = char(dataSets(id));
         catLength=size(catalog.(dataSets{id}));
         
-        h5create([fullPath '/' fullName],['/' dataSet],catLength,'Datatype',class(catalog.(dataSet)));
+        h5create([fullPath '/' fullName],['/' dataSet],catLength);%,'Datatype',class(catalog.(dataSet)));
         
         h5write([fullPath '/' fullName], ['/' dataSet], catalog.(dataSet));%,'Datatype','single');
         %h5write(catPath, ['' catPs.selection_hType '' '/' '' dataSet ''], sHaloes.(sprintf([ dataSet ])), 'WriteMode', 'append');

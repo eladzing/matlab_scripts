@@ -133,121 +133,135 @@ for k=1:length(sims)
         xx=xx0(simMask);
         xxJF=xx0(simMask & maskJF);
         xxNJF=xx0(simMask & ~maskJF);
+        xxNJFS=xx0(simMask & maskNJF);
+        xxT=xx0(simMask & ~maskNJF & ~maskJF);
         
                
         % set limit.
         xl0=[min(xx(~isinf(xx))) max(xx(~isinf(xx)))];
         xl0=xl0+abs(xl0).*[-0.01 0.01];
         
+        binEdges=linspace(xl0(1),xl0(2),nbins);
+        bc=0.5.*(binEdges(1:end-1)+binEdges(2:end));
         
-        hcNJF=histcounts(xxNJF,50);
-        hcJF=histcounts(xxJF,50);
+        hcNJF=histcounts(xxNJF,binEdges);
+        hcNJFS=histcounts(xxNJFS,binEdges);
+        hcT=histcounts(xxT,binEdges);
+        hcJF=histcounts(xxJF,binEdges);
         
         % plot 
         
         hf=figure('position',[1432 421 1000 750],'Color','w');
         
         
-        
+        stairs(bc-0.01,hcNJF./sum(hcNJF))
         hold on
+        stairs(bc+0.01,hcJF./sum(hcJF))
+        hold off
         
+        st(bc,hcNJFS./sum(hcNJFS))
+        hold on
+        bar(bc,hcJF./sum(hcJF))
+        bar(bc,hcT./sum(hcT))
+    end
+end
        
         
         
         
-            [bird, binsize, xl,yl]= histogram2d(xxNJF,yyNJF,ones(size(xxNJF)),...
-                'xlim',xl0,'ylim',yl0
-            
-            filt=fspecial('disk',15);
-            popCont=plot_population_contour(xxJF,yyJF,'smooth',filt,'noplot',...
-                'xlim',xl,'ylim',yl);
-            
-            jfscore=maskJF(simMask);
-            
-            %% identify points beyond contour
-            
-            
-            lx=max(diff(popCont.xx));ly=max(diff(popCont.yy));
-            x0=popCont.xx(1)-0.5.*lx; y0=popCont.yy(1)-0.5.*ly;
-            
-            indx=ceil((xxJF-x0)./lx); indy=ceil((yyJF-y0)./ly);
-            outScore=ones(size(indx));
-            for ii=1:length(xxJF)
-                if isinf(indy(ii)) || isinf(indx(ii))
-                    continue
-                end
-                outScore(ii)=popCont.popContour(indy(ii),indx(ii));
-            end
-            
-            %% plot
-            
-            figure('position',[1432 421 1000 750],'Color','w')
-            
-            %% underlying hist
-            
-            hh=scatterhist(xx,yy,'Group',jfscore,...
-                'location','northeast','direction','out','legend','off','color',cols,...
-                'markersize',1);
-            
-            %0.6950    0.6960
-            set(hh(1),'position',[0.1000    0.1000   0.7 0.7 ],'fontsize',14);
-            hh(1).YLabel.String='';
-            hh(1).XLabel.String='';
-            %'XTick',[],'YTick',[],'YAxisLocation','left','XAxisLocation','bottom');
-            set(hh(2),'position',[0.80 0.1 0.119806451612903 0.75]);
-            set(hh(3),'position',[0.1 0.80 0.75 0.132374233128834]);
-            hh(2).Children(1).LineWidth=1.5; hh(2).Children(2).LineWidth=1.5;
-            hh(3).Children(1).LineWidth=1.5; hh(3).Children(2).LineWidth=1.5;
-            xlim(xl);ylim(yl);
-            
-            %% map
-            
-            ax1=axes;
-            axPos=get(hh(1),'position');
-            set(ax1,'position',axPos);
-            
-            imagesc(xl,yl,squeeze(bird(:,:,1)))
-            set(gca,'ydir','normal','fontsize',14)
-            
-            colormap(cmap)
-            
-            %% JF contour
-            
-            hold on
-            [~,h(1)]=contour(popCont.xx,popCont.yy,popCont.popContour,'ShowText','off','LineColor',[0 0 1],...
-                'LineColor',cols(2,:),'linewidth',2,...
-                'LevelList',[98 75:-25:5],'Fill','off','linestyle','-',...
-                'DisplayName','Jellyfish');
-            
-            
-            plot(xxJF(outScore>98),yyJF(outScore>98),'^',...
-                'color',cols(2,:),'markersize',6.5,...
-                'linewidth',1.5,'MarkerFaceColor',otherCol(2,:),...
-                'Displayname','JF beyond 98 percentile');
-            grid
-            %legend(h)
-            
-            xfac=0.83; yfac=0.08;
-            text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),sims{k},...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
-                'Interpreter','latex','fontsize',17,'fontweight','bold','color','k')
-            
-            xlim(xl);ylim(yl);
-            
-            
-            xlabelmine(xlab{i},16);
-            ylabelmine(ylab{j},16);
-            
-            
-            linkaxes([hh(1),ax1])
-            
-            %% print figure
-            fname=sprintf('jfProps_%s_%s_%s',xfields{i},yfields{j},sims{k});
-            if  printFlag; printout_fig(gcf,fname,'nopdf','v','dir',outdir); end
-            
-            
-        end
-        close all
-    end
-    
-    
-end
+% %             [bird, binsize, xl,yl]= histogram2d(xxNJF,yyNJF,ones(size(xxNJF)),...
+% %                 'xlim',xl0,'ylim',yl0
+%             
+%             filt=fspecial('disk',15);
+%             popCont=plot_population_contour(xxJF,yyJF,'smooth',filt,'noplot',...
+%                 'xlim',xl,'ylim',yl);
+%             
+%             jfscore=maskJF(simMask);
+%             
+%             %% identify points beyond contour
+%             
+%             
+%             lx=max(diff(popCont.xx));ly=max(diff(popCont.yy));
+%             x0=popCont.xx(1)-0.5.*lx; y0=popCont.yy(1)-0.5.*ly;
+%             
+%             indx=ceil((xxJF-x0)./lx); indy=ceil((yyJF-y0)./ly);
+%             outScore=ones(size(indx));
+%             for ii=1:length(xxJF)
+%                 if isinf(indy(ii)) || isinf(indx(ii))
+%                     continue
+%                 end
+%                 outScore(ii)=popCont.popContour(indy(ii),indx(ii));
+%             end
+%             
+%             %% plot
+%             
+%             figure('position',[1432 421 1000 750],'Color','w')
+%             
+%             %% underlying hist
+%             
+%             hh=scatterhist(xx,yy,'Group',jfscore,...
+%                 'location','northeast','direction','out','legend','off','color',cols,...
+%                 'markersize',1);
+%             
+%             %0.6950    0.6960
+%             set(hh(1),'position',[0.1000    0.1000   0.7 0.7 ],'fontsize',14);
+%             hh(1).YLabel.String='';
+%             hh(1).XLabel.String='';
+%             %'XTick',[],'YTick',[],'YAxisLocation','left','XAxisLocation','bottom');
+%             set(hh(2),'position',[0.80 0.1 0.119806451612903 0.75]);
+%             set(hh(3),'position',[0.1 0.80 0.75 0.132374233128834]);
+%             hh(2).Children(1).LineWidth=1.5; hh(2).Children(2).LineWidth=1.5;
+%             hh(3).Children(1).LineWidth=1.5; hh(3).Children(2).LineWidth=1.5;
+%             xlim(xl);ylim(yl);
+%             
+%             %% map
+%             
+%             ax1=axes;
+%             axPos=get(hh(1),'position');
+%             set(ax1,'position',axPos);
+%             
+%             imagesc(xl,yl,squeeze(bird(:,:,1)))
+%             set(gca,'ydir','normal','fontsize',14)
+%             
+%             colormap(cmap)
+%             
+%             %% JF contour
+%             
+%             hold on
+%             [~,h(1)]=contour(popCont.xx,popCont.yy,popCont.popContour,'ShowText','off','LineColor',[0 0 1],...
+%                 'LineColor',cols(2,:),'linewidth',2,...
+%                 'LevelList',[98 75:-25:5],'Fill','off','linestyle','-',...
+%                 'DisplayName','Jellyfish');
+%             
+%             
+%             plot(xxJF(outScore>98),yyJF(outScore>98),'^',...
+%                 'color',cols(2,:),'markersize',6.5,...
+%                 'linewidth',1.5,'MarkerFaceColor',otherCol(2,:),...
+%                 'Displayname','JF beyond 98 percentile');
+%             grid
+%             %legend(h)
+%             
+%             xfac=0.83; yfac=0.08;
+%             text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),sims{k},...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
+%                 'Interpreter','latex','fontsize',17,'fontweight','bold','color','k')
+%             
+%             xlim(xl);ylim(yl);
+%             
+%             
+%             xlabelmine(xlab{i},16);
+%             ylabelmine(ylab{j},16);
+%             
+%             
+%             linkaxes([hh(1),ax1])
+%             
+%             %% print figure
+%             fname=sprintf('jfProps_%s_%s_%s',xfields{i},yfields{j},sims{k});
+%             if  printFlag; printout_fig(gcf,fname,'nopdf','v','dir',outdir); end
+%             
+%             
+%         end
+%         close all
+%     end
+%     
+%     
+% end

@@ -7,7 +7,7 @@ global illUnits
 
 virType='crit200';
 sampleMask=hih2Struct.galMask;
-binEdges=0.1:0.1:2;
+radBinEdges=0.1:0.1:2;
 sfrBinEdges=-13:0.5:-8;
 mainSequenceType='all';
 modelType='br';
@@ -21,10 +21,12 @@ while i<=length(varargin)
             virType='mean200';
         case {'500','crit500','500crit'}
             virType='crit500';
-        case {'binedges','bins'}
+        case {'radbinedges','radbins'}
             i=i+1;
-            binEdges=varargin{i};
+            radBinEdges=varargin{i};
         case {'sfrbins','sfrbinedges'}
+             i=i+1;
+            sfrBinEdges=varargin{i};
         case 'mask'
             i=i+1;
             sampleMask=varargin{i};
@@ -138,8 +140,8 @@ res.byHostStar2.massHeader='stellar mass bins: 8 10.5 and above';
 %% by Host mass only
 for j=1:4
     mask=squeeze(hmask(j,:));
-    ssfrProf=mk_meanMedian_bin(radPosition(mask),ssfr(mask),'bins',binEdges);
-    starMassProf=mk_meanMedian_bin(radPosition(mask),gMass(mask),'bins',binEdges);
+    ssfrProf=mk_meanMedian_bin(radPosition(mask),ssfr(mask),'bins',radBinEdges);
+    starMassProf=mk_meanMedian_bin(radPosition(mask),gMass(mask),'bins',radBinEdges);
     
     byHost.ssfrAvg(:,j)=ssfrProf.yMean;
     byHost.ssfrMed(:,j)=ssfrProf.yMedian;
@@ -155,8 +157,8 @@ for j=1:4
         hiMass=loc.(comps{k}).(strcat(comps{k},'HIMass'));
         h2Mass=loc.(comps{k}).(strcat(comps{k},'H2Mass'));
         for jj=1:3
-            hiProf=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask),'bins',binEdges);
-            h2Prof=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask),'bins',binEdges);
+            hiProf=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask),'bins',radBinEdges);
+            h2Prof=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask),'bins',radBinEdges);
             
             byHost.(comps{k}).hiMassAvg(jj,:,j)=hiProf.yMean;
             byHost.(comps{k}).hiMassMed(jj,:,j)=hiProf.yMedian;
@@ -165,8 +167,8 @@ for j=1:4
             byHost.(comps{k}).h2MassMed(jj,:,j)=h2Prof.yMedian;
             
             % normalized by stellar mass
-            hiProfN=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask)./gMass(mask),'bins',binEdges);
-            h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
+            hiProfN=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask)./gMass(mask),'bins',radBinEdges);
+            h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',radBinEdges);
             
             byHost.(comps{k}).hiMassAvgN(jj,:,j)=hiProfN.yMean;
             byHost.(comps{k}).hiMassMedN(jj,:,j)=hiProfN.yMedian;
@@ -174,7 +176,7 @@ for j=1:4
             byHost.(comps{k}).h2MassAvgN(jj,:,j)=h2ProfN.yMean;
             byHost.(comps{k}).h2MassMedN(jj,:,j)=h2ProfN.yMedian;
             
-            %%hi offset
+            %% hi offset
             if strcmp(comps{k},'Gal')
                 ms=galH_star.xMedian;
                 hm=galH_star.yMedian;
@@ -186,23 +188,27 @@ for j=1:4
             hm=hm(~isnan(ms));
             msMass=interp1(ms,hm,log10(gMass(mask)));
             
-            hiProfD=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask)-10.^msMass),'bins',binEdges);
-            hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',binEdges);
+            hiDef=-1.*(hiMass(jj,mask)./gMass(mask)-10.^msMass);
+            hiDefL=-1.*(log10(hiMass(jj,mask)./gMass(mask))-msMass);
+            
+            hiProfD=mk_meanMedian_bin(radPosition(mask),hiDef,'bins',radBinEdges);
+            hiProfDL=mk_meanMedian_bin(radPosition(mask),hiDefL,'bins',radBinEdges);
+            %hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',radBinEdges);
             
             %h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
             
             byHost.(comps{k}).hiMassAvgD(jj,:,j)=hiProfD.yMean;
             byHost.(comps{k}).hiMassMedD(jj,:,j)=hiProfD.yMedian;
             
-            byHost.(comps{k}).hiMassAvgDN(jj,:,j)=hiProfDN.yMean;
-            byHost.(comps{k}).hiMassMedDN(jj,:,j)=hiProfDN.yMedian;
+            byHost.(comps{k}).hiMassAvgDL(jj,:,j)=hiProfDL.yMean;
+            byHost.(comps{k}).hiMassMedDL(jj,:,j)=hiProfDL.yMedian;
             
             %byHost.(comps{k}).h2MassAvgN(jj,:,j)=h2ProfN.yMean;
             %byHost.(comps{k}).h2MassMedN(jj,:,j)=h2ProfN.yMedian;
             
-            %% by ssfr
-            hiProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),hiMass(jj,mask)./gMass(mask),'bins',-15:1:-8);
-            h2ProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),h2Mass(jj,mask)./gMass(mask),'bins',-15:1:-8);
+            %% mass  by ssfr
+            hiProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),hiMass(jj,mask)./gMass(mask),'bins',sfrBinEdges);
+            h2ProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),h2Mass(jj,mask)./gMass(mask),'bins',sfrBinEdges);
             
             byHost.xsfrMed(:,j)=hiProfSFRN.xMedian;
             byHost.xsfrAvg(:,j)=hiProfSFRN.xMean;
@@ -214,8 +220,18 @@ for j=1:4
             byHost.(comps{k}).h2MassSFRMedN(jj,:,j)=h2ProfSFRN.yMedian;
             
             
+            %% deficiency by ssfr
+            hiProfDSFR=mk_meanMedian_bin(log10(ssfr(mask)),hiDef,'bins',sfrBinEdges);
+            hiProfDLSFR=mk_meanMedian_bin(log10(ssfr(mask)),hiDefL,'bins',sfrBinEdges);
             
+            %byHost.xsfrMed(:,j)=hiProfSFRN.xMedian;
+            %byHost.xsfrAvg(:,j)=hiProfSFRN.xMean;
             
+            byHost.(comps{k}).hiDefSFRAvg(jj,:,j)=hiProfDSFR.yMean;
+            byHost.(comps{k}).hiDefSFRMed(jj,:,j)=hiProfDSFR.yMedian;
+            
+            byHost.(comps{k}).hiDefLSFRAvg(jj,:,j)=hiProfDLSFR.yMean;
+            byHost.(comps{k}).hiDefLSFRMed(jj,:,j)=hiProfDLSFR.yMedian;
             
         end
     end
@@ -227,8 +243,8 @@ for i=1:2
     
     for j=1:4
         mask=squeeze(hmask(j,:)) & squeeze(smask2(i,:));
-        ssfrProf=mk_meanMedian_bin(radPosition(mask),ssfr(mask),'bins',binEdges);
-        starMassProf=mk_meanMedian_bin(radPosition(mask),gMass(mask),'bins',binEdges);
+        ssfrProf=mk_meanMedian_bin(radPosition(mask),ssfr(mask),'bins',radBinEdges);
+        starMassProf=mk_meanMedian_bin(radPosition(mask),gMass(mask),'bins',radBinEdges);
         
         byHostStar2(i).ssfrAvg(:,j)=ssfrProf.yMean;
         byHostStar2(i).ssfrMed(:,j)=ssfrProf.yMedian;
@@ -246,8 +262,8 @@ for i=1:2
             hiMass=loc.(comps{k}).(strcat(comps{k},'HIMass'));
             h2Mass=loc.(comps{k}).(strcat(comps{k},'H2Mass'));
             for jj=1:3
-                hiProf=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask),'bins',binEdges);
-                h2Prof=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask),'bins',binEdges);
+                hiProf=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask),'bins',radBinEdges);
+                h2Prof=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask),'bins',radBinEdges);
                 
                 byHostStar2(i).(comps{k}).hiMassAvg(jj,:,j)=hiProf.yMean;
                 byHostStar2(i).(comps{k}).hiMassMed(jj,:,j)=hiProf.yMedian;
@@ -256,8 +272,8 @@ for i=1:2
                 byHostStar2(i).(comps{k}).h2MassMed(jj,:,j)=h2Prof.yMedian;
                 
                 % normalized by stellar mass
-                hiProfN=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask)./gMass(mask),'bins',binEdges);
-                h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
+                hiProfN=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask)./gMass(mask),'bins',radBinEdges);
+                h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',radBinEdges);
                 
                 byHostStar2(i).(comps{k}).hiMassAvgN(jj,:,j)=hiProfN.yMean;
                 byHostStar2(i).(comps{k}).hiMassMedN(jj,:,j)=hiProfN.yMedian;
@@ -277,23 +293,27 @@ for i=1:2
                 hm=hm(~isnan(ms));
                 msMass=interp1(ms,hm,log10(gMass(mask)));
                 
-                hiProfD=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask)-10.^msMass),'bins',binEdges);
-                hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',binEdges);
+                hiDef=-1.*(hiMass(jj,mask)./gMass(mask)-10.^msMass);
+                hiDefL=-1.*(log10(hiMass(jj,mask)./gMass(mask))-msMass);
+                
+                hiProfD=mk_meanMedian_bin(radPosition(mask),hiDef,'bins',radBinEdges);
+                hiProfDL=mk_meanMedian_bin(radPosition(mask),hiDefL,'bins',radBinEdges);
+                %hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',radBinEdges);
                 
                 %h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
                 
                 byHostStar2(i).(comps{k}).hiMassAvgD(jj,:,j)=hiProfD.yMean;
                 byHostStar2(i).(comps{k}).hiMassMedD(jj,:,j)=hiProfD.yMedian;
                 
-                byHostStar2(i).(comps{k}).hiMassAvgDN(jj,:,j)=hiProfDN.yMean;
-                byHostStar2(i).(comps{k}).hiMassMedDN(jj,:,j)=hiProfDN.yMedian;
+                byHostStar2(i).(comps{k}).hiMassAvgDL(jj,:,j)=hiProfDL.yMean;
+                byHostStar2(i).(comps{k}).hiMassMedDL(jj,:,j)=hiProfDL.yMedian;
                 
                 %byHostStar2(i).(comps{k}).h2MassAvgN(jj,:,j)=h2ProfN.yMean;
                 %byHostStar2(i).(comps{k}).h2MassMedN(jj,:,j)=h2ProfN.yMedian;
                 
-                %% by ssfr
-                hiProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),hiMass(jj,mask)./gMass(mask),'bins',-15:1:-8);
-                h2ProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),h2Mass(jj,mask)./gMass(mask),'bins',-15:1:-8);
+                %% mass by ssfr
+                hiProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),hiMass(jj,mask)./gMass(mask),'bins',sfrBinEdges);
+                h2ProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),h2Mass(jj,mask)./gMass(mask),'bins',sfrBinEdges);
                 
                 byHostStar2(i).xsfrMed(:,j)=hiProfSFRN.xMedian;
                 byHostStar2(i).xsfrAvg(:,j)=hiProfSFRN.xMean;
@@ -305,7 +325,15 @@ for i=1:2
                 byHostStar2(i).(comps{k}).h2MassSFRMedN(jj,:,j)=h2ProfSFRN.yMedian;
                 
                 
-                
+                %% deficiency by ssfr
+            hiProfDSFR=mk_meanMedian_bin(log10(ssfr(mask)),hiDef,'bins',sfrBinEdges);
+            hiProfDLSFR=mk_meanMedian_bin(log10(ssfr(mask)),hiDefL,'bins',sfrBinEdges);
+            
+            byHostStar2(i).(comps{k}).hiDefSFRAvg(jj,:,j)=hiProfDSFR.yMean;
+            byHostStar2(i).(comps{k}).hiDefSFRMed(jj,:,j)=hiProfDSFR.yMedian;
+            
+            byHostStar2(i).(comps{k}).hiDefLSFRAvg(jj,:,j)=hiProfDLSFR.yMean;
+            byHostStar2(i).(comps{k}).hiDefLSFRMed(jj,:,j)=hiProfDLSFR.yMedian;
                 
                 
             end
@@ -320,8 +348,8 @@ for i=1:4  % in stellar mass bins
     
     for j=1:4 % in host mass bins 
         mask=squeeze(hmask(j,:)) & squeeze(smask4(i,:));
-        ssfrProf=mk_meanMedian_bin(radPosition(mask),ssfr(mask),'bins',binEdges);
-        starMassProf=mk_meanMedian_bin(radPosition(mask),gMass(mask),'bins',binEdges);
+        ssfrProf=mk_meanMedian_bin(radPosition(mask),ssfr(mask),'bins',radBinEdges);
+        starMassProf=mk_meanMedian_bin(radPosition(mask),gMass(mask),'bins',radBinEdges);
         
         byHostStar4(i).ssfrAvg(:,j)=ssfrProf.yMean;
         byHostStar4(i).ssfrMed(:,j)=ssfrProf.yMedian;
@@ -338,8 +366,8 @@ for i=1:4  % in stellar mass bins
             hiMass=loc.(comps{k}).(strcat(comps{k},'HIMass'));
             h2Mass=loc.(comps{k}).(strcat(comps{k},'H2Mass'));
             for jj=1:3
-                hiProf=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask),'bins',binEdges);
-                h2Prof=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask),'bins',binEdges);
+                hiProf=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask),'bins',radBinEdges);
+                h2Prof=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask),'bins',radBinEdges);
                 
                 byHostStar4(i).(comps{k}).hiMassAvg(jj,:,j)=hiProf.yMean;
                 byHostStar4(i).(comps{k}).hiMassMed(jj,:,j)=hiProf.yMedian;
@@ -348,8 +376,8 @@ for i=1:4  % in stellar mass bins
                 byHostStar4(i).(comps{k}).h2MassMed(jj,:,j)=h2Prof.yMedian;
                 
                 % normalized by stellar mass
-                hiProfN=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask)./gMass(mask),'bins',binEdges);
-                h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
+                hiProfN=mk_meanMedian_bin(radPosition(mask),hiMass(jj,mask)./gMass(mask),'bins',radBinEdges);
+                h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',radBinEdges);
                 
                 byHostStar4(i).(comps{k}).hiMassAvgN(jj,:,j)=hiProfN.yMean;
                 byHostStar4(i).(comps{k}).hiMassMedN(jj,:,j)=hiProfN.yMedian;
@@ -369,23 +397,27 @@ for i=1:4  % in stellar mass bins
                 hm=hm(~isnan(ms));
                 msMass=interp1(ms,hm,log10(gMass(mask)));
                 
-                hiProfD=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask)-10.^msMass),'bins',binEdges);
-                hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',binEdges);
+                 hiDef=-1.*(hiMass(jj,mask)./gMass(mask)-10.^msMass);
+                 hiDefL=-1.*(log10(hiMass(jj,mask)./gMass(mask))-msMass);
+                
+                hiProfD=mk_meanMedian_bin(radPosition(mask),hiDef,'bins',radBinEdges);
+                hiProfDL=mk_meanMedian_bin(radPosition(mask),hiDefL,'bins',radBinEdges);
+                %hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',radBinEdges);
                 
                 %h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
                 
                 byHostStar4(i).(comps{k}).hiMassAvgD(jj,:,j)=hiProfD.yMean;
                 byHostStar4(i).(comps{k}).hiMassMedD(jj,:,j)=hiProfD.yMedian;
                 
-                byHostStar4(i).(comps{k}).hiMassAvgDN(jj,:,j)=hiProfDN.yMean;
-                byHostStar4(i).(comps{k}).hiMassMedDN(jj,:,j)=hiProfDN.yMedian;
+                byHostStar4(i).(comps{k}).hiMassAvgDL(jj,:,j)=hiProfDL.yMean;
+                byHostStar4(i).(comps{k}).hiMassMedDL(jj,:,j)=hiProfDL.yMedian;
                 
                 %byHostStar4(i).(comps{k}).h2MassAvgN(jj,:,j)=h2ProfN.yMean;
                 %byHostStar4(i).(comps{k}).h2MassMedN(jj,:,j)=h2ProfN.yMedian;
                 
-                %% by ssfr
-                hiProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),hiMass(jj,mask)./gMass(mask),'bins',-15:1:-8);
-                h2ProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),h2Mass(jj,mask)./gMass(mask),'bins',-15:1:-8);
+                %% mass by ssfr
+                hiProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),hiMass(jj,mask)./gMass(mask),'bins',sfrBinEdges);
+                h2ProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),h2Mass(jj,mask)./gMass(mask),'bins',sfrBinEdges);
                 
                 byHostStar4(i).xsfrMed(:,j)=hiProfSFRN.xMedian;
                 byHostStar4(i).xsfrAvg(:,j)=hiProfSFRN.xMean;
@@ -397,6 +429,18 @@ for i=1:4  % in stellar mass bins
                 byHostStar4(i).(comps{k}).h2MassSFRMedN(jj,:,j)=h2ProfSFRN.yMedian;
                 
                 
+                %% deficiency by ssfr
+                hiProfDSFR=mk_meanMedian_bin(log10(ssfr(mask)),hiDef,'bins',sfrBinEdges);
+                hiProfDLSFR=mk_meanMedian_bin(log10(ssfr(mask)),hiDefL,'bins',sfrBinEdges);
+                
+                %byHost.xsfrMed(:,j)=hiProfSFRN.xMedian;
+                %byHost.xsfrAvg(:,j)=hiProfSFRN.xMean;
+                
+                byHostStar4(i).(comps{k}).hiDefSFRAvg(jj,:,j)=hiProfDSFR.yMean;
+                byHostStar4(i).(comps{k}).hiDefSFRMed(jj,:,j)=hiProfDSFR.yMedian;
+                
+                byHostStar4(i).(comps{k}).hiDefLSFRAvg(jj,:,j)=hiProfDLSFR.yMean;
+                byHostStar4(i).(comps{k}).hiDefLSFRMed(jj,:,j)=hiProfDLSFR.yMedian;
                 
                 
                 

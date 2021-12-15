@@ -11,6 +11,7 @@ radBinEdges=0.1:0.1:2;
 sfrBinEdges=-13:0.5:-8;
 mainSequenceType='all';
 modelType='br';
+hiMassThresh=100; % lower enforced limit to avoid NAN's in log for zero mass
 %% parse arguments
 i=1;
 while i<=length(varargin)
@@ -25,7 +26,7 @@ while i<=length(varargin)
             i=i+1;
             radBinEdges=varargin{i};
         case {'sfrbins','sfrbinedges'}
-             i=i+1;
+            i=i+1;
             sfrBinEdges=varargin{i};
         case 'mask'
             i=i+1;
@@ -36,6 +37,9 @@ while i<=length(varargin)
         case 'model'
             i=i+1;
             modelType=varargin{i};
+        case {'massthresh', 'massthreshold'}
+            i=i+1;
+            hiMassThresh=varargin{i};
         case {'br','gk','kmt'}
             modelType=varargin{i};
         otherwise
@@ -188,12 +192,14 @@ for j=1:4
             hm=hm(~isnan(ms));
             msMass=interp1(ms,hm,log10(gMass(mask)));
             
-            hiDef=-1.*(hiMass(jj,mask)./gMass(mask)-10.^msMass);
-            hiDefL=-1.*(log10(hiMass(jj,mask)./gMass(mask))-msMass);
+            him=hiMass(jj,mask);
+            him(him<hiMassThresh)=hiMassThresh;
+            hiDef=-1.*(him./gMass(mask)-10.^msMass);
+            hiDefL=-1.*(log10(him./gMass(mask))-msMass);
             
             hiProfD=mk_meanMedian_bin(radPosition(mask),hiDef,'bins',radBinEdges);
             hiProfDL=mk_meanMedian_bin(radPosition(mask),hiDefL,'bins',radBinEdges);
-            %hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',radBinEdges);
+            %hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(him./gMass(mask))./(10.^msMass)-1,'bins',radBinEdges);
             
             %h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
             
@@ -293,12 +299,14 @@ for i=1:2
                 hm=hm(~isnan(ms));
                 msMass=interp1(ms,hm,log10(gMass(mask)));
                 
-                hiDef=-1.*(hiMass(jj,mask)./gMass(mask)-10.^msMass);
-                hiDefL=-1.*(log10(hiMass(jj,mask)./gMass(mask))-msMass);
+                him=hiMass(jj,mask);
+                him(him<hiMassThresh)=hiMassThresh;
+                hiDef=-1.*(him./gMass(mask)-10.^msMass);
+                hiDefL=-1.*(log10(him./gMass(mask))-msMass);
                 
                 hiProfD=mk_meanMedian_bin(radPosition(mask),hiDef,'bins',radBinEdges);
                 hiProfDL=mk_meanMedian_bin(radPosition(mask),hiDefL,'bins',radBinEdges);
-                %hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',radBinEdges);
+                %hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(him./gMass(mask))./(10.^msMass)-1,'bins',radBinEdges);
                 
                 %h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
                 
@@ -326,14 +334,14 @@ for i=1:2
                 
                 
                 %% deficiency by ssfr
-            hiProfDSFR=mk_meanMedian_bin(log10(ssfr(mask)),hiDef,'bins',sfrBinEdges);
-            hiProfDLSFR=mk_meanMedian_bin(log10(ssfr(mask)),hiDefL,'bins',sfrBinEdges);
-            
-            byHostStar2(i).(comps{k}).hiDefSFRAvg(jj,:,j)=hiProfDSFR.yMean;
-            byHostStar2(i).(comps{k}).hiDefSFRMed(jj,:,j)=hiProfDSFR.yMedian;
-            
-            byHostStar2(i).(comps{k}).hiDefLSFRAvg(jj,:,j)=hiProfDLSFR.yMean;
-            byHostStar2(i).(comps{k}).hiDefLSFRMed(jj,:,j)=hiProfDLSFR.yMedian;
+                hiProfDSFR=mk_meanMedian_bin(log10(ssfr(mask)),hiDef,'bins',sfrBinEdges);
+                hiProfDLSFR=mk_meanMedian_bin(log10(ssfr(mask)),hiDefL,'bins',sfrBinEdges);
+                
+                byHostStar2(i).(comps{k}).hiDefSFRAvg(jj,:,j)=hiProfDSFR.yMean;
+                byHostStar2(i).(comps{k}).hiDefSFRMed(jj,:,j)=hiProfDSFR.yMedian;
+                
+                byHostStar2(i).(comps{k}).hiDefLSFRAvg(jj,:,j)=hiProfDLSFR.yMean;
+                byHostStar2(i).(comps{k}).hiDefLSFRMed(jj,:,j)=hiProfDLSFR.yMedian;
                 
                 
             end
@@ -342,11 +350,11 @@ for i=1:2
 end
 
 
-%% by host and stellar mass 4 groups 
+%% by host and stellar mass 4 groups
 
-for i=1:4  % in stellar mass bins 
+for i=1:4  % in stellar mass bins
     
-    for j=1:4 % in host mass bins 
+    for j=1:4 % in host mass bins
         mask=squeeze(hmask(j,:)) & squeeze(smask4(i,:));
         ssfrProf=mk_meanMedian_bin(radPosition(mask),ssfr(mask),'bins',radBinEdges);
         starMassProf=mk_meanMedian_bin(radPosition(mask),gMass(mask),'bins',radBinEdges);
@@ -397,12 +405,14 @@ for i=1:4  % in stellar mass bins
                 hm=hm(~isnan(ms));
                 msMass=interp1(ms,hm,log10(gMass(mask)));
                 
-                 hiDef=-1.*(hiMass(jj,mask)./gMass(mask)-10.^msMass);
-                 hiDefL=-1.*(log10(hiMass(jj,mask)./gMass(mask))-msMass);
+                him=hiMass(jj,mask);
+                him(him<hiMassThresh)=hiMassThresh;
+                hiDef=-1.*(him./gMass(mask)-10.^msMass);
+                hiDefL=-1.*(log10(him./gMass(mask))-msMass);
                 
                 hiProfD=mk_meanMedian_bin(radPosition(mask),hiDef,'bins',radBinEdges);
                 hiProfDL=mk_meanMedian_bin(radPosition(mask),hiDefL,'bins',radBinEdges);
-                %hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(hiMass(jj,mask)./gMass(mask))./(10.^msMass)-1,'bins',radBinEdges);
+                %hiProfDN=mk_meanMedian_bin(radPosition(mask),-1.*(him./gMass(mask))./(10.^msMass)-1,'bins',radBinEdges);
                 
                 %h2ProfN=mk_meanMedian_bin(radPosition(mask),h2Mass(jj,mask)./gMass(mask),'bins',binEdges);
                 

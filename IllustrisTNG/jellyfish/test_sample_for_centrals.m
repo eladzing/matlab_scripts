@@ -73,8 +73,8 @@ for k=1:length(sims)
         
         rp=rpos./r200;
         
-        centralTest.rad10=rp<=0.1;
-        centralTest.rad5=rp<=0.5;
+        centralTest.rad10(inds)=rp<=0.1;
+        centralTest.rad5(inds)=rp<=0.5;
         
     end
 end

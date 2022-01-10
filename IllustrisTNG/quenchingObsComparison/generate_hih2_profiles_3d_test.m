@@ -204,7 +204,7 @@ for j=1:4
             %byHost.(comps{k}).h2MassAvgN(jj,:,j)=h2ProfN.yMean;
             %byHost.(comps{k}).h2MassMedN(jj,:,j)=h2ProfN.yMedian;
             
-            %% by ssfr
+            %% mass by ssfr
             hiProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),hiMass(jj,mask)./gMass(mask),'bins',-15:1:-8);
             h2ProfSFRN=mk_meanMedian_bin(log10(ssfr(mask)),h2Mass(jj,mask)./gMass(mask),'bins',-15:1:-8);
             
@@ -217,6 +217,18 @@ for j=1:4
             byHost.(comps{k}).h2MassSFRAvgN(jj,:,j)=h2ProfSFRN.yMean;
             byHost.(comps{k}).h2MassSFRMedN(jj,:,j)=h2ProfSFRN.yMedian;
             
+            %% deficiency by ssfr
+            hiProfSFRD=mk_meanMedian_bin(log10(ssfr(mask)),hiMass(jj,mask)./gMass(mask),'bins',-15:1:-8);
+            h2ProfSFRD=mk_meanMedian_bin(log10(ssfr(mask)),h2Mass(jj,mask)./gMass(mask),'bins',-15:1:-8);
+            
+            byHost.xsfrMed(:,j)=hiProfSFRN.xMedian;
+            byHost.xsfrAvg(:,j)=hiProfSFRN.xMean;
+            
+            byHost.(comps{k}).hiMassSFRAvgN(jj,:,j)=hiProfSFRN.yMean;
+            byHost.(comps{k}).hiMassSFRMedN(jj,:,j)=hiProfSFRN.yMedian;
+            
+            byHost.(comps{k}).h2MassSFRAvgN(jj,:,j)=h2ProfSFRN.yMean;
+            byHost.(comps{k}).h2MassSFRMedN(jj,:,j)=h2ProfSFRN.yMedian;
             
             
             

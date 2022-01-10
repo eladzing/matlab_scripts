@@ -1,4 +1,4 @@
-function res= generate_hih2_profiles_3d(hih2Struct,fofs,subs,varargin)
+function res= generate_hih2_profilesFull_3d(hih2Struct,fofs,subs,varargin)
 
 global illUnits
 % global DEFAULT_MATFILE_DIR

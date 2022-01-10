@@ -75,7 +75,7 @@ massRatio=galProps.galStellarMass./mv;
 radiality=vr./vv;
 
 
-
+nbins=50;
 
 
 
@@ -152,17 +152,24 @@ for k=1:length(sims)
         % plot 
         
         hf=figure('position',[1432 421 1000 750],'Color','w');
+        h=[];
         
-        
-        stairs(bc-0.01,hcNJF./sum(hcNJF))
+        h(end+1)=stairs(bc-0.01,hcNJF./sum(hcNJF),'linewidth',1.8,...
+            'DisplayName','JF');
         hold on
-        stairs(bc+0.01,hcJF./sum(hcJF))
-        hold off
-        
-        st(bc,hcNJFS./sum(hcNJFS))
-        hold on
-        bar(bc,hcJF./sum(hcJF))
-        bar(bc,hcT./sum(hcT))
+        h(end+1)=stairs(bc+0.01,hcJF./sum(hcJF),'linewidth',1.8,...
+        'DisplayName','non-JF');
+   
+    
+    set(gca,'fontsize',14)
+    
+    xl=xlim;
+    yl=ylim;
+    legend(h,'Interpreter','latex','fontsize',14)
+    xfac=0.73; yfac=0.95;
+    text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),sims{k},...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
+        'Interpreter','latex','fontsize',17,'fontweight','bold','color','k')
+    xlabelmine(xlabs{i},16);
     end
 end
        

@@ -1,6 +1,6 @@
 function res =calculate_typical_value(arr,mass,nbins)
 %CALCULATE TYPICAL VALUE  function for calculating the ypical
-%value of a given array of vlues based on several metrics : 
+%value of a given array of values based on several metrics : 
 % median, mean and mode  - explores value distribution 
 % mass-weighted median, mean and mode - explores what is the typical value
 % of the mass distribution. 

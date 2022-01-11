@@ -73,12 +73,18 @@ switch lower(mainSequenceType)
         mmaskC=hih2Struct.galMask & hih2Struct.CGMall.CGMallHIMass(kmodel,:)>0;
 end
 
-galH_star=mk_meanMedian_bin(log10(hih2Struct.galMass(mmaskG)),...
-    log10(hih2Struct.Gal.GalHIMass(kmodel,mmaskG)./hih2Struct.galMass(mmaskG)),'bins',8.29:0.05:12.5);
+% galH_star0=mk_meanMedian_bin(log10(hih2Struct.galMass(mmaskG)),...
+%     log10(hih2Struct.Gal.GalHIMass(kmodel,mmaskG)./hih2Struct.galMass(mmaskG)),'bins',8.29:0.075:12.6);
+galH_star=mk_main_sequence(log10(hih2Struct.galMass(mmaskG)),...
+    log10(hih2Struct.Gal.GalHIMass(kmodel,mmaskG)./hih2Struct.galMass(mmaskG)),'bins',8.29:0.15:12.6,...
+    'fac',2);
 
 
-cgmH_star=mk_meanMedian_bin(log10(hih2Struct.galMass(mmaskC)),...
-    log10(hih2Struct.CGMall.CGMallHIMass(kmodel,mmaskC)./hih2Struct.galMass(mmaskC)),'bins',8.29:0.05:12.5);
+% cgmH_star=mk_meanMedian_bin(log10(hih2Struct.galMass(mmaskC)),...
+%     log10(hih2Struct.CGMall.CGMallHIMass(kmodel,mmaskC)./hih2Struct.galMass(mmaskC)),'bins',8.29:0.05:12.6);
+cgmH_star=mk_main_sequence(log10(hih2Struct.galMass(mmaskC)),...
+    log10(hih2Struct.CGMall.CGMallHIMass(kmodel,mmaskC)./hih2Struct.galMass(mmaskC)),'bins',8.29:0.15:12.6,...
+    'fac',2);
 
 
 %% calculate sSFR
@@ -182,15 +188,15 @@ for j=1:4
             
             %% hi offset
             if strcmp(comps{k},'Gal')
-                ms=galH_star.xMedian;
-                hm=galH_star.yMedian;
+                ms=galH_star.msX;
+                hm=galH_star.msY;
             elseif strcmp(comps{k},'CGMall')
-                ms=cgmH_star.xMedian;
-                hm=cgmH_star.yMedian;
+                ms=cgmH_star.msX;
+                hm=cgmH_star.msY;
             end
             ms=ms(~isnan(ms));
             hm=hm(~isnan(ms));
-            msMass=interp1(ms,hm,log10(gMass(mask)));
+            msMass=interp1(ms,hm,log10(gMass(mask)),'pchip','extrap');
             
             him=hiMass(jj,mask);
             him(him<hiMassThresh)=hiMassThresh;
@@ -289,15 +295,15 @@ for i=1:2
                 
                 %%hi offset
                 if strcmp(comps{k},'Gal')
-                    ms=galH_star.xMedian;
-                    hm=galH_star.yMedian;
+                    ms=galH_star.msX;
+                    hm=galH_star.msY;
                 elseif strcmp(comps{k},'CGMall')
-                    ms=cgmH_star.xMedian;
-                    hm=cgmH_star.yMedian;
+                    ms=cgmH_star.msX;
+                    hm=cgmH_star.msY;
                 end
                 ms=ms(~isnan(ms));
                 hm=hm(~isnan(ms));
-                msMass=interp1(ms,hm,log10(gMass(mask)));
+                msMass=interp1(ms,hm,log10(gMass(mask)),'pchip','extrap');
                 
                 him=hiMass(jj,mask);
                 him(him<hiMassThresh)=hiMassThresh;
@@ -392,15 +398,15 @@ for i=1:4  % in stellar mass bins
                 
                 %hi offset
                 if strcmp(comps{k},'Gal')
-                    ms=galH_star.xMedian;
-                    hm=galH_star.yMedian;
+                    ms=galH_star.msX;
+                    hm=galH_star.msY;
                 elseif strcmp(comps{k},'CGMall')
-                    ms=cgmH_star.xMedian;
-                    hm=cgmH_star.yMedian;
+                    ms=cgmH_star.msX;
+                    hm=cgmH_star.msY;
                 end
                 ms=ms(~isnan(ms));
                 hm=hm(~isnan(ms));
-                msMass=interp1(ms,hm,log10(gMass(mask)));
+                msMass=interp1(ms,hm,log10(gMass(mask)),'pchip','extrap');
                 
                 him=hiMass(jj,mask);
                 him(him<hiMassThresh)=hiMassThresh;

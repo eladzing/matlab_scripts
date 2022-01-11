@@ -12,13 +12,13 @@ h=[];
 xl=[0 2.4];
 for k=1:4
     subplot(2,2,k);
-    
+    hflag=true;
     h=[];
     for j=1:4
         
         profSt=hprofs50.byHostStar4(k).Gal.hiProfD(1,j);
         msk=profSt.binCount>0;
-        if any(msk)
+        if any(msk) && sum(profSt.binCount)>10
             
             
             %          neg=abs(profSt.yQuarts(2,msk)-profSt.yMedian(msk));
@@ -27,7 +27,7 @@ for k=1:4
             py=[profSt.yQuarts(2,msk) fliplr(profSt.yQuarts(3,msk))];
             
             patch(px,py,colors(cind(j),:),'facealpha',0.35,'edgecolor','none')
-            if j==1;hold on;end
+            if hflag;hold on; hflag=false;end
             h(end+1)=plot(profSt.xMedian(msk),profSt.yMedian(msk),'-',...
                 'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
             %          h(end+1)=errorbar(profSt.xMean,profSt.yMean,profSt.yStanDev./2,'-',...
@@ -41,12 +41,12 @@ for k=1:4
         
         profSt=hprofs100.byHostStar4(k).Gal.hiProfD(1,j);
         msk=profSt.binCount>0;
-        if any(msk)
+        if any(msk) && sum(profSt.binCount)>10
             px=[profSt.xMedian(msk) fliplr(profSt.xMedian(msk))];
             py=[profSt.yQuarts(2,msk) fliplr(profSt.yQuarts(3,msk))];
             
             patch(px,py,colors(cind(j),:),'facealpha',0.35,'edgecolor','none')
-            if j==1;hold on;end
+            if hflag;hold on; hflag=false;end
             h(end+1)=plot(profSt.xMedian(msk),profSt.yMedian(msk),'--',...
                 'linewidth',1.2,'color',colors(cind(j),:),'DisplayName',htag{j} );
         end

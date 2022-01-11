@@ -1,3 +1,10 @@
+
+figPos=[ 800          42        1062         954];
+colors=brewermap(8,'Set1');
+cind=[2 5 3 1];
+htag={'11-12','12-13','13-14','14-15'};
+mtag={'8.3-9','9-10','10-11','11-12'};
+
 hf=figure('color','w','position',figPos);
 titlemine('Gal');
 h=[];

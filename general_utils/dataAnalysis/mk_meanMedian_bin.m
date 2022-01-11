@@ -30,7 +30,7 @@ while i<=length(varargin)
             binFlag=true;
             
         otherwise
-            error('mk_meanMedian_bin - Illegal argument: %s',varargin{i})
+            error('%s - Illegal argument: %s',current_function.upper, varargin{i})
     end
     i=i+1;
 end
@@ -57,9 +57,10 @@ binXQuantile=zeros(5,nBins);
 binCount=zeros(1,nBins);
 
 binInd=discretize(xParam,binEdges);
-
+nanMask=~isnan(yParam);
 for i=1:nBins
-    mask=binInd==i;
+    mask=binInd==i & nanMask;
+    
     binYMean(i)=mean(yParam(mask));
     binYStd(i)=std(yParam(mask));
     binYQuantile(:,i)=quantile(yParam(mask),[0.1 0.25 0.5 0.75 0.9]);

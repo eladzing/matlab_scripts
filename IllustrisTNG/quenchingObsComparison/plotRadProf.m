@@ -30,7 +30,7 @@ switch(lower(type))
         yl=[-2 3];
 end
 
-xl=[0 2.4];
+xl=[0 3.6];
 for k=1:4
     nexttile;
     hflag=true;
@@ -86,7 +86,7 @@ hf=figure('color','w','position',figPos);
 
 h=[];
 %yl=[-0.4 0.25];
-xl=[0 2.4];
+% xl=[0 2.4];
 
 t=tiledlayout(2,2);
 
@@ -160,7 +160,7 @@ switch(lower(type))
         yl=[-2 3];
 end
 
-xl=[0 2.4];
+% xl=[0 2.4];
 for k=1:4
     nexttile;
     hflag=true;
@@ -216,8 +216,8 @@ hf=figure('color','w','position',figPos);
 
 h=[];
 %yl=[-0.4 0.25];
-xl=[0 2.4];
-
+% xl=[0 2.4];
+% 
 t=tiledlayout(2,2);
 
 for k=1:4

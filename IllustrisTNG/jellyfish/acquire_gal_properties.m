@@ -97,7 +97,7 @@ for k=1:length(sims)
         
         galProps.hostR200m(inds)=illUnits.lengthUnit.*...
              double(fofs.Group_R_Mean200(hostInds));
-        
+         
         % gal/subfind properties
         galProps.stellarMass(inds)=illUnits.massUnit.*...
              double(subs.SubhaloMassType(illustris.partTypeNum('stars')+1,galInds));
@@ -166,6 +166,10 @@ for k=1:length(sims)
         
     end
 end
+
+%% add a uniqaue halo tag identifier 
+galProps = generate_hostTag(galProps);
+
 
 fname=sprintf('jf_galProperties_CJF.mat');
 save([DEFAULT_MATFILE_DIR '/' fname],'galProps','-v7.3')

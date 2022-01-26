@@ -1,5 +1,52 @@
 
-function plotRadProf(profStr,type,sim,model)
+function plotRadProf(profStr,varargin)  %,type,sim,model,printFlag)
+
+printFlag=false;
+type='none';
+sim='none';
+model=0;
+
+outDir='C:\Users\eladz\Documents\workProjects\IllustrisTNG\printout\obsComp';
+
+%% parse arguments
+i=1;
+while(i<=length(varargin))
+    
+    switch(lower(varargin{i}))
+        case{'print','plot','save'}
+            printFlag=true;
+        case{50,'50','tng50'}
+            sim='TNG50';
+        case{100,'100','tng100'}
+            sim='TNG100';
+        case{1,'br'}
+            model=1;
+        case{2,'gk'}
+            model=2;
+        case{3,'kmt'}
+            model=3;
+        case{'gal','cgmall'}
+            type=varargin{i};
+        otherwise
+            if ~ischar(varargin{i})
+                msg=num2str(varargin{i});
+            else
+                msg=varargin{i};
+            end
+            error('%s - unknown argument: %s',current_function().lower,msg);
+    end
+    i=i+1;
+end
+
+
+if strcmp(sim,'none')
+    error('%s - missing sim.',current_function().lower);
+elseif strcmp(type,'none')
+    error('%s - missing type.',current_function().lower);
+elseif model==0
+    error('%s - missing model.',current_function().lower);
+end
+
 
 switch(lower(sim))
     case 'tng50'
@@ -80,6 +127,11 @@ t.TileSpacing = 'compact';
 
 sgtitle([sim ' ' type ' ' modelTag{model} ' - Median and 25-75 percentile'],...
     'Interpreter','latex','fontsize',18);
+
+if printFlag
+    fname=['hiDef_radProf_' type '_med' '_stellarMass_' modelTag{model} '_' sim];
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
+end
 %% Average
 
 hf=figure('color','w','position',figPos);
@@ -144,7 +196,10 @@ sgtitle([sim ' ' type ' ' modelTag{model} '- Mean and StdDev'],...
     'Interpreter','latex','fontsize',18);
 
 
-
+if printFlag
+    fname=['hiDef_radProf_' type '_avg' '_stellarMass_' modelTag{model} '_' sim];
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
+end
 
 %% in Host Mass Bins 
 legendPanel=3;
@@ -194,7 +249,7 @@ for k=1:4
     
     grid
     text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
-        ['$ M_\mathrm{*} =' htag{k} '$'],'interpreter','latex',...
+        ['$ M_\mathrm{h} =' htag{k} '$'],'interpreter','latex',...
         'fontsize',16);
     
     set(gca,'fontsize',14,'box','on')
@@ -210,6 +265,11 @@ t.TileSpacing = 'compact';
 
 sgtitle([sim ' ' type ' ' modelTag{model} ' - Median and 25-75 percentile'],...
     'Interpreter','latex','fontsize',18);
+
+if printFlag
+    fname=['hiDef_radProf_' type '_med' '_hostMass_' modelTag{model} '_' sim];
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
+end
 %% Average
 
 hf=figure('color','w','position',figPos);
@@ -259,7 +319,7 @@ for k=1:4
     
     grid
     text(xl(1)+0.05.*diff(xl),yl(1)+0.95.*diff(yl),...
-        ['$ M_\mathrm{*} =' htag{k} '$'],'interpreter','latex',...
+        ['$ M_\mathrm{h} =' htag{k} '$'],'interpreter','latex',...
         'fontsize',16);
     
     set(gca,'fontsize',14,'box','on')
@@ -272,3 +332,8 @@ t.TileSpacing = 'compact';
 
 sgtitle([sim ' ' type ' ' modelTag{model} '- Mean and StdDev'],...
     'Interpreter','latex','fontsize',18);
+
+if printFlag
+    fname=['hiDef_radProf_' type '_avg' '_hostMass_' modelTag{model} '_' sim];
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outDir);
+end

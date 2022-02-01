@@ -3,7 +3,7 @@ function hf = plot_demographics(maskJF,xxBI,xBins,lineBI,lineBins,varargin)
 %   Detailed explanation goes here
 
 
-nboot=500;
+nboot=1000;
 cind=1:9;
 lw=1.5;
 colors=brewermap(9,'Set1');
@@ -12,12 +12,18 @@ simTag='TNG100 \& TNG50';
 logFlag=false;
 xLab='';
 legTag='';
+fullLegend='';
+xx=[];
 
 i=1;
 while(i<=length(varargin))
     switch lower(varargin{i})
         case 'tng100'
             simTag='TNG100';
+            i=i+1;
+            simMask=varargin{i};
+            case 'tng50'
+            simTag='TNG50';
             i=i+1;
             simMask=varargin{i};
         case 'log'
@@ -31,11 +37,17 @@ while(i<=length(varargin))
         case{'xlab','xlabel','label'}
             i=i+1;
             xLab=varargin{i};
-        case{'legend','leglab','legtag'}
+        case 'xx'
+            i=i+1;
+            xx=varargin{i};
+        case{'leglab','legtag'}
             i=i+1;
             legTag=varargin{i};
+        case{'legend'}
+             i=i+1;
+            fullLegend=varargin{i};
         otherwise
-            error('%s - Unkown argument: %s',current_function.upper(),varargin{i});
+            error('%s - Unkown argument: %s',current_function().upper,varargin{i});
     end
     i=i+1;
 end
@@ -71,11 +83,12 @@ end
 
 %% plot figures
 
-xx=(xBins(1:end-1));
-if logFlag
-    xx=log10(xx);
+if isempty(xx)
+    xx=(xBins(1:end-1));
+    if logFlag
+        xx=log10(xx);
+    end
 end
-
 
 px=[xx fliplr(xx)];
 
@@ -84,8 +97,11 @@ hf=figure('color','w');
 h=[];
 
 for j=1:length(lineBins)-1
-    tag=[legTag num2str(log10(lineBins(j))) '-' num2str(log10(lineBins(j+1)))  ];
-    
+    if isempty(fullLegend)
+        tag=[legTag num2str(log10(lineBins(j))) '-' num2str(log10(lineBins(j+1)))  ];
+    else
+        tag=fullLegend(j);
+    end
     py=[bsci(:,j,1)' fliplr(bsci(:,j,2)')];
     patch(px,py,colors(cind(j),:),'facealpha',0.35,'edgecolor','none')
     if j==1;hold on;end

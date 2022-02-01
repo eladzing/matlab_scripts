@@ -52,13 +52,13 @@ for k=1:length(sims)
         for j=1:length(hostList)
             indx=indx+1;
             
-            tag=join([sims(k) 'snp' num2str(snap,'%03.f') 'halid' num2str(hostList(j))],'');
+            tag=join([sims(k) 'snp' num2str(snap,'%03.f') 'hostID' num2str(hostList(j))],'');
             
             jfStats.GroupNsubs(indx)=fofs.GroupNsubs(hostInds(j));
             jfStats.sim(indx)=sims(k);
             jfStats.tag(indx)=tag;
             jfStats.snap(indx)=snap;
-            jfStats.M200c=double(fofs.Group_M_Crit200(hostInds(j))).*illUnits.massUnit;
+            jfStats.M200c(indx)=double(fofs.Group_M_Crit200(hostInds(j))).*illUnits.massUnit;
             jfStats.hostID(indx)=hostList(j);
             
                         % find the relavent subs

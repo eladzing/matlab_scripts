@@ -2,7 +2,7 @@ function hf = myFigure(varargin)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
-figPos=[1432 421 1000 750];
+figPos=[1186  343   680   556]; %[1432 421 1000 750];
 col='w';
 
 i=1;

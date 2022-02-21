@@ -15,8 +15,9 @@ Units.kpc= Units.pc*1e3;
 Units.ev= 1.602177e-12; % ergs
 Units.Gyr=1e9*Units.yr;
 Units.GG=Units.G*Units.km^-2*Units.kpc^-1*Units.Ms; % same as above in (kpc km/sec Msun^-1)
-Units.cspeed= 2.99792458e10;  % speed of sound in cm ;
+Units.cspeed= 2.99792458e10;  % speed of light in cm ;
 Units.lightspeed=Units.cspeed;
+
 
 Units.sigmaThomson=6.6524e-25; %Thomson cross sectionin cm^2  
 

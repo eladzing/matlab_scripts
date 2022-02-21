@@ -8,6 +8,8 @@ nBins=100;
 xMin=min(xParam);
 xMax=max(xParam);
 binFlag=false;
+type="mean";
+
 
 fac=2;
 %% parse arguments
@@ -30,6 +32,10 @@ while i<=length(varargin)
         case{'fac','factor'}
             i=i+1;
             fac=varargin{i};
+        case{'mean','avg'}
+            type="mean";
+        case{'median','med'}
+            type="median";
         otherwise
             error('%s - Illegal argument: %s',current_function().upper,varargin{i})
     end
@@ -59,7 +65,16 @@ while(nn~=n0 )
     
     for i=1:length(ms.xMean)
         inds=find(xParam>=binEdges(i) & xParam<binEdges(i+1));
-        ylim=ms.yMean(i)+ms.yStanDev(i).*[-1 1].*fac;
+        switch type.lower
+            case "mean"
+                yMS=ms.yMean(i);
+                ySTD=ms.yStanDev(i);
+                
+            case "median"
+                yMS=ms.yMedian(i);
+                ySTD=ms.yStanDevMed(i);
+        end
+        ylim=yMS+ySTD.*[-1 1].*fac;
         mm=yParam(inds)<ylim(1) | yParam(inds)>ylim(2);
         mask(inds(mm))=false;
     end
@@ -70,11 +85,32 @@ while(nn~=n0 )
     if itCnt>itCntMax
         error('%s - Does not converge',current_function().upper)
     end
-    res.itr(itCnt).msX=ms.xMean;
-    res.itr(itCnt).msY=ms.yMean;
+    switch type.lower
+        case "mean"
+            res.itr(itCnt).msX=ms.xMean;
+            res.itr(itCnt).msY=ms.yMean;
+            res.itr(itCnt).msXstd=ms.xStanDev;
+            res.itr(itCnt).msYstd=ms.yStanDev;
+        case "median"
+            res.itr(itCnt).msX=ms.xMedian;
+            res.itr(itCnt).msY=ms.yMedian;
+            res.itr(itCnt).msXstd=ms.xStanDevMed;
+            res.itr(itCnt).msYstd=ms.yStanDevMed;
+    end
     res.itr(itCnt).mask=mask;
 end
 
-res.msX=ms.xMean(ms.binCount>0);
-res.msY=ms.yMean(ms.binCount>0);
+switch type.lower
+    case "mean"
+        res.msX=ms.xMean(ms.binCount>0);
+        res.msY=ms.yMean(ms.binCount>0);
+        res.msXstd=ms.xStanDev(ms.binCount>0);
+        res.msYstd=ms.yStanDev(ms.binCount>0);
+    case "median"
+        res.msX=ms.xMedian(ms.binCount>0);
+        res.msY=ms.yMedian(ms.binCount>0);
+        res.msXstd=ms.xStanDevMed(ms.binCount>0);
+        res.msYstd=ms.yStanDevMed(ms.binCount>0);
+end
+
 res.mask=mask;

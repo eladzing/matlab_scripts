@@ -1,11 +1,13 @@
 %% Compare TNG quenched fraction with Romulus  & Wetzel 2012 
 %% Read TNG data
 %%
-load('/home/zinger/workProjects/matlab_scripts/IllustrisTNG/matFiles/quenchedFractions_z0.mat')
+scriptPath='C:\Users\eladz\Documents\workProjects\matlab_scripts';
+load([scriptPath '/IllustrisTNG/matFiles/quenchedFractions_z0.mat'])
 %% Read Romulus and Wetzel 2012 data 
 %%
 RomC_data;
-load('/home/zinger/workProjects/matlab_scripts/rpsProject/matFiles/wetzel.mat')
+
+load([scriptPath '/rpsProject/matFiles/wetzel.mat'])
 
 %% Compare to Tremmel 2018 Figure 14 : QF as a function of stellar mass 
 %%
@@ -39,7 +41,7 @@ cmap=brewermap(8,'Set1');
 %figure('position',[ 1756 452 805 724])
 cnt=0;
 h=[];
-figure
+myFigure
 for j=3 %1:length(hmBin)-1
     %j=3;
     cnt=cnt+1;
@@ -171,7 +173,7 @@ rdistBLow=fig15.rdistLow(1:end-1)+0.5.*diff(fig15.rdistLow);
 
 
 h=[];
-figure
+myFigure
 h(end+1)=errorbar(rb,qf100Hi,err100Hi,err100Hi,'x',...
     'color',cmap(3,:),'DisplayName',str1Hi);
 hold on 
@@ -217,7 +219,7 @@ titlemine('High mass galaxies')
 %% plot Low
 %%
 h=[];
-figure
+myFigure
 
 h(end+1)=errorbar(rb,qf100Low,err100Low,err100Low,'x',...
     'color',cmap(3,:),'DisplayName',str1Low);

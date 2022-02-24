@@ -11,7 +11,7 @@ if numvarargs>1
 end
 
 %set defualt  fontsize
-defvals={14};
+defvals={16};
 
 %assign the optional values
 defvals(1:numvarargs)=varargin;

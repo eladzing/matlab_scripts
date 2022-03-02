@@ -1,5 +1,5 @@
 function galPropStr = generate_hostTag(galPropStr)
-% GENERATE_HOSTTAG Add a host tag field tothe galaxy property structure 
+% GENERATE_HOSTTAG Add a host tag field to the galaxy property structure 
 %   for a unique identifier of hosts across sims and snaps
 
 for j=1:length(galPropStr.hostID)

@@ -4,11 +4,15 @@
 global DEFAULT_MATFILE_DIR
 global DEFAULT_PRINTOUT_DIR
 colors=brewermap(9,'Set1');
-figPos=[1043         181         840         733];
+%figPos=[1043         181         840         733];
+figPos=[1169         181         714         573];
 outdir=[DEFAULT_PRINTOUT_DIR '/jellyfish/paper'];
 printFlag=true;
 
-
+ axFont=18;
+ legFont=20;
+ labFont=20;
+ 
 %% load data
 if setupFlag
     % load object table
@@ -38,6 +42,9 @@ if setupFlag
     %ind=find(mm); index of 3 weird objects
     maskJF_full=maskJF;
     maskJF(mm)=false;
+    
+    mask100=objectTable.sim=="TNG100";
+    mask50=~mask100;
 end
 
 %% plot some general info about the sample
@@ -46,8 +53,7 @@ if 0==1
     fprintf('Total number of objects = %i \n',nObject);
     fprintf('Total number of JF = %i (%4.2f %%) \n',sum(maskJF),sum(maskJF)/nObject*100);
     
-    mask100=objectTable.sim=="TNG100";
-    mask50=~mask100;
+    
     fprintf('TNG100 number of objects = %i (%4.2f %%) \n',sum(mask100),sum(mask100)/nObject*100);
     fprintf('TNG50 number of objects = %i (%4.2f %%) \n',sum(mask50),sum(mask50)/nObject*100);
     
@@ -57,7 +63,7 @@ end
 
 %% plot scores
 
-if 1==1
+if 1==0
     myFigure('pos',figPos);
     yl=[0.0 0.35];
     t=tiledlayout(2,1);
@@ -67,9 +73,9 @@ if 1==1
     %yl=ylim;
     hold on
     plot(15.5.*ones(size(yl)),yl,':k' ,'linewidth',1.8)
-    legend("Full Sample",'Interpreter','latex','FontSize',18)
+    legend("Full Sample",'Interpreter','latex','FontSize',legFont)
     %xlabelmine('Score');
-    set(gca,'fontsize',14)
+    set(gca,'fontsize',axFont)
     %ylabelmine('fraction of populaiton');
     %titlemine('All');
     
@@ -83,13 +89,13 @@ if 1==1
     ylim(yl2)
     hold on
     plot(15.5.*ones(size(yl2)),yl2,':k'  ,'linewidth',1.8)
-    legend(["TNG50","TNG100"],'Interpreter','latex','FontSize',18)
-    set(gca,'Yscale','log','fontsize',18)
+    legend(["TNG50","TNG100"],'Interpreter','latex','FontSize',legFont)
+    set(gca,'Yscale','log','fontsize',axFont)
     xlabelmine('Score',20);
     %ylabelmine('fraction of populaiton');
     %titlemine('TNG50');
     
-    ylabel(t,'fraction of populaiton','fontsize',20,'interpreter','latex')
+    ylabel(t,'fraction of populaiton','fontsize',labFont,'interpreter','latex')
     t.TileSpacing='tight';
     t.Padding='compact';
     
@@ -99,40 +105,43 @@ if 1==1
     end
 end
 %% plot stellar mass and host mass functions
-if 1==1
+if 1==0
+   
+    
+    
     bins=8.0:0.1:12.5;
     hf=myFigure('pos',figPos);
     axes1 = axes('Parent',hf);
     hold(axes1,'on');
-     hs(1)=histogram(log10(galProps.galStellarMass(mask50)),bins,'facecolor',colors(2,:),...
+    hs(1)=histogram(log10(galProps.galStellarMass(mask50)),bins,'facecolor',colors(2,:),...
         'DisplayName',"TNG50");
     hold on
     hs(2)=histogram(log10(galProps.galStellarMass(mask100)),bins,'facecolor',colors(1,:),...
         'DisplayName',"TNG100");
-%     hold on
-%     hs(2)=histogram(log10(galProps.galStellarMass(mask50)),bins,'facecolor',colors(2,:),...
-%         'DisplayName',"TNG50");
-   set(gca,'fontsize',14,'box','on');%,'Yscale','log')
-    legend(hs,'Interpreter','latex','FontSize',18)
-    xlabelmine('log Stellar Mass',18);
-    ylabelmine('Number of Galaxies',18);
+    %     hold on
+    %     hs(2)=histogram(log10(galProps.galStellarMass(mask50)),bins,'facecolor',colors(2,:),...
+    %         'DisplayName',"TNG50");
+    set(gca,'fontsize',axFont,'box','on');%,'Yscale','log')
+    legend(hs,'Interpreter','latex','FontSize',legFont)
+    xlabelmine('log Stellar Mass',labFont);
+    ylabelmine('Number of Galaxies',labFont);
     hold(axes1,'off');
     % Create inset axes
     axes2 = axes('Parent',hf,...
-    'Position',[0.592 0.494 0.282 0.289]);
+        'Position',[0.592 0.494 0.282 0.289]);
     hold(axes2,'on');
     histogram(log10(galProps.galStellarMass(mask100)),bins,'facecolor',colors(2,:));
     histogram(log10(galProps.galStellarMass(mask50)),bins,'facecolor',colors(1,:));
     xlim(axes2,[11 12.3]);
     ylim(axes2,[0 250]);
-    set(gca,'fontsize',14,'box','on','Yscale','log')
-     if printFlag
+    set(gca,'fontsize',axFont,'box','on','Yscale','log')
+    if printFlag
         fname='cjf_stellarMassFunction';
         printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
     end
     
     
-    % halo mass function 
+    % halo mass function
     [~,ia,~]=unique(galProps.hostTag);
     hmass=galProps.hostM200c(ia);
     hsim=galProps.sim(ia);
@@ -144,44 +153,44 @@ if 1==1
     hold on
     hs(2)=histogram(log10(hmass(hsim=="TNG100")),bins,'facecolor',colors(1,:),...
         'DisplayName',"TNG100");
-    set(gca,'fontsize',14,'box','on');%,'Yscale','log')
-    legend(hs,'Interpreter','latex','FontSize',18)
-    xlabelmine('log Host Mass',18);
-    ylabelmine('Number of Hosts',18);
-     % Create inset axes
+    set(gca,'fontsize',axFont,'box','on');%,'Yscale','log')
+    legend(hs,'Interpreter','latex','FontSize',legFont)
+    xlabelmine('log Host Mass',labFont);
+    ylabelmine('Number of Hosts',labFont);
+    % Create inset axes
     axes2 = axes('Parent',hf,...
-    'Position',[0.592 0.494 0.282 0.289]);
+        'Position',[0.592 0.494 0.282 0.289]);
     hold(axes2,'on');
     histogram(log10(hmass(hsim=="TNG50")),bins,'facecolor',colors(2,:));
     hold on
     histogram(log10(hmass(hsim=="TNG100")),bins,'facecolor',colors(1,:));
     xlim(axes2,[13.5 14.5]);
     ylim(axes2,[0 100]);
-    set(gca,'fontsize',14,'box','on','Yscale','log')
-%     titlemine("host mass function");
-     if printFlag
+    set(gca,'fontsize',axFont,'box','on','Yscale','log')
+    %     titlemine("host mass function");
+    if printFlag
         fname='cjf_hostMassFunction';
         printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
-     end
+    end
     
     % no. of sat's
     bins=10:0.1:15;
     hf=myFigure('pos',figPos);
-     hs(1)=histogram(log10(galProps.hostM200c(mask50)),bins,'facecolor',colors(2,:),...
+    hs(1)=histogram(log10(galProps.hostM200c(mask50)),bins,'facecolor',colors(2,:),...
         'DisplayName',"TNG50");
     hold on
     hs(2)=histogram(log10(galProps.hostM200c(mask100)),bins,'facecolor',colors(1,:),...
         'DisplayName',"TNG100");
     
-     set(gca,'fontsize',14,'box','on');%,'Yscale','log')
-    legend(hs,'Interpreter','latex','FontSize',18)
-    xlabelmine('log Host Mass',18);
-    ylabelmine('Number of Satellites',18);
-    titlemine("Number of Sat's found in hosts");
-     if printFlag
+    set(gca,'fontsize',axFont,'box','on');%,'Yscale','log')
+    legend(hs,'Interpreter','latex','FontSize',legFont)
+    xlabelmine('log Host Mass',labFont);
+    ylabelmine('Number of Satellites',labFont);
+    %titlemine("Number of Sat's found in hosts");
+    if printFlag
         fname='cjf_satNumber';
         printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
-     end
+    end
     
     
     bins=-6:0.125:-1;
@@ -191,59 +200,54 @@ if 1==1
     hold on
     hs(2)=histogram(log10(massRatio(mask100)),bins,'facecolor',colors(1,:),...
         'DisplayName',"TNG100");
-    set(gca,'fontsize',14,'box','on');%,'Yscale','log')
-    legend(hs,'Interpreter','latex','FontSize',18)
-    xlabelmine('log Stellar/Host Mass ratio',18);
-    ylabelmine('Number of Satellites',18);
+    set(gca,'fontsize',axFont,'box','on');%,'Yscale','log')
+    legend(hs,'Interpreter','latex','FontSize',legFont)
+    xlabelmine('log Stellar/Host Mass ratio',labFont);
+    ylabelmine('Number of Satellites',labFont);
     %titlemine("stellar=to-host mass ratio");
-     % Create inset axes
-%     axes2 = axes('Parent',hf,...
-%     'Position',[0.2 0.6 0.23 0.23]);
-%     hold(axes2,'on');
-%     histogram(log10(massRatio(mask50)),bins,'facecolor',colors(2,:));
-%     hold on
-%     histogram(log10(massRatio(mask100)),bins,'facecolor',colors(1,:));
-%     xlim(axes2,[-1.6 -1]);
-%     ylim(axes2,[0 500]);
-%     set(gca,'fontsize',14,'box','on','Yscale','log')
-     if printFlag
+    % Create inset axes
+    %     axes2 = axes('Parent',hf,...
+    %     'Position',[0.2 0.6 0.23 0.23]);
+    %     hold(axes2,'on');
+    %     histogram(log10(massRatio(mask50)),bins,'facecolor',colors(2,:));
+    %     hold on
+    %     histogram(log10(massRatio(mask100)),bins,'facecolor',colors(1,:));
+    %     xlim(axes2,[-1.6 -1]);
+    %     ylim(axes2,[0 500]);
+    %     set(gca,'fontsize',axFont,'box','on','Yscale','log')
+    if printFlag
         fname='cjf_massRationHist';
         printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
-     end
-    %% snap distribution 
-        
-%     hf=myFigure('pos',figPos);
-%     hs(1)=histogram(galProps.snap(mask100),30.5:1:99.5,'facecolor',colors(2,:),...
-%         'DisplayName',"TNG100");
-%     hold on
-%     hs(2)=histogram(galProps.snap(mask50),30.5:1:99.5,'facecolor',colors(1,:),...
-%         'DisplayName',"TNG50");
-%     yl=ylim;
-%     ind=find(hs(1).Values>0);
-%         
-%     for i=1:length(ind)
-%         
-%         xx=0.5.*sum(hs(1).BinEdges(ind(i)-1:ind(i)));
-%         
-%         yy=hs(1).Values(ind(i))+0.06.*diff(yl);
-%         zz=round(100*illustris.utils.snap2redshift(xx+1))/100;
-%         
-%         text(xx,yy,num2str(zz),'fontsize',18,'interpreter','latex')
-%     end
-%     
-%     set(gca,'fontsize',14,'box','on');
-%     legend(hs,'Interpreter','latex','FontSize',18,'Location','northwest')
-%     xlabelmine('Snapshot',18);
-%     ylabelmine('Number of Satellites',18);
-%     %titlemine("snapshot/redshift distribution");
-    if printFlag
-        fname='cjf_snapDistribution';
-        printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
     end
-     
+    %% snap distribution
+    
+    %     hf=myFigure('pos',figPos);
+    %     hs(1)=histogram(galProps.snap(mask100),30.5:1:99.5,'facecolor',colors(2,:),...
+    %         'DisplayName',"TNG100");
+    %     hold on
+    %     hs(2)=histogram(galProps.snap(mask50),30.5:1:99.5,'facecolor',colors(1,:),...
+    %         'DisplayName',"TNG50");
+    %     yl=ylim;
+    %     ind=find(hs(1).Values>0);
+    %
+    %     for i=1:length(ind)
+    %
+    %         xx=0.5.*sum(hs(1).BinEdges(ind(i)-1:ind(i)));
+    %
+    %         yy=hs(1).Values(ind(i))+0.06.*diff(yl);
+    %         zz=round(100*illustris.utils.snap2redshift(xx+1))/100;
+    %
+    %         text(xx,yy,num2str(zz),'fontsize',18,'interpreter','latex')
+    %     end
+    %
+    %     set(gca,'fontsize',axFont,'box','on');
+    %     legend(hs,'Interpreter','latex','FontSize',18,'Location','northwest')
+    %     xlabelmine('Snapshot',labFont);
+    %     ylabelmine('Number of Satellites',labFont);
+    %     %titlemine("snapshot/redshift distribution");
     
     
-    % another version 
+    % another version
     snp100=unique(galProps.snap(mask100));
     z100=round(100*illustris.utils.snap2redshift(snp100))/100;
     snp50=unique(galProps.snap(mask50));
@@ -255,48 +259,39 @@ if 1==1
     b50=hs50(hs50>0);
     
     hf=myFigure('pos',figPos);
-   
-    ax1 = axes('position',[0.1300    0.1100    0.7750    0.7918]);
-    h(2)=bar(snp100,b100,0.16,'facecolor',colors(1,:),...
+    
+    ax1 = axes('position',[0.1300    0.1100    0.7750    0.7713]);
+    h(2)=bar(snp100,b100,0.16,'facecolor',colors(2,:),...
         'Displayname','TNG100');
     hold on;
-      h(1)=bar(snp50,b50,1,'facealpha',0.6,'facecolor',colors(2,:),...
+    h(1)=bar(snp50,b50,1,'facealpha',0.6,'facecolor',colors(1,:),...
         'Displayname','TNG50');
-   
     
-   
+    
+    
     legend(h,'Interpreter','latex','FontSize',18,'Location','northwest')
-    set(gca,'fontsize',14,'box','on');
-    xlabelmine('Snapshot',18);
-    ylabelmine('Number of Satellites',18);
+    set(gca,'fontsize',axFont,'box','on');
+    xlabelmine('Snapshot',labFont);
+    ylabelmine('Number of Satellites',labFont);
     
     ax2 = axes('Position', get(ax1,'Position'), ...
-    'XAxisLocation','top', ...
-    'Color','none', ...
-    'XColor','k');
+        'XAxisLocation','top', ...
+        'Color','none', ...
+        'XColor','k');
     ax2.YAxis.Visible = 'off';
     ax2.XTick=ax1.XTick;
     ax2.XTickLabel={'2' '1.5' '1' '0.7' '0.5' '0.4' '0.3' '0.2' '0.1' '0'};
     ax2.XLim = ax1.XLim;
-    ax2.FontSize=14;
-    xlabelmine('redshift',18);
+    ax2.FontSize=axFont;
+    xlabelmine('redshift',labFont);
     linkprop([ax1 ax2], 'XLim');
-     if printFlag
+    if printFlag
         fname='cjf_snapDistribution';
         printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
-     end
+    end
 end
 
-%
-%
-% figure
-% histogram(redshifts(mask100),be)
-% hold on
-% histogram(redshifts(mask50),be)
-% legend(["TNG100","TNG50"],'Interpreter','latex','FontSize',14)
-% xlabelmine('snaps');
-% ylabelmine('Number of Satellites');
-% titlemine("stellar=to-host mass ratio");
+
 
 %% examine samples by snapshots and simulations
 
@@ -318,80 +313,110 @@ end
 % % tags
 % simTags=unique(galProps.sim);
 % simTags(3)=join([simTags(1) '\&' simTags(2)]);
+
 %% fraction vs. stellar mass in halo mass bins
 
 hostMassBins=10.^(10:15);
-stellarMassBins=10.^(8:0.5:12.5);
-hmBI=discretize(galProps.hostM200c,hostMassBins);
-smBI=discretize(galProps.stellarMass,stellarMassBins);
+stellarMassBins=10.^(8.0:0.3:12.5);
+%stellarMassBins100=10.^(9.5:0.3:12.5);
+% hmBI=discretize(galProps.hostM200c,hostMassBins);
+% smBI=discretize(galProps.stellarMass,stellarMassBins);
 
-jellyfish.utils.plot_demographics(maskJF,smBI,stellarMassBins,hmBI,hostMassBins,...
-    'log','label','stellar mass','legtag','$M_\mathrm{h}=$');
+%jellyfish.utils.plot_demographics(maskJF,smBI,stellarMassBins,hmBI,hostMassBins,...
+%    'log','label','stellar mass','legtag','$M_\mathrm{h}=$');
 
-jellyfish.utils.plot_demographics_2sims(maskJF,smBI,stellarMassBins,hmBI,hostMassBins,mask50,...
-    'log','label','stellar mass','legtag','$M_\mathrm{h}=$');
-
+jellyfish.utils.plot_demographics_2sims(maskJF,galProps.stellarMass,stellarMassBins,galProps.hostM200c,hostMassBins,mask50,...
+    'log','label','stellar mass','legtag','$M_\mathrm{host}=$');
+if printFlag
+    fname='cjf_jfFrac_demograf_mstar_mhostBin';
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+end
 %% fraction vs. host mass in Stellar mass bins
 
 hostMassBins=10.^(10:15);
 stellarMassBins=10.^(8:1:12.5);
-hmBI=discretize(galProps.hostM200c,hostMassBins);
-smBI=discretize(galProps.stellarMass,stellarMassBins);
+% hmBI=discretize(galProps.hostM200c,hostMassBins);
+% smBI=discretize(galProps.stellarMass,stellarMassBins);
 
-jellyfish.utils.plot_demographics(maskJF,hmBI,hostMassBins,smBI,stellarMassBins,...
-    'log','label','host mass','legtag','$M_\mathrm{\ast}=$');
+% jellyfish.utils.plot_demographics(maskJF,hmBI,hostMassBins,smBI,stellarMassBins,...
+%     'log','label','host mass','legtag','$M_\mathrm{\ast}=$');
 
-jellyfish.utils.plot_demographics_2sims(maskJF,hmBI,hostMassBins,smBI,stellarMassBins,mask50,...
-    'log','label','host mass','legtag','$M_\mathrm{\ast}=$');
+jellyfish.utils.plot_demographics_2sims(maskJF,galProps.hostM200c,hostMassBins,galProps.stellarMass,stellarMassBins,mask50,...
+    'log','label','host mass','legtag','$M_\mathrm{\ast}=$','legLoc',{'northwest','northeast'});
+
+if printFlag
+    fname='cjf_jfFrac_demograf_mhost_mstarBin';
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+end
 %% fraction vs. mass ratio in Stellar mass bins
 
 massRatBins=10.^(-6:0.5:-2);
-mrBI=discretize(massRatio,massRatBins);
+%mrBI=discretize(massRatio,massRatBins);
 stellarMassBins=10.^(8:1:12.5);
-smBI=discretize(galProps.stellarMass,stellarMassBins);
+%smBI=discretize(galProps.stellarMass,stellarMassBins);
 
-jellyfish.utils.plot_demographics(maskJF,mrBI,massRatBins,smBI,stellarMassBins,...
-    'log','label','mass ratio','legtag','$M_\mathrm{\ast}=$');
-jellyfish.utils.plot_demographics_2sims(maskJF,mrBI,massRatBins,smBI,stellarMassBins,mask50,...
+% jellyfish.utils.plot_demographics(maskJF,mrBI,massRatBins,smBI,stellarMassBins,...
+%     'log','label','mass ratio','legtag','$M_\mathrm{\ast}=$');
+jellyfish.utils.plot_demographics_2sims(maskJF,massRatio,massRatBins,galProps.stellarMass,stellarMassBins,mask50,...
     'log','label','mass ratio','legtag','$M_\mathrm{\ast}=$');
 
-stellarMassBins=10.^(8:0.5:12.5);
-smBI=discretize(galProps.stellarMass,stellarMassBins);
+if printFlag
+    fname='cjf_jfFrac_demograf_mrat_mstarBin';
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+end
+
+
+stellarMassBins=10.^(8:0.3:12.5);
+% smBI=discretize(galProps.stellarMass,stellarMassBins);
 massRatBins=10.^(-6:1:-2);
-mrBI=discretize(massRatio,massRatBins);
-jellyfish.utils.plot_demographics(maskJF,smBI,stellarMassBins,mrBI,massRatBins,...
+% mrBI=discretize(massRatio,massRatBins);
+% jellyfish.utils.plot_demographics(maskJF,smBI,stellarMassBins,mrBI,massRatBins,...
+%     'log','label','stellar mass','legtag','$M_\mathrm{sat}/M_\mathrm{h}$');
+jellyfish.utils.plot_demographics_2sims(maskJF,galProps.stellarMass,stellarMassBins,massRatio,massRatBins,mask50,...
     'log','label','stellar mass','legtag','$M_\mathrm{sat}/M_\mathrm{h}$');
-jellyfish.utils.plot_demographics_2sims(maskJF,smBI,stellarMassBins,mrBI,massRatBins,mask50,...
-    'log','label','stellar mass','legtag','$M_\mathrm{sat}/M_\mathrm{h}$');
+if printFlag
+    fname='cjf_jfFrac_demograf_mstar_mratBin';
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+end
+
 %% fraction vs. mass rtion in host mass bins
 
 massRatBins=10.^(-6:0.5:-2);
-mrBI=discretize(massRatio,massRatBins);
+%mrBI=discretize(massRatio,massRatBins);
 hostMassBins=10.^(10:15);
-hmBI=discretize(galProps.hostM200c,hostMassBins);
+%hmBI=discretize(galProps.hostM200c,hostMassBins);
 
-jellyfish.utils.plot_demographics(maskJF,mrBI,massRatBins,hmBI,hostMassBins,...
-    'log','label','mass ratio','legtag','$M_\mathrm{h}=$');
+% jellyfish.utils.plot_demographics(maskJF,mrBI,massRatBins,hmBI,hostMassBins,...
+%     'log','label','mass ratio','legtag','$M_\mathrm{h}=$');
 
-jellyfish.utils.plot_demographics_2sims(maskJF,mrBI,massRatBins,hmBI,hostMassBins,mask50,...
+jellyfish.utils.plot_demographics_2sims(maskJF,massRatio,massRatBins,galProps.hostM200c,hostMassBins,mask50,...
     'log','label','mass ratio','legtag','$M_\mathrm{h}=$');
+if printFlag
+    fname='cjf_jfFrac_demograf_mrat_mhostBin';
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+end
 %% fraction vs. redshift in host mass bins
 
 hostMassBins=10.^(10:15);
-hmBI=discretize(galProps.hostM200c,hostMassBins);
+%hmBI=discretize(galProps.hostM200c,hostMassBins);
 zredBins=[0 0.05:0.1:0.55 0.75 1.25 1.75 2.2];
 zx=[0:0.1:0.5 0.7 1 1.5 2];
-zrBI=discretize(zreds,zredBins);
-jellyfish.utils.plot_demographics(maskJF,zrBI,zredBins,hmBI,hostMassBins,'xx',zx,...
-    'label','redshift','legtag','$M_\mathrm{h}=$');
+%zrBI=discretize(zreds,zredBins);
+% jellyfish.utils.plot_demographics(maskJF,zreds,zredBins,galProps.hostM200c,hostMassBins,'xx',zx,...
+%     'label','redshift','legtag','$M_\mathrm{h}=$');
 
-jellyfish.utils.plot_demographics(maskJF2,zrBI,zredBins,hmBI,hostMassBins,'xx',zx,...
-    'label','redshift','legtag','$M_\mathrm{h}=$');
+% jellyfish.utils.plot_demographics(maskJF2,zreds,zredBins,galProps.hostM200c,hostMassBins,'xx',zx,...
+%     'label','redshift','legtag','$M_\mathrm{h}=$');
 
-jellyfish.utils.plot_demographics_2sims(maskJF,zrBI,zredBins,hmBI,hostMassBins,mask50,'xx',zx,...
+jellyfish.utils.plot_demographics_2sims(maskJF,zreds,zredBins,galProps.hostM200c,hostMassBins,mask50,'xx',zx,...
     'label','redshift','legtag','$M_\mathrm{h}=$');
-jellyfish.utils.plot_demographics_2sims(maskJF2,zrBI,zredBins,hmBI,hostMassBins,mask50,'xx',zx,...
-    'label','redshift','legtag','$M_\mathrm{h}=$');
+if printFlag
+    fname='cjf_jfFrac_demograf_zred_mhostBin';
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+end
+
+% jellyfish.utils.plot_demographics_2sims(maskJF2,zrBI,zredBins,hmBI,hostMassBins,mask50,'xx',zx,...
+%     'label','redshift','legtag','$M_\mathrm{h}=$');
 
 % jellyfish.utils.plot_demographics(maskJF,zrBI,zredBins,hmBI,hostMassBins,'xx',zx,...
 %     'label','redshift','legtag','$M_\mathrm{h}=$','tng50',galProps.sim=="TNG50");
@@ -404,60 +429,50 @@ jellyfish.utils.plot_demographics_2sims(maskJF2,zrBI,zredBins,hmBI,hostMassBins,
 zredBins=[0 0.501  1.25 2.2];
 %zx=[0  1 2];
 
-zrBI=discretize(zreds,zredBins);
+%zrBI=discretize(zreds,zredBins);
 zleg=["$z=0-0.5$" "$z=0.5-1$" "$z=1-2$" ];
 
 
 % stellar mass
-stellarMassBins=10.^(8:0.5:12.5);
-smBI=discretize(galProps.stellarMass,stellarMassBins);
+stellarMassBins=10.^(8:0.3:12.5);
+%smBI=discretize(galProps.stellarMass,stellarMassBins);
 
-jellyfish.utils.plot_demographics(maskJF,smBI,stellarMassBins,zrBI,zredBins,...
-    'log','label','stellar mass','legend',zleg);
-% jellyfish.utils.plot_demographics_2sims(maskJF,smBI,stellarMassBins,zrBI,zredBins,mask50,...
-%      'log','label','stellar mass','legend',zleg);
+% jellyfish.utils.plot_demographics(maskJF,smBI,stellarMassBins,zrBI,zredBins,...
+%     'log','label','stellar mass','legend',zleg);
+jellyfish.utils.plot_demographics_2sims(maskJF,galProps.stellarMass,stellarMassBins,zreds,zredBins,mask50,...
+     'log','label','stellar mass','legend',zleg);
+if printFlag
+    fname='cjf_jfFrac_demograf_mstar_zredBin';
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+end
 
 % host mass
 hostMassBins=10.^(10:15);
-hmBI=discretize(galProps.hostM200c,hostMassBins);
+% hmBI=discretize(galProps.hostM200c,hostMassBins);
 
-jellyfish.utils.plot_demographics(maskJF,hmBI,hostMassBins,zrBI,zredBins,...
-    'log','label','host mass','legend',zleg,'cind',[1:5 7]);
-jellyfish.utils.plot_demographics(maskJF2,hmBI,hostMassBins,zrBI,zredBins,...
-    'log','label','host mass','legend',zleg,'cind',[1:5 7]);
-
-% jellyfish.utils.plot_demographics_2sims(maskJF,hmBI,hostMassBins,zrBI,zredBins,mask50,...
+% jellyfish.utils.plot_demographics(maskJF,hmBI,hostMassBins,zrBI,zredBins,...
+%     'log','label','host mass','legend',zleg,'cind',[1:5 7]);
+% jellyfish.utils.plot_demographics(maskJF2,hmBI,hostMassBins,zrBI,zredBins,...
 %     'log','label','host mass','legend',zleg,'cind',[1:5 7]);
 
+jellyfish.utils.plot_demographics_2sims(maskJF,galProps.hostM200c,hostMassBins,zreds,zredBins,mask50,...
+    'log','label','host mass','legend',zleg,'cind',[1:5 7],'legLoc',{'northwest','northeast'});
+if printFlag
+    fname='cjf_jfFrac_demograf_mhost_zredBin';
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+end
+
 % mass ratio
 massRatBins=10.^(-6:0.5:-2);
-mrBI=discretize(massRatio,massRatBins);
+%mrBI=discretize(massRatio,massRatBins);
 
-jellyfish.utils.plot_demographics(maskJF,mrBI,massRatBins,zrBI,zredBins,...
-    'log','label','log mass ratio','legend',zleg,'cind',[1:5 7]);
+jellyfish.utils.plot_demographics_2sims(maskJF,massRatio,massRatBins,zreds,zredBins,mask50,...
+    'log','label','host mass','legend',zleg,'cind',[1:5 7]);
 % jellyfish.utils.plot_demographics_2sims(maskJF,mrBI,massRatBins,zrBI,zredBins,mask50,...
 %     'log','label','log mass ratio','legend',zleg,'cind',[1:5 7]);
+if printFlag
+    fname='cjf_jfFrac_demograf_mrat_zredBin';
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+end
 
 
-% breakup by sim
-% stellar mass
-stellarMassBins=10.^(8:0.25:12.5);
-smBI=discretize(galProps.stellarMass,stellarMassBins);
-
-jellyfish.utils.plot_demographics_2sims(maskJF,smBI,stellarMassBins,zrBI,zredBins,mask50,...
-    'log','label','stellar mass','legend',zleg,'cind',[1:5 7]);
-
-
-% host mass
-hostMassBins=10.^(10:15);
-hmBI=discretize(galProps.hostM200c,hostMassBins);
-
-jellyfish.utils.plot_demographics_2sims(maskJF,hmBI,hostMassBins,zrBI,zredBins,mask50,...
-    'log','label','host mass','legend',zleg,'cind',[1:5 7]);
-
-% mass ratio
-massRatBins=10.^(-6:0.5:-2);
-mrBI=discretize(massRatio,massRatBins);
-
-jellyfish.utils.plot_demographics_2sims(maskJF,mrBI,massRatBins,zrBI,zredBins,mask50,...
-    'log','label','host mass','legend',zleg,'cind',[1:5 7]);

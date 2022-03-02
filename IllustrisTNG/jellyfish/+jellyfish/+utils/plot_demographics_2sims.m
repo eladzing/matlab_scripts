@@ -1,4 +1,4 @@
-function hf = plot_demographics_2sims(maskJF,xxBI,xBins,lineBI,lineBins,mask50,varargin)
+function hf = plot_demographics_2sims(maskJF,xVal,xBins,lineVal,lineBins,mask50,varargin)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -13,8 +13,13 @@ logFlag=false;
 xLab='';
 legTag='';
 fullLegend='';
-xx=[];
+xxGiven=[];
 
+axFont=18;
+legFont=20;
+labFont=20;
+
+legLoc={'NorthEast','northwest'};
 i=1;
 while(i<=length(varargin))
     switch lower(varargin{i})
@@ -32,21 +37,40 @@ while(i<=length(varargin))
             xLab=varargin{i};
         case 'xx'
             i=i+1;
-            xx=varargin{i};
+            xxGiven=varargin{i};
         case{'leglab','legtag'}
             i=i+1;
             legTag=varargin{i};
         case{'legend'}
-             i=i+1;
+            i=i+1;
             fullLegend=varargin{i};
+        case'axfont'
+            i=i+1;
+            axFont=varargin{i};
+        case'legfont'
+            i=i+1;
+            legFont=varargin{i};
+        case 'legloc'
+            i=i+1;
+            legLoc=varargin{i};
+        case'labfont'
+            i=i+1;
+            labFont=varargin{i};
         otherwise
             error('%s - Unkown argument: %s',current_function().upper,varargin{i});
     end
     i=i+1;
 end
 
+%% find bin indices and x values 
+xxBI=discretize(xVal,xBins);
+lineBI=discretize(lineVal,lineBins);
+
+
 %% prepare lines
 flines=zeros(length(xBins)-1,length(lineBins)-1,2);
+count=zeros(length(xBins)-1,length(lineBins)-1,2);
+xx=zeros(length(xBins)-1,length(lineBins)-1,2);
 bsci=zeros(length(xBins)-1,length(lineBins)-1,2,2);
 fffun = @(x)(sum(x)./length(x));
 
@@ -62,7 +86,10 @@ for k=1:2
                        
             binMask=xxBI==i & lineBI==j & simMask';
             
+            count(i,j,k)=sum(binMask);
             if sum(binMask)>0
+                
+                xx(i,j,k)=median(xVal(binMask));
                 jf=maskJF(binMask);
                 
                 flines(i,j,k)=sum(jf)./length(jf);
@@ -72,12 +99,16 @@ for k=1:2
                 else
                     bsci(i,j,:,k)=jf;
                 end
+            else
+                xx(i,j,k)=0.5*sum(xBins(i:i+1));
             end
         end
     end
 end
 
 
+   
+    
 
 %% plot figures
 
@@ -88,10 +119,12 @@ if isempty(xx)
     end
 end
 
-px=[xx fliplr(xx)];
+if logFlag
+        xx(xx>0)=log10(xx(xx>0));
+end
 
 
-hf=figure('color','w');
+hf=myFigure();
 h=[];
 h2=[];
 
@@ -104,24 +137,56 @@ for j=1:length(lineBins)-1
     end
     
     for k=1:2
-    
-    py=[bsci(:,j,1,k)' fliplr(bsci(:,j,2,k)')];
-    patch(px,py,colors(cind(j),:),'facealpha',0.35,'edgecolor','none')
-    if j==1
-        hold on
-        h2(k)=plot(xx,flines(:,j,k),ls(k),...
-        'color','k','linewidth',lw,...
-        'displayName',simTag(k));
-    end
-    h(end+1)=plot(xx,flines(:,j,k),ls(k),...
-        'color',colors(cind(j),:),'linewidth',lw,...
-        'displayName',tag);
-    
-    
+        
+        ind=find(count(:,j,k)>0,1,'first'):find(count(:,j,k)>0,1,'last');
+        
+        if isempty(xxGiven)
+            xxx=xx(:,j,k)';
+        else
+            xxx=xxGiven;
+        end
+        
+        
+        if ~isempty(ind)
+            
+            px=[xxx(ind) fliplr(xxx(ind))];
+            py=[bsci(ind,j,1,k)' fliplr(bsci(ind,j,2,k)')];
+            patch(px,py,colors(cind(j),:),'facealpha',0.35,'edgecolor','none')
+            if j==1
+                hold on
+                h2(k)=plot(xxx(ind)',flines(ind,j,k),ls(k),...
+                    'color','k','linewidth',lw,...
+                    'displayName',simTag(k));
+                
+            end
+            h(end+1)=plot(xxx(ind)',flines(ind,j,k),ls(k),...
+                'color',colors(cind(j),:),'linewidth',lw,...
+                'displayName',tag);
+            
+            
+        else
+            if j==1
+                hold on
+                h2(k)=plot(xxx',flines(:,j,k),ls(k),...
+                    'color','k','linewidth',lw,...
+                    'displayName',simTag(k));
+                
+            end
+            h(end+1)=plot(xxx',flines(:,j,k),ls(k),...
+                'color',colors(cind(j),:),'linewidth',lw,...
+                'displayName',tag);
+        end
+        
     end
 end
 
-hl1=legend(h(1:2:end),'interpreter','latex','fontsize',14,'location','northeast');
+nc=1;
+% if length(h)/2<4
+%     nc=1;
+% end
+    
+
+hl1=legend(h(1:2:end),'interpreter','latex','fontsize',14,'location',legLoc{1},'NumColumns',nc);
 grid
 xlabelmine(xLab);
 ylabelmine('JF Fraction');
@@ -129,7 +194,7 @@ set(gca,'fontsize',14,'box','on')
 
 ah1=axes('position',get(gca,'position'),'visible','off');
 
-hl2=legend(ah1,h2(1:2),'interpreter','latex','fontsize',14,'location','northwest');
+hl2=legend(ah1,h2(1:2),'interpreter','latex','fontsize',14,'location',legLoc{2},'NumColumns',2);
 
 
 

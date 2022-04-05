@@ -67,6 +67,7 @@ satMask=sats(sampleMask);
 
 gmass=galMass(sampleMask);
 ssfr=ssfrBase(sampleMask);
+
 %% generate 'main-sequence'
 switch lower(mainSequenceType)
     case 'central'
@@ -179,7 +180,6 @@ end
 
 %% by host Mass and stellar mass - 4 bins
 
-
 for i=1:4  % in stellar mass bins
     byHostStar4(i).qfrac=zeros(length(radBinEdges)-1,4);
     byHostStar4(i).bsci=zeros(length(radBinEdges)-1,2,4);
@@ -213,7 +213,7 @@ for i=1:4  % in stellar mass bins
     
 end
 
-%% by host Mass and stellar mass - 4 bins
+%% by host Mass and stellar mass - 2 bins
 
 for i=1:2  % in stellar mass bins
     byHostStar2(i).qfrac=zeros(length(radBinEdges)-1,4);

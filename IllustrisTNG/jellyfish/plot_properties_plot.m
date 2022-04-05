@@ -207,29 +207,48 @@ for k=1:length(sims)
             yl0=[min(yy(~isinf(yy))) max(yy(~isinf(yy)))];
             yl0=yl0+abs(yl0).*[-0.01 0.01];
             
-            [bird, binsize, xl,yl]= histogram2d(xxNJF,yyNJF,ones(size(xxNJF)),...
-                'xlim',xl0,'ylim',yl0,'len',50);
+%             [bird, binsize, xl,yl]= histogram2d(xxNJF,yyNJF,ones(size(xxNJF)),...
+%                 'xlim',xl0,'ylim',yl0,'len',50);
+            xl=xl0;yl=yl0;
             
             filt=fspecial('disk',15);
-            popCont=plot_population_contour(xxJF,yyJF,'smooth',filt,'noplot',...
+            popContJF=plot_population_contour(xxJF,yyJF,'smooth',filt,'noplot',...
                 'xlim',xl,'ylim',yl);
+            popContNJF=plot_population_contour(xxNJF,yyNJF,'smooth',filt,'noplot',...
+                'xlim',xl,'ylim',yl);
+            
+            
             
             jfscore=maskJF(simMask);
             
-            %% identify points beyond contour
-            
-            
-            lx=max(diff(popCont.xx));ly=max(diff(popCont.yy));
-            x0=popCont.xx(1)-0.5.*lx; y0=popCont.yy(1)-0.5.*ly;
+            %% identify points beyond contour2
+                        
+            lx=max(diff(popContJF.xx));ly=max(diff(popContJF.yy));
+            x0=popContJF.xx(1)-0.5.*lx; y0=popContJF.yy(1)-0.5.*ly;
             
             indx=ceil((xxJF-x0)./lx); indy=ceil((yyJF-y0)./ly);
-            outScore=ones(size(indx));
+            outScoreJF=ones(size(indx));
             for ii=1:length(xxJF)
                 if isinf(indy(ii)) || isinf(indx(ii))
                     continue
                 end
-                outScore(ii)=popCont.popContour(indy(ii),indx(ii));
+                outScoreJF(ii)=popContJF.popContour(indy(ii),indx(ii));
             end
+            
+            %
+            lx=max(diff(popContNJF.xx));ly=max(diff(popContNJF.yy));
+            x0=popContNJF.xx(1)-0.5.*lx; y0=popContNJF.yy(1)-0.5.*ly;
+            
+            indx=ceil((xxNJF-x0)./lx); indy=ceil((yyNJF-y0)./ly);
+            outScoreNJF=ones(size(indx));
+            for ii=1:length(xxNJF)
+                if isinf(indy(ii)) || isinf(indx(ii))
+                    continue
+                end
+                outScoreNJF(ii)=popContNJF.popContour(indy(ii),indx(ii));
+            end
+            
+            
             
             %% plot
             
@@ -252,30 +271,51 @@ for k=1:length(sims)
             hh(3).Children(1).LineWidth=1.5; hh(3).Children(2).LineWidth=1.5;
             xlim(xl);ylim(yl);
             
-            %% map
+            %% contours
             
-            ax1=axes;
-            axPos=get(hh(1),'position');
-            set(ax1,'position',axPos);
+             ax1=axes;
+             axPos=get(hh(1),'position');
+             set(ax1,'position',axPos);
+
+             
+             
+%             
+%             imagesc(xl,yl,squeeze(bird(:,:,1)))
+%             set(gca,'ydir','normal','fontsize',14)
+%             
+%             colormap(cmap)
             
-            imagesc(xl,yl,squeeze(bird(:,:,1)))
-            set(gca,'ydir','normal','fontsize',14)
-            
-            colormap(cmap)
-            
-            %% JF contour
+            %% non - JF contour
             
             hold on
-            [~,h(1)]=contour(popCont.xx,popCont.yy,popCont.popContour,'ShowText','off','LineColor',[0 0 1],...
+            [~,h(1)]=contour(popContNJF.xx,popContNJF.yy,popContNJF.popContour,'ShowText','off','LineColor',[0 0 1],...
+                'LineColor',cols(1,:),'linewidth',2,...
+                'LevelList',[99 75:-25:5],'Fill','off','linestyle','-',...
+                'DisplayName','Jellyfish');
+            
+            
+%             plot(xxNJF(outScoreNJF>98),yyNJF(outScoreNJF>98),'^',...
+%                 'color',cols(1,:),'markersize',6.5,...
+%                 'linewidth',1.5,'MarkerFaceColor',otherCol(1,:),...
+%                 'Displayname','JF beyond 98 percentile');
+            
+            
+             %% JF contour
+            
+            hold on
+            [~,h(1)]=contour(popContJF.xx,popContJF.yy,popContJF.popContour,'ShowText','off','LineColor',[0 0 1],...
                 'LineColor',cols(2,:),'linewidth',2,...
                 'LevelList',[98 75:-25:5],'Fill','off','linestyle','-',...
                 'DisplayName','Jellyfish');
             
             
-            plot(xxJF(outScore>98),yyJF(outScore>98),'^',...
+            plot(xxJF(outScoreJF>98),yyJF(outScoreJF>98),'^',...
                 'color',cols(2,:),'markersize',6.5,...
                 'linewidth',1.5,'MarkerFaceColor',otherCol(2,:),...
                 'Displayname','JF beyond 98 percentile');
+            
+            
+            
             grid
             %legend(h)
             

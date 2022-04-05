@@ -88,7 +88,6 @@ for k=1:2
             
             count(i,j,k)=sum(binMask);
             if sum(binMask)>0
-                
                 xx(i,j,k)=median(xVal(binMask));
                 jf=maskJF(binMask);
                 

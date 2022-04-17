@@ -207,9 +207,9 @@ for k=1:length(sims)
             yl0=[min(yy(~isinf(yy))) max(yy(~isinf(yy)))];
             yl0=yl0+abs(yl0).*[-0.01 0.01];
             
-%             [bird, binsize, xl,yl]= histogram2d(xxNJF,yyNJF,ones(size(xxNJF)),...
-%                 'xlim',xl0,'ylim',yl0,'len',50);
-            xl=xl0;yl=yl0;
+            [bird, binsize, xl,yl]= histogram2d(xxNJF,yyNJF,ones(size(xxNJF)),...
+                'xlim',xl0,'ylim',yl0,'len',50);
+%            xl=xl0;yl=yl0;
             
             filt=fspecial('disk',15);
             popContJF=plot_population_contour(xxJF,yyJF,'smooth',filt,'noplot',...
@@ -279,21 +279,21 @@ for k=1:length(sims)
 
              
              
-%             
-%             imagesc(xl,yl,squeeze(bird(:,:,1)))
-%             set(gca,'ydir','normal','fontsize',14)
-%             
-%             colormap(cmap)
+            
+            imagesc(xl,yl,squeeze(bird(:,:,1)))
+            set(gca,'ydir','normal','fontsize',14)
+            
+            colormap(cmap)
             
             %% non - JF contour
             
             hold on
-            [~,h(1)]=contour(popContNJF.xx,popContNJF.yy,popContNJF.popContour,'ShowText','off','LineColor',[0 0 1],...
-                'LineColor',cols(1,:),'linewidth',2,...
-                'LevelList',[99 75:-25:5],'Fill','off','linestyle','-',...
-                'DisplayName','Jellyfish');
-            
-            
+%             [~,h(1)]=contour(popContNJF.xx,popContNJF.yy,popContNJF.popContour,'ShowText','off','LineColor',[0 0 1],...
+%                 'LineColor',cols(1,:),'linewidth',2,...
+%                 'LevelList',[99 75:-25:5],'Fill','off','linestyle','-',...
+%                 'DisplayName','Jellyfish');
+%             
+%             
 %             plot(xxNJF(outScoreNJF>98),yyNJF(outScoreNJF>98),'^',...
 %                 'color',cols(1,:),'markersize',6.5,...
 %                 'linewidth',1.5,'MarkerFaceColor',otherCol(1,:),...

@@ -105,15 +105,15 @@ t=tiledlayout(6,3);
 nexttile([4 3])
 countMap=squeeze(bird100(:,:,1));
 imagesc(xl,yl,log10(countMap));
-set(gca,'ydir','normal','fontsize',14)
-text(10.2,60,'TNG100','Fontsize',16,'interpreter','latex')
-text(10.2,55,num2str(sum(sum(countMap))),'Fontsize',16,'interpreter','latex')
+set(gca,'ydir','normal','fontsize',16)
+text(10.2,60,'TNG100','Fontsize',18,'interpreter','latex')
+text(10.2,55,num2str(sum(sum(countMap))),'Fontsize',18,'interpreter','latex')
 %xlabelmine('log Host Mass');
 %ylabelmine('No. of Sample Satellites');
 colormap(cmap2)
 caxis(cax);
-cbh=colorbar('fontsize',14);
-barTitle(cbh(1),'$\log N$','fontsize',16)
+cbh=colorbar('fontsize',16);
+barTitle(cbh(1),'$\log N$','fontsize',18)
 %tag={'$z=[0\; 0.5]$','$z=[0.5\; 1]$','$z=[1 2]$'};
 tag={'$0\leq z \leq 0.5$','$0.5< z \leq 1$','$1< z \leq 2$'};
 for k=1:3
@@ -121,17 +121,17 @@ for k=1:3
 nexttile([2,1])
 ccm=squeeze(cntMap(:,:,k));
 imagesc(xl,yl,log10(ccm));
-set(gca,'ydir','normal','fontsize',11)
-text(10.2,55,tag{k},'Fontsize',14,'interpreter','latex')
-text(10.2,40,num2str(sum(sum(ccm))),'Fontsize',14,'interpreter','latex')
+set(gca,'ydir','normal','fontsize',12)
+text(10.2,55,tag{k},'Fontsize',16,'interpreter','latex')
+text(10.2,40,num2str(sum(sum(ccm))),'Fontsize',16,'interpreter','latex')
 colormap(cmap2)
 caxis(cax);
 end
 t.XLabel.String='log Host Mass';
-t.XLabel.FontSize=16;
+t.XLabel.FontSize=18;
 t.XLabel.Interpreter='latex';
 t.YLabel.String='No. of Sample Satellites';
-t.YLabel.FontSize=16;
+t.YLabel.FontSize=18;
 t.YLabel.Interpreter='latex';
 t.TileSpacing='compact';
 
@@ -163,15 +163,15 @@ t=tiledlayout(6,3);
 nexttile([4 3])
 countMap=squeeze(bird50(:,:,1));
 imagesc(xl,yl,log10(countMap));
-set(gca,'ydir','normal','fontsize',14)
-text(10.2,60,'TNG50','Fontsize',16,'interpreter','latex')
-text(10.2,55,num2str(sum(sum(countMap))),'Fontsize',16,'interpreter','latex')
+set(gca,'ydir','normal','fontsize',16)
+text(10.2,60,'TNG50','Fontsize',18,'interpreter','latex')
+text(10.2,55,num2str(sum(sum(countMap))),'Fontsize',18,'interpreter','latex')
 %xlabelmine('log Host Mass');
 %ylabelmine('No. of Sample Satellites');
 colormap(cmap2)
 caxis(cax);
-cbh=colorbar('fontsize',14);
-barTitle(cbh(1),'$\log N$','fontsize',16)
+cbh=colorbar('fontsize',16);
+barTitle(cbh(1),'$\log N$','fontsize',18)
 %tag={'$z=[0\; 0.5]$','$z=[0.5\; 1]$','$z=[1 2]$'};
 tag={'$0\leq z \leq 0.5$','$0.5< z \leq 1$','$1< z \leq 2$'};
 for k=1:3
@@ -180,16 +180,16 @@ nexttile([2,1])
 ccm=squeeze(cntMap(:,:,k));
 imagesc(xl,yl,log10(ccm));
 set(gca,'ydir','normal','fontsize',11)
-text(10.2,55,tag{k},'Fontsize',14,'interpreter','latex')
-text(10.2,40,num2str(sum(sum(ccm))),'Fontsize',14,'interpreter','latex')
+text(10.2,55,tag{k},'Fontsize',16,'interpreter','latex')
+text(10.2,40,num2str(sum(sum(ccm))),'Fontsize',16,'interpreter','latex')
 colormap(cmap2)
 caxis(cax);
 end
 t.XLabel.String='log Host Mass';
-t.XLabel.FontSize=16;
+t.XLabel.FontSize=18;
 t.XLabel.Interpreter='latex';
 t.YLabel.String='No. of Sample Satellites';
-t.YLabel.FontSize=16;
+t.YLabel.FontSize=18;
 t.YLabel.Interpreter='latex';
 t.TileSpacing='compact';
 
@@ -288,7 +288,7 @@ hf=myFigure ;
         'location','Northwest','Direction','out','kernel','off',...
         'nbins',10,'markersize',[4,6,8],'marker','osd','color',cmap([5 2 3],:));
     set(gca,'xaxislocation','bottom',...
-        'yaxislocation','right','fontsize',14)
+        'yaxislocation','right','fontsize',16)
     
     % set linwidth for histogram
     for i=2:3
@@ -312,14 +312,14 @@ hf=myFigure ;
   grid
     % hold on
     % plot(log10(jfStats.M200c(msk & mmm)),log10(jff(msk & mmm)),'.')
-    text(11.6,-1.4,"TNG50",'Interpreter','latex','fontsize',14);
-    text(11.6,-1.6,num2str(sum(msk50 & gr==0)),'Interpreter','latex','Color',cmap(5,:),'fontsize',14);
-    text(11.6,-1.75,num2str(sum(msk50 & gr==1)),'Interpreter','latex','Color',cmap(2,:),'fontsize',14);
-    text(11.6,-1.9,num2str(sum(msk50 & gr==2)),'Interpreter','latex','Color',cmap(3,:),'fontsize',14);
+    text(11.6,-1.4,"TNG50",'Interpreter','latex','fontsize',16);
+    text(11.6,-1.6,num2str(sum(msk50 & gr==0)),'Interpreter','latex','Color',cmap(5,:),'fontsize',16);
+    text(11.6,-1.75,num2str(sum(msk50 & gr==1)),'Interpreter','latex','Color',cmap(2,:),'fontsize',16);
+    text(11.6,-1.9,num2str(sum(msk50 & gr==2)),'Interpreter','latex','Color',cmap(3,:),'fontsize',16);
     xlim([11.4 14.7])
     ylim([-2 0.05])
-    xlabelmine('log Host Mass');
-    ylabelmine('JF Fraction');
+    xlabelmine('log Host Mass',18);
+    ylabelmine('JF Fraction',18);
     
     fname='cjf_jfhost_jfFrac_TNG50';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
@@ -333,7 +333,7 @@ hf=myFigure ;
         'location','Northeast','Direction','out','kernel','off',...
         'nbins',10,'markersize',[4,6,8],'marker','osd','color',cmap([5 2 3],:));
     set(gca,'xaxislocation','bottom',...
-        'yaxislocation','left','fontsize',14)
+        'yaxislocation','left','fontsize',16)
     
     % set linwidth for histogram
     for i=2:3
@@ -357,14 +357,15 @@ hf=myFigure ;
   grid
     % hold on
     % plot(log10(jfStats.M200c(msk & mmm)),log10(jff(msk & mmm)),'.')
-    text(11.6,-1.4,"TNG100",'Interpreter','latex','fontsize',14);
-    text(11.6,-1.6,num2str(sum(msk100 & gr==0)),'Interpreter','latex','Color',cmap(5,:),'fontsize',14);
-    text(11.6,-1.75,num2str(sum(msk100 & gr==1)),'Interpreter','latex','Color',cmap(2,:),'fontsize',14);
-    text(11.6,-1.9,num2str(sum(msk100 & gr==2)),'Interpreter','latex','Color',cmap(3,:),'fontsize',14);
+    text(11.6,-1.4,"TNG100",'Interpreter','latex','fontsize',16);
+    text(11.6,-1.6,num2str(sum(msk100 & gr==0)),'Interpreter','latex','Color',cmap(5,:),'fontsize',16);
+    text(11.6,-1.75,num2str(sum(msk100 & gr==1)),'Interpreter','latex','Color',cmap(2,:),'fontsize',16);
+    text(11.6,-1.9,num2str(sum(msk100 & gr==2)),'Interpreter','latex','Color',cmap(3,:),'fontsize',16);
     xlim([11.4 14.7])
     ylim([-2 0.05])
-    xlabelmine('log Host Mass');
-    ylabelmine('JF Fraction');
+    xlabelmine('log Host Mass',18);
+    ylabelmine('',18);
+    %ylabelmine('JF Fraction',18);
     
     fname='cjf_jfhost_jfFrac_TNG100';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);

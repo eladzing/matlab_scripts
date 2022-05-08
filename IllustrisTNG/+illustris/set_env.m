@@ -199,8 +199,10 @@ if ~DRACOFLAG
         % check to see if mounted
         mountFlag=system(['mountpoint -q ' mountPath]); % 0 - is mounted, 1 - is not mounted
         mountFlag=~mountFlag;
-        while ~mountFlag   % keep trying till you make it
-            
+        maxIter=10;
+        cnt=0;
+        while ~mountFlag && cnt<=maxIter  % keep trying till you make it
+            cnt=cnt+1;
             sysCommand=['sshfs eladzing@vera.mpcdf.mpg.de:. ' mountPath ' -o follow_symlinks'];
             %'sshfs eladzing@draco.mpcdf.mpg.de:../../ptmp/apillepi/IllustrisTNG ' mountPath ' -o follow_symlinks'];
             system(sysCommand);

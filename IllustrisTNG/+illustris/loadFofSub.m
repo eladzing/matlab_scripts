@@ -13,7 +13,11 @@ if ~exist('snap','var')
 end
 
 if ~DRACOFLAG
-    load([ DEFAULT_MATFILE_DIR '/fofs_subs_' simDisplayName '_snp' num2str(snap) '.mat'])
+    try
+        load([ DEFAULT_MATFILE_DIR '/fofs_subs_' simDisplayName '_snp' num2str(snap) '.mat'])
+    catch
+        error('%s - could not load catalog. local copy may not exist for snapshot %i',current_function().upper,snap);
+    end
 else
     fofs=illustris.groupcat.loadHalos(BASEPATH,snap);
     subs=illustris.groupcat.loadSubhalos(BASEPATH,snap);

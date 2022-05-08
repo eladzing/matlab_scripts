@@ -19,26 +19,27 @@ global subBox
 
 systemPath='C:\Users\eladz\Documents\workProjects';
 
-DRACO_SIMPATH = '/virgo/simulations/IllustrisTNG';%    '/ptmp/apillepi/IllustrisTNG';
+DRACO_SIMPATH = '/virgotng/universe/IllustrisTNG';
+%/virgo/simulations/IllustrisTNG';%    '/ptmp/apillepi/IllustrisTNG';
 HOME_SIMPATH = '/home/zinger/sshfsMounts/draco/IllustrisTNG/simulationOutput';
 
-DRACO_PRINTOUT_DIR = '/isaac/ptmp/gc/eladzing/IllustrisTNG/printout';
+DRACO_PRINTOUT_DIR = '/vera/ptmp/gc/eladzing/IllustrisTNG/printout';
 %/ptmp/eladzing/TNG/printout';
 HOME_PRINTOUT_DIR = [ systemPath '/IllustrisTNG/printout'];
 
-DRACO_MATFILE_DIR = '/isaac/ptmp/gc/eladzing/IllustrisTNG/matFiles';
+DRACO_MATFILE_DIR = '/vera/ptmp/gc/eladzing/IllustrisTNG/matFiles';
 %'/u/eladzing/IllustrisTNG/matFiles';%/ptmp/eladzing/TNG/matFiles';
 HOME_MATFILE_DIR = [ systemPath '/matlab_scripts/IllustrisTNG/matFiles'];
 
-DRACO_FIG_DIR ='/isaac/ptmp/gc/eladzing/IllustrisTNG/printout/figFiles';
+DRACO_FIG_DIR ='/vera/ptmp/gc/eladzing/IllustrisTNG/printout/figFiles';
 %'/ptmp/eladzing/TNG/printout/figFiles';
 HOME_FIG_DIR = [ systemPath '/IllustrisTNG/printout/figFiles'];
 
-DRACO_myPOSTPROCESSING = '/isaac/ptmp/gc/eladzing/IllustrisTNG/ezPostProcessing';
+DRACO_myPOSTPROCESSING = '/vera/ptmp/gc/eladzing/IllustrisTNG/ezPostProcessing';
 %'/ptmp/eladzing/TNG/ezpostprocessing';
 HOME_myPOSTPROCESSING = '/home/zinger/sshfsMounts/draco/IllustrisTNG/postProcessing';
 
-DRACO_METHODS = '/isaac/ptmp/gc/eladzing/IllustrisTNG/simulationMethods';
+DRACO_METHODS = '/vera/ptmp/gc/eladzing/IllustrisTNG/simulationMethods';
 HOME_METHODS = '/home/zinger/sshfsMounts/draco/IllustrisTNG/simulationMethods';
 
 HOME_JF_DATA_DIR = [ systemPath '/IllustrisTNG/jellyFish/zooniverse_data'];
@@ -149,7 +150,7 @@ while(i<=length(varargin))
             simDisplayName=['TNG35_' meth];
             LBox=25e3; %in kpc/h
             
-            DRACO_SIMPATH = '/isaac/ptmp/gc/apillepi/sims.TNG_method';
+            DRACO_SIMPATH = '/virgotng/universe/TNG-Variations'; %  /vera/ptmp/gc/apillepi/sims.TNG_method';
             HOME_SIMPATH = '/home/zinger/sshfsMounts/draco/IllustrisTNG/simulationMethods';
         case{'methodres'}
             i=i+1;
@@ -181,7 +182,7 @@ end
 %% Check to see if we are in draco
 
 pp=pwd;
-DRACOFLAG=strcmp(pp(1:7),'/draco/')  || strcmp(pp(1:7),'/isaac/');
+DRACOFLAG=strcmp(pp(1:7),'/draco/')  || strcmp(pp(1:7),'/vera/');
 
 
 
@@ -200,7 +201,7 @@ if ~DRACOFLAG
         mountFlag=~mountFlag;
         while ~mountFlag   % keep trying till you make it
             
-            sysCommand=['sshfs eladzing@draco.mpcdf.mpg.de:. ' mountPath ' -o follow_symlinks'];
+            sysCommand=['sshfs eladzing@vera.mpcdf.mpg.de:. ' mountPath ' -o follow_symlinks'];
             %'sshfs eladzing@draco.mpcdf.mpg.de:../../ptmp/apillepi/IllustrisTNG ' mountPath ' -o follow_symlinks'];
             system(sysCommand);
             

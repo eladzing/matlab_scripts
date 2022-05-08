@@ -168,9 +168,11 @@ for k=1:length(sims)
 end
 
 %% add a uniqaue halo tag identifier 
-galProps = generate_hostTag(galProps);
+galProps = jellyfish.generate_hostTag(galProps);
 
 
+
+%% write to file 
 fname=sprintf('jf_galProperties_CJF.mat');
 save([DEFAULT_MATFILE_DIR '/' fname],'galProps','-v7.3')
 

@@ -182,7 +182,7 @@ end
 %% Check to see if we are in draco
 
 pp=pwd;
-DRACOFLAG=strcmp(pp(1:7),'/draco/')  || strcmp(pp(1:7),'/vera/');
+DRACOFLAG= strcmp(pp(1:6),'/vera/');
 
 
 

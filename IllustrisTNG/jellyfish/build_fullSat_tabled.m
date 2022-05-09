@@ -43,10 +43,12 @@ for k=1:length(sims)
     end
     global LBox
     
-    
-    for i=length(snaps)
+     fprintf('going over %i snapshots \n',length(snaps));
+     
+    for i=1:length(snaps)
         %for i=1:length(snaps)
         snap=snaps(i);
+        fprintf('%i )  snap %i ',i,snap);
         illustris.utils.set_illUnits(snap);
         
         %% load catalogs

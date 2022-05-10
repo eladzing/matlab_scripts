@@ -483,7 +483,7 @@ if newStarFlag
         currentAge=redshift2time(illUnits.zred,'cosmo',cosmoStruct);
         currentAge=currentAge.age;
         deltaAge=currentAge-nsBirthTime;
-        if any(deltaAge<-1e-3); error('mkmapStars: something funky with the ages - probably mask is incorrect re wind particles');end;
+        if any(deltaAge<-1e-3); error('mkmapStars: something funky with the ages - probably mask is incorrect re wind particles');end
             
         newStarMask=deltaAge<=newStarThresh;
         newStarPos=coord(:,newStarMask);
@@ -677,18 +677,19 @@ for projection = 1:3
         %         end
         
         %% plot new stars
-        switch projectiontags{projection}
-            case 'YZ'
-                %plot(newStarPos(2,:),newStarPos(3,:),'.','color',newStarColor);
-                scatter(newStarPos(3,:),newStarPos(2,:),5,'markerfacecolor',newStarColor,'markerfacealpha',0.25,'markeredgealpha',0.0);
-            case 'XZ'
-                %plot(newStarPos(1,:),newStarPos(3,:),'.','color',newStarColor);
-                scatter(newStarPos(1,:),newStarPos(3,:),5,'markerfacecolor',newStarColor,'markerfacealpha',0.25,'markeredgealpha',0.0);
-            case 'XY'
-                scatter(newStarPos(1,:),newStarPos(2,:),5,'markerfacecolor',newStarColor,'markerfacealpha',0.25,'markeredgealpha',0.0);
-                %plot(newStarPos(1,:),newStarPos(2,:),'.','color',newStarColor);
+        if newStarFlag
+            switch projectiontags{projection}
+                case 'YZ'
+                    %plot(newStarPos(2,:),newStarPos(3,:),'.','color',newStarColor);
+                    scatter(newStarPos(3,:),newStarPos(2,:),5,'markerfacecolor',newStarColor,'markerfacealpha',0.25,'markeredgealpha',0.0);
+                case 'XZ'
+                    %plot(newStarPos(1,:),newStarPos(3,:),'.','color',newStarColor);
+                    scatter(newStarPos(1,:),newStarPos(3,:),5,'markerfacecolor',newStarColor,'markerfacealpha',0.25,'markeredgealpha',0.0);
+                case 'XY'
+                    scatter(newStarPos(1,:),newStarPos(2,:),5,'markerfacecolor',newStarColor,'markerfacealpha',0.25,'markeredgealpha',0.0);
+                    %plot(newStarPos(1,:),newStarPos(2,:),'.','color',newStarColor);
+            end
         end
-        
         
         %% add contours
         

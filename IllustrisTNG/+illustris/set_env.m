@@ -16,37 +16,42 @@ global DEFAULT_FIG_DIR
 global myPOSTPROCESSING
 global JF_DATA_DIR
 global subBox
+global MOUNTEDFLAG
 
 systemPath='C:\Users\eladz\Documents\workProjects';
+mountPath='\\wsl.localhost\Ubuntu-20.04\home\kipod\sshfsMounts\vera';
+veraPath='/vera/ptmp/gc/eladzing';
+
 
 DRACO_SIMPATH = '/virgotng/universe/IllustrisTNG';
 %/virgo/simulations/IllustrisTNG';%    '/ptmp/apillepi/IllustrisTNG';
-HOME_SIMPATH = '/home/zinger/sshfsMounts/draco/IllustrisTNG/simulationOutput';
+%HOME_SIMPATH = '/home/zinger/sshfsMounts/draco/IllustrisTNG/simulationOutput';
+HOME_SIMPATH = [ mountPath '\IllustrisTNG\simulationOutput'];
 
-DRACO_PRINTOUT_DIR = '/vera/ptmp/gc/eladzing/IllustrisTNG/printout';
+DRACO_PRINTOUT_DIR = [veraPath '/IllustrisTNG/printout'];
 %/ptmp/eladzing/TNG/printout';
 HOME_PRINTOUT_DIR = [ systemPath '/IllustrisTNG/printout'];
 
-DRACO_MATFILE_DIR = '/vera/ptmp/gc/eladzing/IllustrisTNG/matFiles';
+DRACO_MATFILE_DIR = [veraPath '/IllustrisTNG/matFiles'];
 %'/u/eladzing/IllustrisTNG/matFiles';%/ptmp/eladzing/TNG/matFiles';
 HOME_MATFILE_DIR = [ systemPath '/matlab_scripts/IllustrisTNG/matFiles'];
 
-DRACO_FIG_DIR ='/vera/ptmp/gc/eladzing/IllustrisTNG/printout/figFiles';
+DRACO_FIG_DIR =[veraPath '/IllustrisTNG/printout/figFiles'];
 %'/ptmp/eladzing/TNG/printout/figFiles';
 HOME_FIG_DIR = [ systemPath '/IllustrisTNG/printout/figFiles'];
 
-DRACO_myPOSTPROCESSING = '/vera/ptmp/gc/eladzing/IllustrisTNG/ezPostProcessing';
+DRACO_myPOSTPROCESSING = [veraPath '/IllustrisTNG/ezPostProcessing'];
 %'/ptmp/eladzing/TNG/ezpostprocessing';
-HOME_myPOSTPROCESSING = '/home/zinger/sshfsMounts/draco/IllustrisTNG/postProcessing';
+HOME_myPOSTPROCESSING = [ mountPath '/IllustrisTNG/ezPostProcessing'];
 
-DRACO_METHODS = '/vera/ptmp/gc/eladzing/IllustrisTNG/simulationMethods';
-HOME_METHODS = '/home/zinger/sshfsMounts/draco/IllustrisTNG/simulationMethods';
+DRACO_METHODS = [veraPath '/IllustrisTNG/TNG-Variations'];
+HOME_METHODS = [mountPath '/IllustrisTNG/TNG-Variations'];
 
 HOME_JF_DATA_DIR = [ systemPath '/IllustrisTNG/jellyFish/zooniverse_data'];
 DRACO_JF_DATA_DIR = 'NOT DEFINED!';
 
 DRACOFLAG=false;
-doMount=true;
+doMount=false;
 
 subbox='';
 
@@ -58,7 +63,7 @@ while(i<=length(varargin))
     if isstring(varargin{i})
         varargin{i}=char(varargin{i});
     end
-        
+    
     switch(lower(varargin{i}))
         case{'100','tng100',100,101,'100-1'}
             simName='L75n1820TNG';
@@ -144,20 +149,20 @@ while(i<=length(varargin))
             i=i+1;
             meth=varargin{i};
             if ~ischar(meth)
-               error('SET_ENV: method code must be a string');
+                error('SET_ENV: method code must be a string');
             end
             simName=['L25n512_' meth];
             simDisplayName=['TNG35_' meth];
             LBox=25e3; %in kpc/h
             
-            DRACO_SIMPATH = '/virgotng/universe/TNG-Variations'; %  /vera/ptmp/gc/apillepi/sims.TNG_method';
-            HOME_SIMPATH = '/home/zinger/sshfsMounts/draco/IllustrisTNG/simulationMethods';
+            DRACO_SIMPATH = DRACO_METHODS; %'/virgotng/universe/TNG-Variations'; %
+            HOME_SIMPATH =  HOME_METHODS; %'/home/zinger/sshfsMounts/draco/IllustrisTNG/simulationMethods';
         case{'methodres'}
             i=i+1;
             res=varargin{i};
             if ~ischar(res)
                 res=num2str(res);
-            end  
+            end
             k1=strfind(simName,'n');
             k2=strfind(simName,'_');
             
@@ -189,34 +194,46 @@ DRACOFLAG= strcmp(pp(1:6),'/vera/');
 %% Set the environmmet for accssing IllustrisTNG data
 if ~DRACOFLAG
     
-    mountPath='/home/zinger/sshfsMounts/draco';
+    mPath='/home/kipod/sshfsMounts/vera';
     
-    fprintf('*** Mounting simulation files *** \n');
+    %fprintf('*** Checking if Mounting simulation files *** \n');
     
+    % check to see if mounted
+    mountFlag=system(['wsl mountpoint -q ' mPath]); % 0 - is mounted, 1 - is not mounted
+    MOUNTEDFLAG=~mountFlag;
     
-    if doMount
-        
-        % check to see if mounted
-        mountFlag=system(['mountpoint -q ' mountPath]); % 0 - is mounted, 1 - is not mounted
-        mountFlag=~mountFlag;
-        maxIter=10;
-        cnt=0;
-        while ~mountFlag && cnt<=maxIter  % keep trying till you make it
-            cnt=cnt+1;
-            sysCommand=['sshfs eladzing@vera.mpcdf.mpg.de:. ' mountPath ' -o follow_symlinks'];
-            %'sshfs eladzing@draco.mpcdf.mpg.de:../../ptmp/apillepi/IllustrisTNG ' mountPath ' -o follow_symlinks'];
-            system(sysCommand);
-            
-            mountFlag=system(['mountpoint -q ' mountPath]); % 0 - is mounted, 1 - is not mounted
-            mountFlag=~mountFlag;
-        end
-        fprintf('*** Remote filesystem mounted on %s  *** \n',mountPath);
+    if MOUNTEDFLAG
+        fprintf('*** remote filesystem on VERA mounted at: %s ***\n', mountPath);
     else
-        mountFlag=false;
+        warning('*** remote filesystem on VERA  - NOT MOUNTED!  ***\n');
     end
-    % set paths
     
-    
+    %% this part is unneeded
+    %     if doMount
+    %
+    %         % check to see if mounted
+    %         mountFlag=system(['wsl mountpoint -q ' mPath]); % 0 - is mounted, 1 - is not mounted
+    %         mountFlag=~mountFlag;
+    %         maxIter=10;
+    %         cnt=0;
+    %         while ~mountFlag && cnt<=maxIter  % keep trying till you make it
+    %             cnt=cnt+1;
+    %             sysCommand=['wsl sshfs -p 2002 eladzing@localhost:. ' mPath ' -o follow_symlinks -o allow_other'];
+    %             %'sshfs eladzing@draco.mpcdf.mpg.de:../../ptmp/apillepi/IllustrisTNG ' mPath ' -o follow_symlinks'];
+    %             system(sysCommand);
+    %
+    %             mountFlag=system(['wsl mountpoint -q ' mPath]); % 0 - is mounted, 1 - is not mounted
+    %             mountFlag=~mountFlag;
+    %         end
+    %         fprintf('*** Remote filesystem mounted on %s  *** \n',mountPath);
+    %     else
+    %         mountFlag=false;
+end
+
+
+%% set paths
+
+if ~DRACOFLAG
     DEFAULT_PRINTOUT_DIR = HOME_PRINTOUT_DIR;
     DEFAULT_MOVIE_DIR = [ HOME_PRINTOUT_DIR '/movies'];
     DEFAULT_FIG_DIR = HOME_FIG_DIR;
@@ -246,7 +263,7 @@ POSTPROCESSING = [SIMPATH '/' simName '/postprocessing'];
 
 
 % set cosmology
-illustris.utils.set_cosmology(mountFlag);
+illustris.utils.set_cosmology(MOUNTEDFLAG);
 
 %% snapshot - redshift info
 
@@ -259,11 +276,11 @@ fullSnapMask=fullSnapMask0;
 snapRedshifts=snapRedshifts0;
 
 if contains(simDisplayName,'TNG35')
-  zred0=4;
-  snapRedshifts=[4 3 2 1 0];
-  fullSnapMask=true(size(snapRedshifts));
+    zred0=4;
+    snapRedshifts=[4 3 2 1 0];
+    fullSnapMask=true(size(snapRedshifts));
 end
-  
+
 % analyze sub-boxes
 if ~isempty(subbox)
     BASEPATH=[BASEPATH '/' subbox];

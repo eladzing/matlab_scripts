@@ -91,6 +91,7 @@ for i=1:length(sidList)
     
     vv=votes;
     
+    
     if sign(wt0)>0
         iscoreHigh.wt(ii)=iscoreHigh.wt(ii)+wt;
         iscoreHigh.score(ii)=iscoreHigh.score(ii)+wt.*vv;
@@ -100,9 +101,7 @@ for i=1:length(sidList)
         
         iscoreLow.wt(ii)=iscoreLow.wt(ii)+wt;
         iscoreLow.score(ii)=iscoreLow.score(ii)+wt.*vv;
-        iscoreLow.ncls(ii)=iscoreLow.ncls(ii)+1;
-    else
-        continue
+        iscoreLow.ncls(ii)=iscoreLow.ncls(ii)+1;      
     end
     
     
@@ -128,12 +127,17 @@ for i=1:length(sidList)
         badScore.downVoteScore(ii)=badScore.downVoteScore(ii)+wtHi.*(1-votes);
         badScore.downVoteNum(ii)=badScore.downVoteNum(ii)+1;
         badScore.downVoteWt(ii)=badScore.downVoteWt(ii)+wtHi;
-    else  % score is in the middle
-        continue
+%     else  % score is in the middle
+%         continue
     end
     
 end
+
 iscore.score=iscore.score./iscore.wt;
+
+iscore.score(iscore.wt==0)=1;
+
+
 
 iscoreHigh.score=iscoreHigh.score./iscoreHigh.wt;
 iscoreHigh.score(iscoreHigh.ncls==0)=1;

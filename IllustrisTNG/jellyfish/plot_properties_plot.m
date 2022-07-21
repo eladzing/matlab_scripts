@@ -18,8 +18,8 @@ if setupFlag
     threshJF=16;
     fprintf('JF Threshold set to %i and above. \n', threshJF);
     
-    maskJF=objectTable.score>=16;
-    maskNJF=objectTable.score<=5;
+    maskJF=objectTable.scoreWeighted>=0.8;
+    maskNJF=objectTable.scoreWeighted<=0.2;
     
     % list snaps and redshifts
     snaps=unique(objectTable.snap);
@@ -252,7 +252,7 @@ for k=1:length(sims)
             
             %% plot
             
-            figure('position',[1432 421 1000 750],'Color','w')
+            myFigure('pos',[1432 421 1000 750])
             
             %% underlying hist
             

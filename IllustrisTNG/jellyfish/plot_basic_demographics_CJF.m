@@ -26,11 +26,11 @@ if setupFlag
     zreds=round(100.*illustris.utils.snap2redshift(galProps.snap))./100;
     
     %% Define JF
-    threshJF=16;
+    threshJF=0.8;
     fprintf('JF Threshold set to %i and above. \n', threshJF);
     
-    maskJF=objectTable.score>=16;
-    maskNJF=objectTable.score<=5;
+    maskJF=objectTable.scoreWeighted>=0.8;
+    maskNJF=objectTable.scoreWeighted<=0.2;
     
     % list snaps and redshifts
     snaps=unique(objectTable.snap);
@@ -48,7 +48,7 @@ if setupFlag
 end
 
 %% plot some general info about the sample
-if 0==1
+if 1==1
     nObject=height(objectTable);
     fprintf('Total number of objects = %i \n',nObject);
     fprintf('Total number of JF = %i (%4.2f %%) \n',sum(maskJF),sum(maskJF)/nObject*100);
@@ -63,16 +63,17 @@ end
 
 %% plot scores
 
-if 1==0
+if 1==1
+    bins=-0.025:0.05:1.025;
     myFigure('pos',figPos);
     yl=[0.0 0.35];
     t=tiledlayout(2,1);
     nexttile
-    histogram(objectTable.score,'normalization','probability','facecolor',colors(1,:))
+    histogram(objectTable.scoreWeighted,bins,'normalization','probability','facecolor',colors(1,:))
     ylim(yl)
     %yl=ylim;
     hold on
-    plot(15.5.*ones(size(yl)),yl,':k' ,'linewidth',1.8)
+    plot(0.775.*ones(size(yl)),yl,':k' ,'linewidth',1.8)
     legend("Full Sample",'Interpreter','latex','FontSize',legFont)
     %xlabelmine('Score');
     set(gca,'fontsize',axFont)
@@ -81,16 +82,16 @@ if 1==0
     
     nexttile
     yl2=[0.001 0.5];
-    histogram(objectTable.score(mask50),'normalization','probability','facecolor',colors(2,:))
+    histogram(objectTable.scoreWeighted(mask50),bins,'normalization','probability','facecolor',colors(2,:))
     hold on
-    histogram(objectTable.score(mask100),'normalization','probability','facecolor',colors(5,:))
+    histogram(objectTable.scoreWeighted(mask100),bins,'normalization','probability','facecolor',colors(5,:))
     
     %yl=ylim;
     ylim(yl2)
     hold on
-    plot(15.5.*ones(size(yl2)),yl2,':k'  ,'linewidth',1.8)
+    plot(0.775.*ones(size(yl2)),yl2,':k'  ,'linewidth',1.8)
     legend(["TNG50","TNG100"],'Interpreter','latex','FontSize',legFont)
-    set(gca,'Yscale','log','fontsize',axFont)
+    set(gca,'Yscale','log','fontsize',axFont,'Ytick',[0.01 0.1])
     xlabelmine('Score',20);
     %ylabelmine('fraction of populaiton');
     %titlemine('TNG50');
@@ -105,8 +106,7 @@ if 1==0
     end
 end
 %% plot stellar mass and host mass functions
-if 1==0
-   
+if 1==1
     
     
     bins=8.0:0.1:12.5;
@@ -118,13 +118,15 @@ if 1==0
     hold on
     hs(2)=histogram(log10(galProps.galStellarMass(mask100)),bins,'facecolor',colors(1,:),...
         'DisplayName',"TNG100");
+    hs(3)=histogram(log10(galProps.galStellarMass),bins,'Displaystyle','stairs','edgecolor','k',...
+        'linewidth',1.5,'DisplayName',"All satellites");
     %     hold on
     %     hs(2)=histogram(log10(galProps.galStellarMass(mask50)),bins,'facecolor',colors(2,:),...
     %         'DisplayName',"TNG50");
     set(gca,'fontsize',axFont,'box','on');%,'Yscale','log')
-    legend(hs,'Interpreter','latex','FontSize',legFont)
+    legend(hs,'Interpreter','latex','FontSize',legFont,'numcolumns',3,'box','off')
     xlabelmine('log Stellar Mass',labFont);
-    ylabelmine('Number of Galaxies',labFont);
+    ylabelmine('No. of Satellites',labFont);
     hold(axes1,'off');
     % Create inset axes
     axes2 = axes('Parent',hf,...
@@ -132,9 +134,11 @@ if 1==0
     hold(axes2,'on');
     histogram(log10(galProps.galStellarMass(mask100)),bins,'facecolor',colors(2,:));
     histogram(log10(galProps.galStellarMass(mask50)),bins,'facecolor',colors(1,:));
+    histogram(log10(galProps.galStellarMass),bins,'Displaystyle','stairs','edgecolor','k',...
+        'linewidth',1.5)
     xlim(axes2,[11 12.3]);
-    ylim(axes2,[0 250]);
-    set(gca,'fontsize',axFont,'box','on','Yscale','log')
+    ylim(axes2,[0.8 250]);
+    set(gca,'fontsize',axFont,'box','on','Yscale','log','ytick',[1 10 100])
     if printFlag
         fname='cjf_stellarMassFunction';
         printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
@@ -153,17 +157,22 @@ if 1==0
     hold on
     hs(2)=histogram(log10(hmass(hsim=="TNG100")),bins,'facecolor',colors(1,:),...
         'DisplayName',"TNG100");
+     hs(3)=histogram(log10(hmass),bins,'Displaystyle','stairs','edgecolor','k',...
+        'linewidth',1.5,'DisplayName',"All satellites");
     set(gca,'fontsize',axFont,'box','on');%,'Yscale','log')
-    legend(hs,'Interpreter','latex','FontSize',legFont)
+    %legend(hs,'Interpreter','latex','FontSize',legFont)
     xlabelmine('log Host Mass',labFont);
-    ylabelmine('Number of Hosts',labFont);
+    ylabelmine('No. of Hosts',labFont);
     % Create inset axes
     axes2 = axes('Parent',hf,...
-        'Position',[0.592 0.494 0.282 0.289]);
+        'Position',[0.583596638655462,0.605692844677138,0.282,0.289]); % [0.592 0.494 0.282 0.289]);
+                    
     hold(axes2,'on');
     histogram(log10(hmass(hsim=="TNG50")),bins,'facecolor',colors(2,:));
     hold on
     histogram(log10(hmass(hsim=="TNG100")),bins,'facecolor',colors(1,:));
+    histogram(log10(hmass),bins,'Displaystyle','stairs','edgecolor','k',...
+        'linewidth',1.5);
     xlim(axes2,[13.5 14.5]);
     ylim(axes2,[0 100]);
     set(gca,'fontsize',axFont,'box','on','Yscale','log')
@@ -181,11 +190,13 @@ if 1==0
     hold on
     hs(2)=histogram(log10(galProps.hostM200c(mask100)),bins,'facecolor',colors(1,:),...
         'DisplayName',"TNG100");
-    
+     hs(3)=histogram(log10(galProps.hostM200c),bins,'Displaystyle','stairs','edgecolor','k',...
+        'linewidth',1.5,'DisplayName',"All satellites");
     set(gca,'fontsize',axFont,'box','on');%,'Yscale','log')
-    legend(hs,'Interpreter','latex','FontSize',legFont)
+    %legend(hs,'Interpreter','latex','FontSize',legFont)
+    ylim([0 4500])
     xlabelmine('log Host Mass',labFont);
-    ylabelmine('Number of Satellites',labFont);
+    ylabelmine('No. of Satellites',labFont);
     %titlemine("Number of Sat's found in hosts");
     if printFlag
         fname='cjf_satNumber';
@@ -200,10 +211,12 @@ if 1==0
     hold on
     hs(2)=histogram(log10(massRatio(mask100)),bins,'facecolor',colors(1,:),...
         'DisplayName',"TNG100");
+     hs(3)=histogram(log10(massRatio),bins,'Displaystyle','stairs','edgecolor','k',...
+        'linewidth',1.5,'DisplayName',"All satellites");
     set(gca,'fontsize',axFont,'box','on');%,'Yscale','log')
-    legend(hs,'Interpreter','latex','FontSize',legFont)
+    %legend(hs,'Interpreter','latex','FontSize',legFont)
     xlabelmine('log Stellar/Host Mass ratio',labFont);
-    ylabelmine('Number of Satellites',labFont);
+    ylabelmine('No. of Satellites',labFont);
     %titlemine("stellar=to-host mass ratio");
     % Create inset axes
     %     axes2 = axes('Parent',hf,...

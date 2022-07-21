@@ -65,14 +65,16 @@ for k=1:length(sims)
             satList=find(snapMask & simMask & galProps.hostID'==hostList(j)); %indices of subs in the objectTable
             
             jfStats.sampleSats(indx)=length(satList);
-            jfStats.JFNum(indx)=sum(objectTable.score(satList)>15);
+            jfStats.JFNumRaw(indx)=sum(objectTable.scoreRaw(satList)>15);
+            jfStats.JFNumWeighted(indx)=sum(objectTable.scoreWeighted(satList)>0.8);
             
             % fill out host info
             jfStats.halo(indx).tag=tag;
             jfStats.halo(indx).satTags=objectTable.tag(satList);
             jfStats.halo(indx).subfind=objectTable.subfind(satList);
             jfStats.halo(indx).satIndxInTable=satList;
-            jfStats.halo(indx).score=objectTable.score(satList);
+            jfStats.halo(indx).scoreRaw=objectTable.scoreRaw(satList);
+            jfStats.halo(indx).scoreWeighted=objectTable.scoreWeighted(satList);
             %jfStats.halo(indx).rpos=galProps.rpos(satList)./galProps.hostR200c(satList);
             
             

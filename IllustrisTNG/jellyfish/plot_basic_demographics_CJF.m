@@ -105,6 +105,7 @@ if 1==1
         printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
     end
 end
+
 %% plot stellar mass and host mass functions
 if 1==1
     
@@ -143,6 +144,39 @@ if 1==1
         fname='cjf_stellarMassFunction';
         printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
     end
+    
+    % sstellar mass function for JF 
+        bins=8.0:0.1:12.5;
+    hf=myFigure('pos',figPos);
+    axes1 = axes('Parent',hf);
+    hold(axes1,'on');
+    hs(1)=histogram(log10(galProps.galStellarMass(maskJF & mask50)),bins,'facecolor',colors(2,:),...
+        'DisplayName',"TNG50");
+    hold on
+    hs(2)=histogram(log10(galProps.galStellarMass(mask50)),bins,...
+        'Displaystyle','stairs','edgecolor',colors(2,:),...
+        'DisplayName',"TNG50");
+    hs(3)=histogram(log10(galProps.galStellarMass(maskJF & mask100)),bins,'facecolor',colors(1,:),...
+        'DisplayName',"TNG100");
+    hs(4)=histogram(log10(galProps.galStellarMass(mask100)),bins,...
+        'Displaystyle','stairs','edgecolor',colors(1,:),...
+        'DisplayName',"TNG100");
+
+    %     hs(3)=histogram(log10(galProps.galStellarMass),bins,'Displaystyle','stairs','edgecolor','k',...
+%         'linewidth',1.5,'DisplayName',"All satellites");
+%     %     hold on
+    %     hs(2)=histogram(log10(galProps.galStellarMass(mask50)),bins,'facecolor',colors(2,:),...
+    %         'DisplayName',"TNG50");
+    set(gca,'fontsize',axFont,'box','on','Yscale','log')
+    legend(hs,'Interpreter','latex','FontSize',legFont,'numcolumns',3,'box','off')
+    xlabelmine('log Stellar Mass',labFont);
+    ylabelmine('No. of Satellites',labFont);
+    if printFlag
+        fname='cjf_stellarMassFunction_JF';
+        printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+    end
+
+    
     
     
     % halo mass function
@@ -303,8 +337,7 @@ if 1==1
         printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
     end
 end
-
-
+    
 
 %% examine samples by snapshots and simulations
 

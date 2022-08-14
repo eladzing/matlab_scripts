@@ -115,7 +115,7 @@ global DEFAULT_PRINTOUT_DIR
 outdir=[DEFAULT_PRINTOUT_DIR '/jellyfish/jfProperties'];
 
 
-for k=1:length(sims)
+for k=2:length(sims)
     
     switch sims{k}
         case 'TNG50'
@@ -127,7 +127,7 @@ for k=1:length(sims)
     if k==1
         startwithI=1;
     else
-        startwithI=1;
+        startwithI=6;
     end
     
     for i=startwithI:length(xfields)
@@ -172,6 +172,8 @@ for k=1:length(sims)
             if skip(i,j)
                 continue;
             end
+            
+            fprintf('i: %i / %i , j: %i /%i \n',i,length(xfields),j,length(yfields));
             
             switch yfields{j}
                 case 'rpos'
@@ -252,7 +254,7 @@ for k=1:length(sims)
             
             %% plot
             
-            myFigure('pos',[1432 421 1000 750])
+            myFigure('pos',[1432 421 1000 750]);
             
             %% underlying hist
             

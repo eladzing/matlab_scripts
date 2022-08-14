@@ -8,7 +8,7 @@ load([DEFAULT_MATFILE_DIR '/jf_galProperties_CJF.mat']);
 
 snaps=unique(objectTable.snap);
 sims=unique(objectTable.sim);
-
+im
 
 %% run over simulations and snapshots
 indx=0; %running index of hosts

@@ -5,6 +5,7 @@ printFlag=false;
 type='none';
 sim='none';
 model=0;
+xl=[0 3.6];
 
 outDir='C:\Users\eladz\Documents\workProjects\IllustrisTNG\printout\obsComp';
 
@@ -27,24 +28,27 @@ while(i<=length(varargin))
             model=3;
         case{'gal','cgmall'}
             type=varargin{i};
+        case{'xl','xlim'}
+            i=i+1;
+            xl=varargin{i};
         otherwise
             if ~ischar(varargin{i})
                 msg=num2str(varargin{i});
             else
                 msg=varargin{i};
             end
-            error('%s - unknown argument: %s',current_function().lower,msg);
+            error('%s - unknown argument: %s',current_function().upper,msg);
     end
     i=i+1;
 end
 
 
 if strcmp(sim,'none')
-    error('%s - missing sim.',current_function().lower);
+    error('%s - missing sim.',current_function().upper);
 elseif strcmp(type,'none')
-    error('%s - missing type.',current_function().lower);
+    error('%s - missing type.',current_function().upper);
 elseif model==0
-    error('%s - missing model.',current_function().lower);
+    error('%s - missing model.',current_function().upper);
 end
 
 
@@ -54,6 +58,17 @@ switch(lower(sim))
     case 'tng100'
         legendPanel=2;
 end
+
+%set x-label 
+switch profStr.virType
+    case 'crit200'
+    xLab='$r/R_\mathrm{200,c}$';
+    case 'mean200'
+    xLab='$r/R_\mathrm{200,m}$';
+    case 'crit500'
+    xLab='$r/R_\mathrm{500,c}$';
+end
+    
 
 figPos=[ 800          42        1062         954];
 colors=brewermap(8,'Set1');
@@ -77,14 +92,14 @@ switch(lower(type))
         yl=[-2 3];
 end
 
-xl=[0 3.6];
+
 for k=1:4
     nexttile;
     hflag=true;
     h=[];
     for j=1:4
         
-        profSt=profStr.byHostStar4(k).(type).hiProfD(model,j);
+        profSt=profStr.byHostStar4(k).(type).hiProfDL(model,j);
         msk=profSt.binCount>0;
         if any(msk) && sum(profSt.binCount)>10
             
@@ -117,7 +132,7 @@ for k=1:4
     set(gca,'fontsize',14,'box','on')
     
     
-    xlabelmine('$r/R_\mathrm{vir}$',16);
+    xlabelmine(xLab,16);
     ylabelmine('HI deficiency',16);
     
     
@@ -148,7 +163,7 @@ for k=1:4
     h=[];
     for j=1:4
         
-        profSt=profStr.byHostStar4(k).(type).hiProfD(model,j);
+        profSt=profStr.byHostStar4(k).(type).hiProfDL(model,j);
         msk=profSt.binCount>0;
         if any(msk) && sum(profSt.binCount)>10
             
@@ -185,7 +200,7 @@ for k=1:4
         'fontsize',16);
     
     set(gca,'fontsize',14,'box','on')
-    xlabelmine('$r/R_\mathrm{vir}$',16);
+    xlabelmine(xLab,16);
     ylabelmine('HI deficiency',16);
     
     
@@ -222,7 +237,7 @@ for k=1:4
     h=[];
     for j=1:4
         
-        profSt=profStr.byHostStar4(j).(type).hiProfD(model,k);
+        profSt=profStr.byHostStar4(j).(type).hiProfDL(model,k);
         msk=profSt.binCount>0;
         if any(msk) && sum(profSt.binCount)>10
             
@@ -255,7 +270,7 @@ for k=1:4
     set(gca,'fontsize',14,'box','on')
     
     
-    xlabelmine('$r/R_\mathrm{vir}$',16);
+    xlabelmine(xLab,16);
     ylabelmine('HI deficiency',16);
     
     
@@ -286,7 +301,7 @@ for k=1:4
     h=[];
     for j=1:4
         
-        profSt=profStr.byHostStar4(j).(type).hiProfD(model,k);
+        profSt=profStr.byHostStar4(j).(type).hiProfDL(model,k);
         msk=profSt.binCount>0;
         if any(msk) && sum(profSt.binCount)>10
             
@@ -323,7 +338,7 @@ for k=1:4
         'fontsize',16);
     
     set(gca,'fontsize',14,'box','on')
-    xlabelmine('$r/R_\mathrm{vir}$',16);
+    xlabelmine(xLab,16);
     ylabelmine('HI deficiency',16);
     
     

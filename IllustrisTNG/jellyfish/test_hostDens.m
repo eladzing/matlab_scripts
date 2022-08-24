@@ -12,7 +12,7 @@ load([DEFAULT_MATFILE_DIR '/jf_galProperties_CJF.mat']);
 
 %% perliminaries
 sims={'TNG50','TNG100'};
-maskJF=objectTable.scoreWeighted>=0.8;
+%maskJF=objectTable.scoreWeighted>=0.8;
 
 snaps=unique(objectTable.snap);
 
@@ -107,3 +107,13 @@ for k=1:length(sims)
         
     end
 end
+
+compareDens=res;
+
+%% write to file 
+fname=sprintf('jf_compareDEnsity_NFW_CJF.mat');
+save([DEFAULT_MATFILE_DIR '/' fname],'compareDens','-v7.3')
+
+fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
+
+

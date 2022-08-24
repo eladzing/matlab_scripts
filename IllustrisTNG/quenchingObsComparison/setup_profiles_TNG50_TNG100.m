@@ -1,4 +1,4 @@
-binEdges=0
+binEdges=0.1:0.2:2.1;
 
 %% load important things TNG50
 bp=illustris.set_env(50,'nomount');

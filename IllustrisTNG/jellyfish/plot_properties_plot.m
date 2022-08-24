@@ -1,5 +1,5 @@
 %% batch plot properties
-printFlag=true;
+printFlag=false;
 
 if setupFlag
     units;
@@ -42,7 +42,7 @@ end
 
 %% properties to plot
 
-xfields={'galStellarMass','hostM200c','rpos','vrad','vel','galGasMass','massRatio','radiality'};
+xfields={'galStellarMass','hostM200c','rpos','vrad','vel','galGasMass','massRatio','radiality','galGasMassNorm'};
 xlab={'log Stellar Mass $[\mathrm{M_\odot}]$',...
     '$\log M_\mathrm{200,c}\, [\mathrm{M_\odot}]$',...
     'Radial Position $[R_\mathrm{200,c}]$',...
@@ -50,13 +50,13 @@ xlab={'log Stellar Mass $[\mathrm{M_\odot}]$',...
     'log Velocity $[V_\mathrm{200,c}]$',...
     'log Gas Mass $[\mathrm{M_\odot}]$',...
     '$\log M_\mathrm{sat}/M_\mathrm{host}$',...
-    '$v_\mathrm{rad}/|\vec{v}|$'};
+    '$v_\mathrm{rad}/|\vec{v}|$','$\log M_\mathrm{gas}/M_\mathrm{sat}$'};
 
 xlog=false(size(xfields));
-xlog([1 2  5 6 7 ])=true;
+xlog([1 2  5 6 7 9])=true;
 
 yfields={'hostM200c','rpos','vrad','vel','galSFR','galGasMass','gasMass',...
-    'galBHMass','massRatio','radiality'};
+    'galBHMass','massRatio','radiality','galGasMassNorm','gasMassNorm'};
 ylab={'$\log M_\mathrm{200,c}\, [\mathrm{M_\odot}]$',...
     'Radial Position $[R_\mathrm{200,c}]$',...
     'Radial Velocity $[V_\mathrm{200,c}]$',...
@@ -66,9 +66,15 @@ ylab={'$\log M_\mathrm{200,c}\, [\mathrm{M_\odot}]$',...
     'log CGM Mass $[\mathrm{M_\odot}]$',...
     'log BH Mass $[\mathrm{M_\odot}]$',...
     '$\log M_\mathrm{sat}/M_\mathrm{host}$',...
-    '$v_\mathrm{rad}/|\vec{v}|$'};
+    '$v_\mathrm{rad}/|\vec{v}|$',...
+    '$\log M_\mathrm{gas}/M_\mathrm{sat}$',...
+    '$ \log M_\mathrm{CGM}/M_\mathrm{host}$'};
+ylog=false(size(yfields));
+ylog([1 4 5 6 7 8 9 11 12])=true;
 
-skip=false(length(xfields),length(yfields));
+skip=true(length(xfields),length(yfields));
+skip(1,1)=false;
+
 % % skip(:,1)=true;
 %  skip(4,2:4)=true;
 %  skip(5,2)=true;
@@ -84,8 +90,7 @@ skip=false(length(xfields),length(yfields));
 
 
 
-ylog=false(size(yfields));
-ylog([1 4 5 6 7 8 9])=true;
+
 % some perliminaries
 mv=galProps.hostM200c;
 rv=galProps.hostR200c;
@@ -115,7 +120,7 @@ global DEFAULT_PRINTOUT_DIR
 outdir=[DEFAULT_PRINTOUT_DIR '/jellyfish/jfProperties'];
 
 
-for k=2:length(sims)
+for k=1:length(sims)
     
     switch sims{k}
         case 'TNG50'
@@ -127,7 +132,7 @@ for k=2:length(sims)
     if k==1
         startwithI=1;
     else
-        startwithI=6;
+        startwithI=1;
     end
     
     for i=startwithI:length(xfields)
@@ -143,6 +148,8 @@ for k=2:length(sims)
                 xx0=massRatio;
             case 'radiality'
                 xx0=radiality;
+            case 'galGasMassNorm'
+                xx0=galProps.galGasMass./galProps.galStellarMass;
             otherwise
                 xx0=galProps.(xfields{i});
         end
@@ -191,6 +198,10 @@ for k=2:length(sims)
                     yy0(yy0<=0)=1e4;
                 case 'radiality'
                     yy0=radiality;
+                case 'galGasMassNorm'
+                    yy0=galProps.galGasMass./galProps.galStellarMass;
+                    case 'gasMassNorm'
+                    yy0=cgmMass./mv;
                 otherwise
                     yy0=galProps.(yfields{j});
             end
@@ -340,7 +351,7 @@ for k=2:length(sims)
             
             
         end
-        close all
+        %close all
     end
     
     

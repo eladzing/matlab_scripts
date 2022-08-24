@@ -1,11 +1,11 @@
 %% plot quenched fractions
 
-bp=illustris.set_env(100,'nomount');
-massThresh=10^9;
+bp=illustris.set_env(50,'nomount');
+massThresh=10^8.3;
 [subs,fofs,subsInfo]=illustris.loadFofSub(99);
 
 colors=brewermap(8,'Set1');
-
+global simDisplayName
 %% generate the quenched fractions
 qfCrit=generate_quenched_fraction(fofs,subs,'massThresh',massThresh,'crit');
 qfMean=generate_quenched_fraction(fofs,subs,'massThresh',massThresh,'mean');
@@ -80,6 +80,10 @@ for kk=1:2
     xlim(xl);
     ylim(yl);
     grid
+    text(xl(1)+0.82.*diff(xl),yl(1)+0.92.*diff(yl),...
+        simDisplayName,'interpreter','latex',...
+        'fontsize',16);
+    %
     %     text(xl(1)+0.05.*diff(xl),yl(1)+0.85.*diff(yl),...
     %         ['$ M_\mathrm{*} =' mtag{k} '$'],'interpreter','latex',...
     %         'fontsize',16);
@@ -137,7 +141,7 @@ for k=1:4
     
     set(gca,'fontsize',14)
     xlabelmine('$r/R_\mathrm{vir}$',16);
-    ylabelmine('sSFR [1/yr]',16);
+    ylabelmine('quenched fraction');
     
 end
 

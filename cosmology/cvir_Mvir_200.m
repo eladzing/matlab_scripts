@@ -1,6 +1,6 @@
 function cvir=cvir_Mvir_200(Mv,zred,type,varargin)
 % function to realize the cvir-Mvir relation as presented in
-% Maccio and Dutton 2014
+% Dutton and  Maccio  2014
 % Mv should be in solarmass NOT solarmass h^-1!! 
 % the fitting relation is for Mv h^-1 so the value of h is an
 % optional argument

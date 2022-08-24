@@ -65,11 +65,13 @@ end
 
 if 1==1
     bins=-0.025:0.05:1.025;
+    
+    % plot initial scores 
     myFigure('pos',figPos);
     yl=[0.0 0.35];
     t=tiledlayout(2,1);
     nexttile
-    histogram(objectTable.scoreWeighted,bins,'normalization','probability','facecolor',colors(1,:))
+    histogram(objectTable.scoreRaw,bins,'normalization','probability','facecolor',colors(1,:))
     ylim(yl)
     %yl=ylim;
     hold on
@@ -82,9 +84,9 @@ if 1==1
     
     nexttile
     yl2=[0.001 0.5];
-    histogram(objectTable.scoreWeighted(mask50),bins,'normalization','probability','facecolor',colors(2,:))
+    histogram(objectTable.scoreRaw(mask50),bins,'normalization','probability','facecolor',colors(2,:))
     hold on
-    histogram(objectTable.scoreWeighted(mask100),bins,'normalization','probability','facecolor',colors(5,:))
+    histogram(objectTable.scoreRaw(mask100),bins,'normalization','probability','facecolor',colors(5,:))
     
     %yl=ylim;
     ylim(yl2)
@@ -96,14 +98,75 @@ if 1==1
     %ylabelmine('fraction of populaiton');
     %titlemine('TNG50');
     
-    ylabel(t,'fraction of populaiton','fontsize',labFont,'interpreter','latex')
+    ylabel(t,'Fraction of Population','fontsize',labFont,'interpreter','latex')
     t.TileSpacing='tight';
     t.Padding='compact';
     
     if printFlag
-        fname='cjf_scoreHist';
+        fname='cjf_scoreHist_initial';
         printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
     end
+    
+    
+    % plot weighted scores 
+    myFigure('pos',figPos);
+    yl=[0.005 0.5];
+%     t=tiledlayout(2,1);
+%     nexttile
+    histogram(objectTable.scoreWeighted,bins,'normalization','probability',...
+        'facecolor',colors(1,:),'edgecolor','none')
+    hold on 
+    
+    histogram(objectTable.scoreRaw,bins,'normalization','probability',...
+        'facecolor','none','edgecolor','k')
+    
+    ylim(yl)
+    hold on
+    plot(0.775.*ones(size(yl)),yl,':k' ,'linewidth',1.8)
+    legend({"Weighted Score","Initial Score"} ,'Interpreter','latex','FontSize',legFont)
+    %xlabelmine('Score');
+    set(gca,'Yscale','log','fontsize',axFont,'Ytick',[0.01 0.1])
+    xlabelmine('Score',20);
+    ylabelmine('Fraction of Population',labFont);
+    set(gca,'fontsize',axFont)
+    %ylabelmine('fraction of populaiton');
+    %titlemine('All');
+    
+%     nexttile
+%     yl2=[0.001 0.5];
+%     histogram(objectTable.scoreWeighted(mask50),bins,'normalization','probability',...
+%         'facecolor',colors(2,:),'edgecolor','none')
+%     hold on
+%     histogram(objectTable.scoreWeighted(mask100),bins,'normalization','probability',...
+%         'facecolor',colors(5,:),'edgecolor','none')
+%     
+%     histogram(objectTable.scoreRaw(mask50),bins,'normalization','probability',...
+%         'edgecolor',colors(2,:),'facecolor','none')
+%     histogram(objectTable.scoreRaw(mask100),bins,'normalization','probability',...
+%         'edgecolor',colors(5,:),'facecolor','none')
+%     
+%     
+%     
+%     %yl=ylim;
+%     ylim(yl2)
+%     hold on
+%     plot(0.775.*ones(size(yl2)),yl2,':k'  ,'linewidth',1.8)
+%     legend(["TNG50","TNG100"],'Interpreter','latex','FontSize',legFont)
+%     set(gca,'Yscale','log','fontsize',axFont,'Ytick',[0.01 0.1])
+%     xlabelmine('Score',20);
+%     %ylabelmine('fraction of populaiton');
+%     %titlemine('TNG50');
+%     
+%     ylabel(t,'fraction of populaiton','fontsize',labFont,'interpreter','latex')
+%     t.TileSpacing='tight';
+%     t.Padding='compact';
+%     
+    if printFlag
+        fname='cjf_scoreHist_weighted';
+        printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+    end
+    
+    
 end
 
 %% plot stellar mass and host mass functions

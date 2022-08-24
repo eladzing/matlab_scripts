@@ -112,6 +112,7 @@ switch lower(virType)
         rvir=double(fofs.Group_R_Crit500(subsInfo.hostFof(sampleMask)+1));
         mvir=double(fofs.Group_M_Crit500(subsInfo.hostFof(sampleMask)+1)).*illUnits.massUnit;
 end
+res.virType=virType;
 %     m200c=log10(double(fofs.Group_M_Crit200(subsInfo.hostFof+1).*illUnits.massUnit));
 
 

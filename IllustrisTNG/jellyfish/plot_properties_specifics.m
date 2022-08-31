@@ -1,5 +1,5 @@
 %% batch plot properties
-printFlag=true;
+%printFlag=true;
 if setupFlag
     units;
     sims={'TNG50','TNG100'};
@@ -13,12 +13,20 @@ if setupFlag
     % load galaxy properties
     load([DEFAULT_MATFILE_DIR '\jf_galProperties_CJF.mat']);
     
+    load([DEFAULT_MATFILE_DIR '\jf_compareDEnsity_NFW_CJF.mat']);
+      
+    densRat=zeros(size(galProps.tag));
+    densRat(compareDens.objectList)=compareDens.closeDens./compareDens.hostDens;
+    
     % Define JF
 %     threshJF=16;
 %     fprintf('JF Threshold set to %i and above. \n', threshJF);
 %     
     maskJF=objectTable.scoreWeighted>=0.8;
     maskNJF=objectTable.scoreWeighted<=0.2;
+    
+    
+    
     
     % list snaps and redshifts
     snaps=unique(objectTable.snap);
@@ -75,7 +83,7 @@ ylog([1 4 5 6 7 8 9 11 12 13])=true;
 skip=true(length(xfields),length(yfields));
 %skip(1,1)=false;
 %skip([1 2 3],[1 2 11 12] )=false;
-skip(3,13)=false;
+skip(3,1)=false;
 
 % % skip(:,1)=true;
 %  skip(4,2:4)=true;
@@ -163,7 +171,7 @@ for k=1:length(sims)
         end
         
         xx=xx0(simMask);
-        xxJF=xx0(simMask & maskJF);
+        xxJF=xx0(simMask & maskJF); xxJFd=xx0(simMask & maskJF & densRat>1.1);
         xxNJF=xx0(simMask & ~maskJF);
         
         if i==1
@@ -217,7 +225,7 @@ for k=1:length(sims)
             end
             
             yy=yy0(simMask);
-            yyJF=yy0(simMask & maskJF);
+            yyJF=yy0(simMask & maskJF); yyJFd=yy0(simMask & maskJF  & densRat>1.1) ;
             yyNJF=yy0(simMask & ~maskJF);
             
             
@@ -332,6 +340,13 @@ for k=1:length(sims)
                 'color',cols(2,:),'markersize',6.5,...
                 'linewidth',1.5,'MarkerFaceColor',otherCol(2,:),...
                 'Displayname','JF beyond 99 percentile');
+            
+            
+            %% dens compare 
+            if densFlag
+                
+                plot(xxJFd,yyJFd,'o','color',otherCol(3,:),'markersize',12)
+            end
             
             
             

@@ -37,6 +37,9 @@ cv0=cvir_Mvir_200(mv(objList),zred,'200');
 
 res.hostDens=nfw.nfwRho(rp(objList),cv0); % not normalized! 
 
+
+fprintf('Examining %i objects \n',length(objList));
+
 for k=1:length(sims)
     bp=illustris.set_env(sims{k});
     global LBox

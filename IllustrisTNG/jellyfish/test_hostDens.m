@@ -20,7 +20,7 @@ mv=galProps.hostM200c;
 rv=galProps.hostR200c;
 rp=galProps.rpos./rv;
 
-objList=find(rp>=1.5);
+objList=find(rp>=1);
 simList=galProps.sim(objList)';
 snapList=galProps.snap(objList)';
 zred=illustris.utils.snap2redshift(snapList);

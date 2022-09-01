@@ -375,7 +375,7 @@ for k=1:length(sims)
             
             
         end
-        close all
+  %      close all
     end
     
     

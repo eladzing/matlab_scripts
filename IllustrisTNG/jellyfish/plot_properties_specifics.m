@@ -180,7 +180,8 @@ for k=1:length(sims)
         end
         
         xx=xx0(simMask);
-        xxJF=xx0(simMask & maskJF); xxJFd=xx0(simMask & maskJF & densRat>1.05);
+        xxJF=xx0(simMask & maskJF); 
+        xxJFd=xx0(simMask & maskJF & densRat>1.05);
         xxNJF=xx0(simMask & ~maskJF);
         
         if i==1
@@ -239,7 +240,8 @@ for k=1:length(sims)
             end
             
             yy=yy0(simMask);
-            yyJF=yy0(simMask & maskJF); yyJFd=yy0(simMask & maskJF  & densRat>1.05) ;
+            yyJF=yy0(simMask & maskJF); 
+            yyJFd=yy0(simMask & maskJF  & densRat>1.05) ;
             yyNJF=yy0(simMask & ~maskJF);
             
             

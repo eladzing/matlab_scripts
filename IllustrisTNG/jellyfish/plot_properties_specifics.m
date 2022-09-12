@@ -61,6 +61,9 @@ xlab={'log Stellar Mass $[\mathrm{M_\odot}]$',...
 
 xlog=false(size(xfields));
 xlog([1 2  5 6 7 9])=true;
+xlList=[8.2 12.5;10 15;0 10;0 0;0 0;0 0;-6.2 -1.25;0 0;-6 1.5];
+
+
 
 yfields={'hostM200c','rpos','vrad','vel','galSFR','galGasMass','gasMass',...
     'galBHMass','massRatio','radiality','galGasMassNorm','gasMassNorm','galStellarMass'};
@@ -75,15 +78,20 @@ ylab={'$\log M_\mathrm{200,c}\, [\mathrm{M_\odot}]$',...
     '$\log M_\mathrm{sat}/M_\mathrm{host}$',...
     '$v_\mathrm{rad}/|\vec{v}|$',...
     '$\log M_\mathrm{gas}/M_\mathrm{sat}$',...
-    '$ \log M_\mathrm{CGM}/M_\mathrm{host}$',...
+    '$ \log M_\mathrm{CGM}/M_\mathrm{sat}$',...
     'log Stellar Mass $[\mathrm{M_\odot}]$'};
 ylog=false(size(yfields));
 ylog([1 4 5 6 7 8 9 11 12 13])=true;
+ylList=[10 15;0 10;0 0;0 0;0 0;0 0;0 0;0 0;-6.2 -1.25;0 0; -6 1.5; -5 2;8.2 12.5];
+
 
 skip=true(length(xfields),length(yfields));
-%skip(1,1)=false;
-%skip([1 2 3],[1 2 11 12] )=false;
-skip(3,1)=false;
+skip(1,1)=false;
+skip([1 2 3],[1 2 11 12] )=false;
+skip(1,1)=false;
+skip(3,[1 9 13])=false;
+skip([1:3 7],11:12)=false;
+skip(9,12)=false;
 
 % % skip(:,1)=true;
 %  skip(4,2:4)=true;
@@ -152,7 +160,8 @@ for k=1:length(sims)
         
         switch xfields{i}
             case 'rpos'
-                xx0=rp;
+                xx0=rp;  
+                
             case 'vrad'
                 xx0=vr;
             case 'vel'
@@ -171,7 +180,7 @@ for k=1:length(sims)
         end
         
         xx=xx0(simMask);
-        xxJF=xx0(simMask & maskJF); xxJFd=xx0(simMask & maskJF & densRat>1.1);
+        xxJF=xx0(simMask & maskJF); xxJFd=xx0(simMask & maskJF & densRat>1.05);
         xxNJF=xx0(simMask & ~maskJF);
         
         if i==1
@@ -181,9 +190,14 @@ for k=1:length(sims)
         end
         
         % set limit.
-        xl0=[min(xx(~isinf(xx))) max(xx(~isinf(xx)))];
-        xl0=xl0+abs(xl0).*[-0.03 0.03];
-        xl=xl0;
+        if diff(xlList(i,:))==0
+            xl0=[min(xx(~isinf(xx))) max(xx(~isinf(xx)))];
+            xl0=xl0+abs(xl0).*[-0.03 0.03];
+            xl=xl0;
+        else
+            xl=xlList(i,:);
+        end
+        
         
         for j= startwith:length(yfields)
             if strcmp(xfields{i},yfields{j})
@@ -215,7 +229,7 @@ for k=1:length(sims)
                 case 'galGasMassNorm'
                     yy0=galProps.galGasMass./galProps.galStellarMass;
                     case 'gasMassNorm'
-                    yy0=cgmMass./mv;
+                    yy0=cgmMass./galProps.galStellarMass;
                 otherwise
                     yy0=galProps.(yfields{j});
             end
@@ -225,16 +239,19 @@ for k=1:length(sims)
             end
             
             yy=yy0(simMask);
-            yyJF=yy0(simMask & maskJF); yyJFd=yy0(simMask & maskJF  & densRat>1.1) ;
+            yyJF=yy0(simMask & maskJF); yyJFd=yy0(simMask & maskJF  & densRat>1.05) ;
             yyNJF=yy0(simMask & ~maskJF);
             
             
             %% prepare data
-            
-            yl0=[min(yy(~isinf(yy))) max(yy(~isinf(yy)))];
-            yl0=yl0+abs(yl0).*[-0.03 0.03];
-            yl=yl0;
-%             [bird, binsize, xl,yl]= histogram2d(xxNJF,yyNJF,ones(size(xxNJF)),...
+            if diff(ylList(j,:))==0
+                yl0=[min(yy(~isinf(yy))) max(yy(~isinf(yy)))];
+                yl0=yl0+abs(yl0).*[-0.03 0.03];
+                yl=yl0;
+            else
+                yl=ylList(j,:);
+            end
+            %             [bird, binsize, xl,yl]= histogram2d(xxNJF,yyNJF,ones(size(xxNJF)),...
 %                 'xlim',xl0,'ylim',yl0,'len',50);
 %            xl=xl0;yl=yl0;
             
@@ -343,12 +360,12 @@ for k=1:length(sims)
             
             
             %% dens compare 
-            if densFlag
-                
-                plot(xxJFd,yyJFd,'o','color',otherCol(3,:),'markersize',12)
-            end
-            
-            
+%             if densFlag
+%                 
+%                 plot(xxJFd,yyJFd,'o','color',otherCol(3,:),'markersize',12)
+%             end
+%             
+%             
             
             grid
             
@@ -375,7 +392,7 @@ for k=1:length(sims)
             
             
         end
-  %      close all
+        close all
     end
     
     

@@ -13,10 +13,9 @@ if setupFlag
     % load galaxy properties
     load([DEFAULT_MATFILE_DIR '\jf_galProperties_CJF.mat']);
     
-    load([DEFAULT_MATFILE_DIR '\jf_compareDEnsity_NFW_CJF.mat']);
-      
-    densRat=zeros(size(galProps.tag));
-    densRat(compareDens.objectList)=compareDens.closeDens./compareDens.hostDens;
+%     load([DEFAULT_MATFILE_DIR '\jf_compareDEnsity_NFW_CJF.mat']);
+%     densRat=zeros(size(galProps.tag));
+%     densRat(compareDens.objectList)=compareDens.closeDens./compareDens.hostDens;
     
     % Define JF
 %     threshJF=16;
@@ -87,8 +86,7 @@ ylList=[10 15;0 10;0 0;0 0;0 0;0 0;0 0;0 0;-6.2 -1.25;0 0; -6 1.5; -5 2;8.2 12.5
 
 skip=true(length(xfields),length(yfields));
 skip(1,1)=false;
-skip([1 2 3],[1 2 11 12] )=false;
-skip(1,1)=false;
+% skip([1 2 3],[1 2 11 12] )=false;
 skip(3,[1 9 13])=false;
 skip([1:3 7],11:12)=false;
 skip(9,12)=false;
@@ -181,7 +179,7 @@ for k=1:length(sims)
         
         xx=xx0(simMask);
         xxJF=xx0(simMask & maskJF); 
-        xxJFd=xx0(simMask & maskJF & densRat>1.05);
+%         xxJFd=xx0(simMask & maskJF & densRat>1.05);
         xxNJF=xx0(simMask & ~maskJF);
         
         if i==1
@@ -241,7 +239,7 @@ for k=1:length(sims)
             
             yy=yy0(simMask);
             yyJF=yy0(simMask & maskJF); 
-            yyJFd=yy0(simMask & maskJF  & densRat>1.05) ;
+%             yyJFd=yy0(simMask & maskJF  & densRat>1.05) ;
             yyNJF=yy0(simMask & ~maskJF);
             
             
@@ -327,7 +325,7 @@ for k=1:length(sims)
              
             
            % imagesc(xl,yl,squeeze(bird(:,:,1)))
-            set(gca,'ydir','normal','fontsize',14)
+            set(gca,'ydir','normal','fontsize',18)
             
             %colormap(cmap)
             
@@ -349,41 +347,32 @@ for k=1:length(sims)
              %% JF contour
             
             hold on
-            [~,h(2)]=contour(popContJF.xx,popContJF.yy,popContJF.popContour,'ShowText','on','LineColor',[0 0 1],...
+            [~,h(2)]=contour(popContJF.xx,popContJF.yy,popContJF.popContour,'ShowText','off','LineColor',[0 0 1],...
                 'LineColor',cols(2,:),'linewidth',2,...
                 'LevelList',[99 75:-25:5],'Fill','off','linestyle','-',...
                 'DisplayName','Jellyfish');
-            
+           clabel([],h(2),'fontsize',14,'margin',5,'backgroundcolor','none');
             
             plot(xxJF(outScoreJF>99),yyJF(outScoreJF>99),'^',...
                 'color',cols(2,:),'markersize',6.5,...
                 'linewidth',1.5,'MarkerFaceColor',otherCol(2,:),...
                 'Displayname','JF beyond 99 percentile');
             
-            
-            %% dens compare 
-%             if densFlag
-%                 
-%                 plot(xxJFd,yyJFd,'o','color',otherCol(3,:),'markersize',12)
-%             end
-%             
-%             
-            
             grid
             
-            legend(h([2 1]),'Interpreter','latex','fontsize',16,'location','southEast',...
+            legend(h([2 1]),'Interpreter','latex','fontsize',20,'location','southEast',...
                 'box','off','numcolumns',2);
             
-            xfac=0.83; yfac=0.12;
+            xfac=0.83; yfac=0.14;
             text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),sims{k},...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
-                'Interpreter','latex','fontsize',17,'fontweight','bold','color','k')
+                'Interpreter','latex','fontsize',22,'fontweight','bold','color','k')
             
             xlim(xl);ylim(yl);
             
             
-            xlabelmine(xlab{i},16);
-            ylabelmine(ylab{j},16);
-            set(gca,'ydir','normal','fontsize',14)
+            xlabelmine(xlab{i},22);
+            ylabelmine(ylab{j},22);
+            set(gca,'ydir','normal','fontsize',18)
             
             
             linkaxes([hh(1),ax1])

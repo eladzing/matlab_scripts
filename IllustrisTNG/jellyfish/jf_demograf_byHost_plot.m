@@ -60,7 +60,7 @@ caxis(cax);
 cbh(1)=colorbar('fontsize',14);
 barTitle(cbh(1),'log No. of Hosts')
 fname='cjf_satInHost_TNG100';
-printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+% printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 %titlemine('TNG100',12);
 
 
@@ -78,7 +78,7 @@ caxis(cax);
 cbh=colorbar('fontsize',14);
 barTitle(cbh,'log No. of Hosts')
 fname='cjf_satInHost_TNG50';
-printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+% printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 %titlemine('TNG100',12);
 
 %titlemine('TNG50',12);
@@ -142,7 +142,7 @@ cbh.Layout.Tile = 'east';
 
 
 fname='cjf_satInHost_2_TNG100';
-printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+% printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 %titlemine('TNG100',12);
 
 
@@ -200,7 +200,7 @@ cbh.Layout.Tile = 'east';
 
 
 fname='cjf_satInHost_2_TNG50';
-printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+% printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 
  %%
 
@@ -324,7 +324,7 @@ hf=myFigure('pos',[1142         302         724         597]);
     ylabelmine('log JF Fraction',18);
     
     fname='cjf_jfhost_jfFrac_TNG50';
-    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+    % printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
     
     
     %%
@@ -370,7 +370,7 @@ hf=myFigure('pos',[1142         302         724         597]);
     %ylabelmine('JF Fraction',18);
     
     fname='cjf_jfhost_jfFrac_TNG100';
-    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+    % printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
     %%
     
     
@@ -461,7 +461,7 @@ titlemine('TNG100',16)
 %text(14.3,400,'TNG100','Fontsize',16,'interpreter','latex')
 ylim([0.5 2000 ])
 fname='cjf_jfhost_hist_TNG100';
-printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+% printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 
 myFigure;
 histogram(log10(jfStats.M200c(mmm & m50)),linspace(10.4,15,50),'facecolor',cmap(2,:));
@@ -482,4 +482,4 @@ set(gca,'yscale','log','fontsize',14)
 titlemine('TNG50',16)
 ylim([0.5 2000 ])
 fname='cjf_jfhost_hist_TNG50';
-printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+% printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);

@@ -123,10 +123,10 @@ if 1==1
     ylim(yl)
     hold on
     plot(0.775.*ones(size(yl)),yl,':k' ,'linewidth',1.8)
-    legend({"Weighted Score","Initial Score"} ,'Interpreter','latex','FontSize',legFont)
+    legend(["Weighted Score","Initial Score"] ,'Interpreter','latex','FontSize',legFont)
     %xlabelmine('Score');
     set(gca,'Yscale','log','fontsize',axFont,'Ytick',[0.01 0.1])
-    xlabelmine('Score',20);
+    xlabelmine('Score',labFont);
     ylabelmine('Fraction of Population',labFont);
     set(gca,'fontsize',axFont)
     %ylabelmine('fraction of populaiton');
@@ -177,6 +177,7 @@ if 1==1
     hf=myFigure('pos',figPos);
     axes1 = axes('Parent',hf);
     hold(axes1,'on');
+    hs=[];
     hs(1)=histogram(log10(galProps.galStellarMass(mask50)),bins,'facecolor',colors(2,:),...
         'DisplayName',"TNG50");
     hold on
@@ -435,7 +436,7 @@ stellarMassBins=10.^(8.0:0.3:12.5);
 %    'log','label','stellar mass','legtag','$M_\mathrm{h}=$');
 
 jellyfish.utils.plot_demographics_2sims(maskJF,galProps.galStellarMass,stellarMassBins,galProps.hostM200c,hostMassBins,mask50,...
-    'log','label','stellar mass','legtag','$M_\mathrm{host}=$','cind',5:-1:1);
+    'log','label','log stellar mass $[\mathrm{M_\odot}]$','legtag','$M_\mathrm{host}=$','cind',5:-1:1);
 if printFlag
     fname='cjf_jfFrac_demograf_mstar_mhostBin';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
@@ -451,7 +452,7 @@ stellarMassBins=10.^(8:1:12.5);
 %     'log','label','host mass','legtag','$M_\mathrm{\ast}=$');
 
 jellyfish.utils.plot_demographics_2sims(maskJF,galProps.hostM200c,hostMassBins,galProps.galStellarMass,stellarMassBins,mask50,...
-    'log','label','host mass','legtag','$M_\mathrm{\ast}=$','legLoc',{'northwest','northeast'});
+    'log','label','log host $M_\mathrm{M_200,c}\,[\mathrm{M_\odot}]$','legtag','$M_\mathrm{\ast}=$','legLoc',{'northwest','northeast'});
 
 if printFlag
     fname='cjf_jfFrac_demograf_mhost_mstarBin';
@@ -482,7 +483,7 @@ massRatBins=10.^(-6:1:-2);
 % jellyfish.utils.plot_demographics(maskJF,smBI,stellarMassBins,mrBI,massRatBins,...
 %     'log','label','stellar mass','legtag','$M_\mathrm{sat}/M_\mathrm{h}$');
 jellyfish.utils.plot_demographics_2sims(maskJF,galProps.galStellarMass,stellarMassBins,massRatio,massRatBins,mask50,...
-    'log','label','stellar mass','legtag','$M_\mathrm{sat}/M_\mathrm{h}$');
+    'log','label','log stellar mass $[\mathrm{M_\odot}]$','legtag','$M_\mathrm{sat}/M_\mathrm{h}$');
 if printFlag
     fname='cjf_jfFrac_demograf_mstar_mratBin';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
@@ -491,7 +492,7 @@ end
 hostMassBins=10.^(11:15);
 massRatBins=10.^(-6:1:-2);
 jellyfish.utils.plot_demographics_2sims(maskJF,galProps.hostM200c,hostMassBins,massRatio,massRatBins,mask50,...
-    'log','label','host mass','legtag','$M_\mathrm{sat}/M_\mathrm{h}$');
+    'log','label','log host $M_\mathrm{M_200,c}\,[\mathrm{M_\odot}]$','legtag','$M_\mathrm{sat}/M_\mathrm{h}$');
 if printFlag
     fname='cjf_jfFrac_demograf_mhost_mratBin';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
@@ -592,7 +593,7 @@ stellarMassBins=10.^(8:0.3:12.5);
 % jellyfish.utils.plot_demographics(maskJF,smBI,stellarMassBins,zrBI,zredBins,...
 %     'log','label','stellar mass','legend',zleg);
 jellyfish.utils.plot_demographics_2sims(maskJF,galProps.galStellarMass,stellarMassBins,zreds,zredBins,mask50,...
-     'log','label','stellar mass','legend',zleg);
+     'log','label','log stellar mass $[\mathrm{M_\odot}]$','legend',zleg);
 if printFlag
     fname='cjf_jfFrac_demograf_mstar_zredBin';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
@@ -608,7 +609,7 @@ hostMassBins=10.^(10:15);
 %     'log','label','host mass','legend',zleg,'cind',[1:5 7]);
 
 jellyfish.utils.plot_demographics_2sims(maskJF,galProps.hostM200c,hostMassBins,zreds,zredBins,mask50,...
-    'log','label','host mass','legend',zleg,'cind',[1:5 7],'legLoc',{'northwest','northeast'});
+    'log','label','log host $M_\mathrm{M_200,c}\,[\mathrm{M_\odot}]$','legend',zleg,'cind',[1:5 7],'legLoc',{'northwest','northeast'});
 if printFlag
     fname='cjf_jfFrac_demograf_mhost_zredBin';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);

@@ -185,15 +185,15 @@ nc=1;
 % end
     
 
-hl1=legend(h(1:2:end),'interpreter','latex','fontsize',14,'location',legLoc{1},'NumColumns',nc);
+hl1=legend(h(1:2:end),'interpreter','latex','fontsize',legFont,'location',legLoc{1},'NumColumns',nc);
 grid
-xlabelmine(xLab);
-ylabelmine('JF Fraction');
-set(gca,'fontsize',14,'box','on')
+xlabelmine(xLab,labFont);
+ylabelmine('JF Fraction',labFont);
+set(gca,'fontsize',axFont,'box','on')
 
 ah1=axes('position',get(gca,'position'),'visible','off');
 
-hl2=legend(ah1,h2(1:2),'interpreter','latex','fontsize',14,'location',legLoc{2},'NumColumns',2);
+hl2=legend(ah1,h2(1:2),'interpreter','latex','fontsize',legFont,'location',legLoc{2},'NumColumns',2);
 
 
 

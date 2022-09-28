@@ -10,13 +10,14 @@ colors=brewermap(9,'Set1');
 %simMask=true(size(maskJF));
 simTag=["TNG50" "TNG100"];
 logFlag=false;
+flipFlag=false;
 xLab='';
 legTag='';
 fullLegend='';
 xxGiven=[];
 
 axFont=18;
-legFont=20;
+legFont=18;
 labFont=20;
 
 legLoc={'NorthEast','northwest'};
@@ -56,6 +57,8 @@ while(i<=length(varargin))
         case'labfont'
             i=i+1;
             labFont=varargin{i};
+        case 'flip'
+            flipFlag=true;
         otherwise
             error('%s - Unkown argument: %s',current_function().upper,varargin{i});
     end
@@ -128,9 +131,17 @@ h=[];
 h2=[];
 
 ls=["-","--"];
-for j=1:length(lineBins)-1
+
+lineOrder=1:length(lineBins)-1;
+
+if flipFlag
+    lineOrder=fliplr(lineOrder);
+end
+    
+
+for j=lineOrder
     if isempty(fullLegend)
-        tag=[legTag num2str(log10(lineBins(j))) '-' num2str(log10(lineBins(j+1)))  ];
+        tag=[legTag num2str(log10(lineBins(j))) '-' num2str(log10(lineBins(j+1))) ];
     else
         tag=fullLegend(j);
     end
@@ -151,7 +162,7 @@ for j=1:length(lineBins)-1
             px=[xxx(ind) fliplr(xxx(ind))];
             py=[bsci(ind,j,1,k)' fliplr(bsci(ind,j,2,k)')];
             patch(px,py,colors(cind(j),:),'facealpha',0.35,'edgecolor','none')
-            if j==1
+            if j==lineOrder(1)
                 hold on
                 h2(k)=plot(xxx(ind)',flines(ind,j,k),ls(k),...
                     'color','k','linewidth',lw,...
@@ -164,7 +175,7 @@ for j=1:length(lineBins)-1
             
             
         else
-            if j==1
+            if j==lineOrder(1)
                 hold on
                 h2(k)=plot(xxx',flines(:,j,k),ls(k),...
                     'color','k','linewidth',lw,...
@@ -183,9 +194,12 @@ nc=1;
 % if length(h)/2<4
 %     nc=1;
 % end
-    
 
-hl1=legend(h(1:2:end),'interpreter','latex','fontsize',legFont,'location',legLoc{1},'NumColumns',nc);
+if flipFlag
+    hl1=legend(h(end-1:-2:1),'interpreter','latex','fontsize',legFont,'location',legLoc{1},'NumColumns',nc);
+else
+    hl1=legend(h(1:2:end),'interpreter','latex','fontsize',legFont,'location',legLoc{1},'NumColumns',nc);
+end
 grid
 xlabelmine(xLab,labFont);
 ylabelmine('JF Fraction',labFont);
@@ -193,7 +207,8 @@ set(gca,'fontsize',axFont,'box','on')
 
 ah1=axes('position',get(gca,'position'),'visible','off');
 
-hl2=legend(ah1,h2(1:2),'interpreter','latex','fontsize',legFont,'location',legLoc{2},'NumColumns',2);
+hl2=legend(ah1,h2(1:2),'interpreter','latex','fontsize',legFont,'location',legLoc{2},...
+'NumColumns',2,'box','off');
 
 
 

@@ -44,7 +44,7 @@ for k=1:length(sims)
     bp=illustris.set_env(sims{k});
     global LBox
     
-    for i=length(snaps)
+    for i=1:length(snaps)
         snp=snaps(i);
         zr=illustris.utils.snap2redshift(snp);
         listInd=find(simList==sims{k} & snapList==snp); % indices of relevant objects for the sim/snap in objList

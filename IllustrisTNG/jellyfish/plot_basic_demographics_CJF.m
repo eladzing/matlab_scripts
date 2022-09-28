@@ -40,8 +40,8 @@ if setupFlag
     
     mm=galProps.hostM200c<1e11 & maskJF';
     %ind=find(mm); index of 3 weird objects
-    maskJF_full=maskJF;
-    maskJF(mm)=false;
+    %maskJF_full=maskJF;
+    %maskJF(mm)=false;
     
     mask100=objectTable.sim=="TNG100";
     mask50=~mask100;
@@ -433,7 +433,7 @@ stellarMassBins=10.^(8.0:0.3:12.5);
 % smBI=discretize(galProps.galStellarMass,stellarMassBins);
 
 %jellyfish.utils.plot_demographics(maskJF,smBI,stellarMassBins,hmBI,hostMassBins,...
-%    'log','label','stellar mass','legtag','$M_\mathrm{h}=$');
+%    'log','label','stellar mass','legtag','$M_\mathrm{host}=$');
 
 jellyfish.utils.plot_demographics_2sims(maskJF,galProps.galStellarMass,stellarMassBins,galProps.hostM200c,hostMassBins,mask50,...
     'log','label','log stellar mass $[\mathrm{M_\odot}]$','legtag','$M_\mathrm{host}=$','cind',5:-1:1);
@@ -452,7 +452,7 @@ stellarMassBins=10.^(8:1:12.5);
 %     'log','label','host mass','legtag','$M_\mathrm{\ast}=$');
 
 jellyfish.utils.plot_demographics_2sims(maskJF,galProps.hostM200c,hostMassBins,galProps.galStellarMass,stellarMassBins,mask50,...
-    'log','label','log host $M_\mathrm{M_200,c}\,[\mathrm{M_\odot}]$','legtag','$M_\mathrm{\ast}=$','legLoc',{'northwest','northeast'});
+    'log','label','log host $M_\mathrm{200,c}\,[\mathrm{M_\odot}]$','legtag','$M_\mathrm{\ast}=$','legLoc',{'northwest','northeast'},'flip');
 
 if printFlag
     fname='cjf_jfFrac_demograf_mhost_mstarBin';
@@ -492,7 +492,7 @@ end
 hostMassBins=10.^(11:15);
 massRatBins=10.^(-6:1:-2);
 jellyfish.utils.plot_demographics_2sims(maskJF,galProps.hostM200c,hostMassBins,massRatio,massRatBins,mask50,...
-    'log','label','log host $M_\mathrm{M_200,c}\,[\mathrm{M_\odot}]$','legtag','$M_\mathrm{sat}/M_\mathrm{h}$');
+    'log','label','log host $M_\mathrm{200,c}\,[\mathrm{M_\odot}]$','legtag','$M_\mathrm{sat}/M_\mathrm{h}$');
 if printFlag
     fname='cjf_jfFrac_demograf_mhost_mratBin';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
@@ -507,10 +507,10 @@ hostMassBins=10.^(10:15);
 %hmBI=discretize(galProps.hostM200c,hostMassBins);
 
 % jellyfish.utils.plot_demographics(maskJF,mrBI,massRatBins,hmBI,hostMassBins,...
-%     'log','label','mass ratio','legtag','$M_\mathrm{h}=$');
+%     'log','label','mass ratio','legtag','$M_\mathrm{host}=$');
 
 jellyfish.utils.plot_demographics_2sims(maskJF,massRatio,massRatBins,galProps.hostM200c,hostMassBins,mask50,...
-    'log','label','log mass ratio','legtag','$M_\mathrm{h}=$','cind',5:-1:1);
+    'log','label','log mass ratio','legtag','$M_\mathrm{host}=$','cind',5:-1:1);
 if printFlag
     fname='cjf_jfFrac_demograf_mrat_mhostBin';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
@@ -519,41 +519,47 @@ end
 
 hostMassBins=10.^(10:15);
 %hmBI=discretize(galProps.hostM200c,hostMassBins);
-zredBins=[0 0.05:0.1:0.55 0.75 1.25 1.75 2.2];
-zx=[0:0.1:0.5 0.7 1 1.5 2];
+%zredBins=[0 0.05:0.1:0.55 0.75 1.25 1.75 2.2];
+%zx=[0:0.1:0.5 0.7 1 1.5 2];
+zredBins=[0 0.15 0.35 0.55 0.75 1.25 1.75 2.2];
+zx=    [0.0  0.15  0.5 0.7 1 1.5 2];
+
 %zrBI=discretize(zreds,zredBins);
 % jellyfish.utils.plot_demographics(maskJF,zreds,zredBins,galProps.hostM200c,hostMassBins,'xx',zx,...
-%     'label','redshift','legtag','$M_\mathrm{h}=$');
+%     'label','redshift','legtag','$M_\mathrm{host}=$');
 
 % jellyfish.utils.plot_demographics(maskJF2,zreds,zredBins,galProps.hostM200c,hostMassBins,'xx',zx,...
-%     'label','redshift','legtag','$M_\mathrm{h}=$');
+%     'label','redshift','legtag','$M_\mathrm{host}=$');
 
 jellyfish.utils.plot_demographics_2sims(maskJF,zreds,zredBins,galProps.hostM200c,hostMassBins,mask50,'xx',zx,...
-    'label','redshift','legtag','$M_\mathrm{h}=$','cind',5:-1:1);
+    'label','redshift','legtag','$M_\mathrm{host}=$','cind',5:-1:1);
 if printFlag
     fname='cjf_jfFrac_demograf_zred_mhostBin';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 end
 
 % jellyfish.utils.plot_demographics_2sims(maskJF2,zrBI,zredBins,hmBI,hostMassBins,mask50,'xx',zx,...
-%     'label','redshift','legtag','$M_\mathrm{h}=$');
+%     'label','redshift','legtag','$M_\mathrm{host}=$');
 
 % jellyfish.utils.plot_demographics(maskJF,zrBI,zredBins,hmBI,hostMassBins,'xx',zx,...
-%     'label','redshift','legtag','$M_\mathrm{h}=$','tng50',galProps.sim=="TNG50");
+%     'label','redshift','legtag','$M_\mathrm{host}=$','tng50',galProps.sim=="TNG50");
 %
 % jellyfish.utils.plot_demographics(maskJF,zrBI,zredBins,hmBI,hostMassBins,'xx',zx,...
-%     'label','redshift','legtag','$M_\mathrm{h}=$','tng100',galProps.sim=="TNG100");
+%     'label','redshift','legtag','$M_\mathrm{host}=$','tng100',galProps.sim=="TNG100");
 
 
 %% fraction vs. redshift in stellar mass bins
 
 stellarMassBins=10.^(8:1:12.5);
 
-zredBins=[0 0.05:0.1:0.55 0.75 1.25 1.75 2.2];
-zx=[0:0.1:0.5 0.7 1 1.5 2];
+zredBins=[0 0.15 0.35 0.55 0.75 1.25 1.75 2.2];
+zx=[0.0  0.15  0.5 0.7 1 1.5 2];
+
+% zredBins=[0 0.05:0.1:0.55 0.75 1.25 1.75 2.2];
+% zx=[0:0.1:0.5 0.7 1 1.5 2];
 
 jellyfish.utils.plot_demographics_2sims(maskJF,zreds,zredBins,galProps.galStellarMass,stellarMassBins,mask50,'xx',zx,...
-    'label','redshift','legtag','$M_\mathrm{\ast}=$');
+    'label','redshift','legtag','$M_\mathrm{\ast}=$','flip');
 if printFlag
     fname='cjf_jfFrac_demograf_zred_mstarBin';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
@@ -593,7 +599,7 @@ stellarMassBins=10.^(8:0.3:12.5);
 % jellyfish.utils.plot_demographics(maskJF,smBI,stellarMassBins,zrBI,zredBins,...
 %     'log','label','stellar mass','legend',zleg);
 jellyfish.utils.plot_demographics_2sims(maskJF,galProps.galStellarMass,stellarMassBins,zreds,zredBins,mask50,...
-     'log','label','log stellar mass $[\mathrm{M_\odot}]$','legend',zleg);
+     'log','label','log stellar mass $[\mathrm{M_\odot}]$','legend',zleg,'flip');
 if printFlag
     fname='cjf_jfFrac_demograf_mstar_zredBin';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
@@ -609,7 +615,7 @@ hostMassBins=10.^(10:15);
 %     'log','label','host mass','legend',zleg,'cind',[1:5 7]);
 
 jellyfish.utils.plot_demographics_2sims(maskJF,galProps.hostM200c,hostMassBins,zreds,zredBins,mask50,...
-    'log','label','log host $M_\mathrm{M_200,c}\,[\mathrm{M_\odot}]$','legend',zleg,'cind',[1:5 7],'legLoc',{'northwest','northeast'});
+    'log','label','log host $M_\mathrm{200,c}\,[\mathrm{M_\odot}]$','legend',zleg,'cind',[1:5 7],'legLoc',{'northwest','northeast'},'flip');
 if printFlag
     fname='cjf_jfFrac_demograf_mhost_zredBin';
     printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
@@ -620,7 +626,7 @@ massRatBins=10.^(-6:0.5:-2);
 %mrBI=discretize(massRatio,massRatBins);
 
 jellyfish.utils.plot_demographics_2sims(maskJF,massRatio,massRatBins,zreds,zredBins,mask50,...
-    'log','label','log mass ratio','legend',zleg,'cind',[1:5 7]);
+    'log','label','log mass ratio','legend',zleg,'cind',[1:5 7],'flip');
 % jellyfish.utils.plot_demographics_2sims(maskJF,mrBI,massRatBins,zrBI,zredBins,mask50,...
 %     'log','label','log mass ratio','legend',zleg,'cind',[1:5 7]);
 if printFlag

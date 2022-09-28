@@ -12,6 +12,11 @@ cmap=brewermap(256,'YlOrRd');
 cmap(1,:)=[1 1 1];
 cmap2=(viridis(256));
 cmap2(1,:)=[1 1 1];
+
+ axFont=18;
+ legFont=20;
+ labFont=20;
+ 
 %%  
 % figure
 % semilogx(jfStats.M200c,jfStats.sampleSats,'.');
@@ -50,17 +55,17 @@ myFigure;
 %nexttile([3 2])
 countMap=squeeze(bird100(:,:,1));
 imagesc(xl,yl,log10(countMap));
-set(gca,'ydir','normal','fontsize',14)
+set(gca,'ydir','normal','fontsize',axFont)
 text(10.2,60,'TNG100','Fontsize',16,'interpreter','latex')
 text(10.2,55,num2str(sum(sum(countMap))),'Fontsize',16,'interpreter','latex')
 xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$');
 ylabelmine('No. of Inspected Satellites');
 colormap(cmap2)
 caxis(cax);
-cbh(1)=colorbar('fontsize',14);
+cbh(1)=colorbar('fontsize',axFont);
 barTitle(cbh(1),'log No. of Hosts')
 fname='cjf_satInHost_TNG100';
-% printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 %titlemine('TNG100',12);
 
 
@@ -68,17 +73,17 @@ myFigure;
 %nexttile([3 2])
 countMap=squeeze(bird50(:,:,1));
 imagesc(xl,yl,log10(countMap));
-set(gca,'ydir','normal','fontsize',14)
+set(gca,'ydir','normal','fontsize',axFont)
 text(10.2,60,'TNG50','Fontsize',16,'interpreter','latex')
 text(10.2,55,num2str(sum(sum(countMap))),'Fontsize',16,'interpreter','latex')
 xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$');
 ylabelmine('No. of Inspected Satellites');
 colormap(cmap2)
 caxis(cax);
-cbh=colorbar('fontsize',14);
+cbh=colorbar('fontsize',axFont);
 barTitle(cbh,'log No. of Hosts')
 fname='cjf_satInHost_TNG50';
-% printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 %titlemine('TNG100',12);
 
 %titlemine('TNG50',12);
@@ -106,15 +111,15 @@ t=tiledlayout(6,3);
 nexttile([4 3])
 countMap=squeeze(bird100(:,:,1));
 imagesc(xl,yl,log10(countMap));
-set(gca,'ydir','normal','fontsize',16)
-text(10.2,60,'TNG100','Fontsize',18,'interpreter','latex')
-text(10.2,55,num2str(sum(sum(countMap))),'Fontsize',18,'interpreter','latex')
+set(gca,'ydir','normal','fontsize',axFont)
+text(10.2,60,'TNG100','Fontsize',legFont,'interpreter','latex')
+text(10.2,55,num2str(sum(sum(countMap))),'Fontsize',legFont,'interpreter','latex')
 %xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$');
 %ylabelmine('No. of Inspected Satellites');
 colormap(cmap2)
 caxis(cax);
-cbh=colorbar('fontsize',16);
-barTitle(cbh(1),'$\log N$','fontsize',18)
+cbh=colorbar('fontsize',axFont);
+barTitle(cbh(1),'$\log N$','fontsize',labFont)
 %tag={'$z=[0\; 0.5]$','$z=[0.5\; 1]$','$z=[1 2]$'};
 tag={'$0\leq z \leq 0.5$','$0.5< z \leq 1$','$1< z \leq 2$'};
 for k=1:3
@@ -123,16 +128,16 @@ nexttile([2,1])
 ccm=squeeze(cntMap(:,:,k));
 imagesc(xl,yl,log10(ccm));
 set(gca,'ydir','normal','fontsize',12)
-text(10.2,55,tag{k},'Fontsize',16,'interpreter','latex')
-text(10.2,40,num2str(sum(sum(ccm))),'Fontsize',16,'interpreter','latex')
+text(10.2,55,tag{k},'Fontsize',18,'interpreter','latex')
+text(10.2,40,num2str(sum(sum(ccm))),'Fontsize',18,'interpreter','latex')
 colormap(cmap2)
 caxis(cax);
 end
 t.XLabel.String='log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$';
-t.XLabel.FontSize=18;
+t.XLabel.FontSize=labFont;
 t.XLabel.Interpreter='latex';
 t.YLabel.String='No. of Inspected Satellites';
-t.YLabel.FontSize=18;
+t.YLabel.FontSize=labFont;
 t.YLabel.Interpreter='latex';
 t.TileSpacing='compact';
 
@@ -142,7 +147,7 @@ cbh.Layout.Tile = 'east';
 
 
 fname='cjf_satInHost_2_TNG100';
-% printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 %titlemine('TNG100',12);
 
 
@@ -164,15 +169,15 @@ t=tiledlayout(6,3);
 nexttile([4 3])
 countMap=squeeze(bird50(:,:,1));
 imagesc(xl,yl,log10(countMap));
-set(gca,'ydir','normal','fontsize',16)
-text(10.2,60,'TNG50','Fontsize',18,'interpreter','latex')
-text(10.2,55,num2str(sum(sum(countMap))),'Fontsize',18,'interpreter','latex')
+set(gca,'ydir','normal','fontsize',axFont)
+text(10.2,60,'TNG50','Fontsize',legFont,'interpreter','latex')
+text(10.2,55,num2str(sum(sum(countMap))),'Fontsize',legFont,'interpreter','latex')
 %xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$');
 %ylabelmine('No. of Inspected Satellites');
 colormap(cmap2)
 caxis(cax);
-cbh=colorbar('fontsize',16);
-barTitle(cbh(1),'$\log N$','fontsize',18)
+cbh=colorbar('fontsize',axFont);
+barTitle(cbh(1),'$\log N$','fontsize',axFont)
 %tag={'$z=[0\; 0.5]$','$z=[0.5\; 1]$','$z=[1 2]$'};
 tag={'$0\leq z \leq 0.5$','$0.5< z \leq 1$','$1< z \leq 2$'};
 for k=1:3
@@ -180,17 +185,17 @@ for k=1:3
 nexttile([2,1])
 ccm=squeeze(cntMap(:,:,k));
 imagesc(xl,yl,log10(ccm));
-set(gca,'ydir','normal','fontsize',11)
-text(10.2,55,tag{k},'Fontsize',16,'interpreter','latex')
-text(10.2,40,num2str(sum(sum(ccm))),'Fontsize',16,'interpreter','latex')
+set(gca,'ydir','normal','fontsize',12)
+text(10.2,55,tag{k},'Fontsize',18,'interpreter','latex')
+text(10.2,40,num2str(sum(sum(ccm))),'Fontsize',18,'interpreter','latex')
 colormap(cmap2)
 caxis(cax);
 end
 t.XLabel.String='log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$';
-t.XLabel.FontSize=18;
+t.XLabel.FontSize=labFont;
 t.XLabel.Interpreter='latex';
 t.YLabel.String='No. of Inspected Satellites';
-t.YLabel.FontSize=18;
+t.YLabel.FontSize=labFont;
 t.YLabel.Interpreter='latex';
 t.TileSpacing='compact';
 
@@ -200,7 +205,7 @@ cbh.Layout.Tile = 'east';
 
 
 fname='cjf_satInHost_2_TNG50';
-% printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 
  %%
 
@@ -283,14 +288,14 @@ msk100=jfStats.sim=="TNG100"  & ~mmm;
 msk50=jfStats.sim=="TNG50" & ~mmm ;
 %%
 
-hf=myFigure('pos',[1142         302         724         597]);
+hf=myFigure('pos',[97   444   838   687]);
   
    scatterhist(log10(jfStats.M200c(msk50)),log10(jff(msk50)),...
         'group',gr(msk50),'legend','off','style','stairs',...
         'location','Northwest','Direction','out','kernel','off',...
         'nbins',10,'markersize',[4,6,8],'marker','osd','color',cmap([4 8 10 ],:));%[5 2 3]
     set(gca,'xaxislocation','bottom',...
-        'yaxislocation','right','fontsize',16)
+        'yaxislocation','right','fontsize',axFont)
     
     % set linwidth for histogram
     for i=2:3
@@ -309,33 +314,34 @@ hf=myFigure('pos',[1142         302         724         597]);
     
     hf.Children(4).String = {'z=[0 0.5]','z=[0.5 1]','z=[1 2]'};  %{"$z\leq 0.5$","$z>0.5 \& z\leq 1$","$z>1 \& z\leq 2$"};
     hf.Children(4).Interpreter ='latex';
-    hf.Children(4).FontSize =16 ;
+    hf.Children(4).FontSize =legFont ;
 
   grid
     % hold on
     % plot(log10(jfStats.M200c(msk & mmm)),log10(jff(msk & mmm)),'.')
-    text(11.6,-1.4,"TNG50",'Interpreter','latex','fontsize',16);
-    text(11.6,-1.6,num2str(sum(msk50 & gr==0)),'Interpreter','latex','Color',cmap(4,:),'fontsize',16);
-    text(11.6,-1.75,num2str(sum(msk50 & gr==1)),'Interpreter','latex','Color',cmap(8,:),'fontsize',16);
-    text(11.6,-1.9,num2str(sum(msk50 & gr==2)),'Interpreter','latex','Color',cmap(10,:),'fontsize',16);
-    xlim([11.4 14.7])
+    text(10.6,-1.4,"TNG50",'Interpreter','latex','fontsize',legFont);
+    text(10.6,-1.6,num2str(sum(msk50 & gr==0)),'Interpreter','latex','Color',cmap(4,:),'fontsize',legFont);
+    text(10.6,-1.75,num2str(sum(msk50 & gr==1)),'Interpreter','latex','Color',cmap(8,:),'fontsize',legFont);
+    text(10.6,-1.9,num2str(sum(msk50 & gr==2)),'Interpreter','latex','Color',cmap(10,:),'fontsize',legFont);
+    xlim([10.4 14.5])
+    %xlim([11.4 14.7])
     ylim([-2 0.05])
-    xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$',18);
-    ylabelmine('log JF Fraction',18);
+    xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$',labFont);
+    ylabelmine('log JF Fraction',labFont);
     
     fname='cjf_jfhost_jfFrac_TNG50';
-    % printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
     
     
     %%
-    hf=myFigure('pos',[1142         302         724         597]);
+    hf=myFigure('pos',[97   444   838   687]);
   
    scatterhist(log10(jfStats.M200c(msk100)),log10(jff(msk100)),...
         'group',gr(msk100),'legend','on','style','stairs',...
         'location','Northeast','Direction','out','kernel','off',...
-        'nbins',10,'markersize',[4,6,8],'marker','osd','color',cmap([4 8 10],:));
+        'nbins',10,'markersize',[5,8,10],'marker','osd','color',cmap([4 8 10],:));
     set(gca,'xaxislocation','bottom',...
-        'yaxislocation','left','fontsize',16)
+        'yaxislocation','left','fontsize',axFont)
     
     % set linwidth for histogram
     for i=2:3
@@ -354,23 +360,24 @@ hf=myFigure('pos',[1142         302         724         597]);
     
     hf.Children(4).String = {'$0\leq z \leq 0.5$','$0.5< z \leq 1$','$1< z \leq 2$'};  %{"$z\leq 0.5$","$z>0.5 \& z\leq 1$","$z>1 \& z\leq 2$"};
     hf.Children(4).Interpreter ='latex';
-    hf.Children(4).FontSize =16 ;
-
+    hf.Children(4).FontSize =legFont ;
+    hf.Children(4).Box='off';
   grid
     % hold on
     % plot(log10(jfStats.M200c(msk & mmm)),log10(jff(msk & mmm)),'.')
-    text(11.6,-1.4,"TNG100",'Interpreter','latex','fontsize',16);
-    text(11.6,-1.6,num2str(sum(msk100 & gr==0)),'Interpreter','latex','Color',cmap(4,:),'fontsize',16);
-    text(11.6,-1.75,num2str(sum(msk100 & gr==1)),'Interpreter','latex','Color',cmap(8,:),'fontsize',16);
-    text(11.6,-1.9,num2str(sum(msk100 & gr==2)),'Interpreter','latex','Color',cmap(10,:),'fontsize',16);
-    xlim([11.4 14.7])
+    text(12.18,-1.4,"TNG100",'Interpreter','latex','fontsize',legFont);
+    text(12.18,-1.6,num2str(sum(msk100 & gr==0)),'Interpreter','latex','Color',cmap(4,:),'fontsize',legFont);
+    text(12.18,-1.75,num2str(sum(msk100 & gr==1)),'Interpreter','latex','Color',cmap(8,:),'fontsize',legFont);
+    text(12.18,-1.9,num2str(sum(msk100 & gr==2)),'Interpreter','latex','Color',cmap(10,:),'fontsize',legFont);
+    xlim([12 15])
+    %xlim([11.4 14.7])
     ylim([-2 0.05])
-    xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$',18);
-    ylabelmine('',18);
+    xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$',labFont);
+    ylabelmine(' ',labFont);
     %ylabelmine('JF Fraction',18);
     
     fname='cjf_jfhost_jfFrac_TNG100';
-    % printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
     %%
     
     
@@ -453,15 +460,16 @@ histogram(log10(jfStats.M200c(~mmm)),linspace(10.4,15,50),'displayStyle','stairs
     'edgecolor',cmap(6,:),'linewidth',1.5);
 %text(10^14.2,1000,num2str(sum(mmm)),'Interpreter','latex','Color',cmap(2,:));
 %text(10^14.2,700,num2str(sum(~mmm)),'Interpreter','latex','Color',cmap(1,:));
-legend({['No JF (' num2str(sum(mmm & m100)) ')'], ['JF (' num2str(sum(~mmm & m100)) ')'] },'Interpreter','latex','fontsize',16    )
-xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$');
-ylabelmine('No. of Hosts');
-set(gca,'yscale','log','fontsize',14)
-titlemine('TNG100',16)
+legend({['No JF (' num2str(sum(mmm & m100)) ')'], ['JF (' num2str(sum(~mmm & m100)) ')'] },'Interpreter','latex','fontsize',18,'box','off' )
+xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$',labFont);
+ylabelmine('No. of Hosts',labFont);
+set(gca,'yscale','log','fontsize',axFont)
+titlemine('TNG100',18)
 %text(14.3,400,'TNG100','Fontsize',16,'interpreter','latex')
+xlim([10 15.])
 ylim([0.5 2000 ])
 fname='cjf_jfhost_hist_TNG100';
-% printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 
 myFigure;
 histogram(log10(jfStats.M200c(mmm & m50)),linspace(10.4,15,50),'facecolor',cmap(2,:));
@@ -474,12 +482,13 @@ histogram(log10(jfStats.M200c(~mmm)),linspace(10.4,15,50),'displayStyle','stairs
     'edgecolor',cmap(6,:),'linewidth',1.5);
 %text(10^14.2,1000,num2str(sum(mmm)),'Interpreter','latex','Color',cmap(2,:));
 %text(10^14.2,700,num2str(sum(~mmm)),'Interpreter','latex','Color',cmap(1,:));
-legend({['No JF (' num2str(sum(mmm & m50)) ')'], ['JF (' num2str(sum(~mmm & m50)) ')'] },'Interpreter','latex','fontsize',16    )
-xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$');
-ylabelmine('No. of Hosts');
-set(gca,'yscale','log','fontsize',14)
+legend({['No JF (' num2str(sum(mmm & m50)) ')'], ['JF (' num2str(sum(~mmm & m50)) ')'] },'Interpreter','latex','fontsize',18,'box','off'   )
+xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$',labFont);
+ylabelmine('No. of Hosts',labFont);
+set(gca,'yscale','log','fontsize',axFont)
 %text(14.3,400,'TNG50','Fontsize',16,'interpreter','latex')
-titlemine('TNG50',16)
+titlemine('TNG50',18)
+xlim([10 15.])
 ylim([0.5 2000 ])
 fname='cjf_jfhost_hist_TNG50';
-% printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);

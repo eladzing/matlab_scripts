@@ -24,6 +24,7 @@ objList=find(rp>0);
 simList=galProps.sim(objList)';
 snapList=galProps.snap(objList)';
 zred=illustris.utils.snap2redshift(snapList);
+
 % prepare output
 res.objectList=objList;
 res.snap=snapList;
@@ -94,6 +95,7 @@ for k=1:length(sims)
             dens=nfw.nfwRho(rpos,cv);
             densG=nfw.nfwRho(rpos,cv).*gf;
             
+            res.hostDens_gf(listInd(j))= res.hostDens(listInd(j)).*gasFrac(hid+1);
             
             %% based on NFW alone 
             [dmax,ix]=max(dens);

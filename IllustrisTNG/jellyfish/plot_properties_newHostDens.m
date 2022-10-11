@@ -13,15 +13,16 @@ if setupFlag
     % load galaxy properties
     load([DEFAULT_MATFILE_DIR '\jf_galProperties_CJF.mat']);
     
-    load([DEFAULT_MATFILE_DIR '\jf_compareDEnsity_NFW_CJF.mat']);
-      
+    load([DEFAULT_MATFILE_DIR '\jf_compareDEnsity_NFW_gasFrac_CJF.mat']);
+    
     densRat=zeros(size(galProps.tag));
-    densRat(compareDens.objectList)=compareDens.closeDens./compareDens.hostDens;
+    densRat(compareDens.objectList)=compareDens.closeDens_gf./compareDens.hostDens_gf;
+    densThresh=1.05;
     
     % Define JF
-%     threshJF=16;
-%     fprintf('JF Threshold set to %i and above. \n', threshJF);
-%     
+    %     threshJF=16;
+    %     fprintf('JF Threshold set to %i and above. \n', threshJF);
+    %
     maskJF=objectTable.scoreWeighted>=0.8;
     maskNJF=objectTable.scoreWeighted<=0.2;
     
@@ -61,7 +62,7 @@ xlab={'log Stellar Mass $[\mathrm{M_\odot}]$',...
 
 xlog=false(size(xfields));
 xlog([1 2  5 6 7 9])=true;
-xlList=[8.2 12.5;10 15;0 10;0 0;0 0;0 0;-6.2 -1.25;0 0;-6 1.5];
+xlList=[8.2 12.5;10 15;0 7.5;0 0;0 0;0 0;-6.2 -1.25;0 0;-6 1.5];
 
 
 
@@ -86,9 +87,10 @@ ylList=[10 15;0 10;0 0;0 0;0 0;0 0;0 0;0 0;-6.2 -1.25;0 0; -6 1.5;-5 2;8.2 12.5]
 
 
 skip=true(length(xfields),length(yfields));
-skip(1,[1,9] )=false;
-skip(2,[9 11 12])=false;
-skip([3 7],[1 9 11 12 13] )=false;
+skip(3,1)=false;
+% skip(1,[1,9] )=false;
+% skip(2,[9 11 12])=false;
+% skip([3 7],[1 9 11 12 13] )=false;
 
 % some perliminaries
 mv=galProps.hostM200c;
@@ -123,8 +125,11 @@ otherCol=brewermap(8,'Set1');
 global DEFAULT_PRINTOUT_DIR
 outdir=[DEFAULT_PRINTOUT_DIR '/jellyfish/jfProperties/paper'];
 
-
-for k=1:1 %length(sims) 
+ axFont=18;
+ legFont=20;
+ labFont=20;
+ 
+for k=1:1 %length(sims)
     
     switch sims{k}
         case 'TNG50'
@@ -170,10 +175,12 @@ for k=1:1 %length(sims)
         
         
         xx=xx0(simMask);
-        xxJF=xx0(simMask & maskJF); 
-        xxJFd=xx0(simMask & maskJF & densRat>1.05);
-        xxJFd2=xx1(simMask & maskJF  & densRat>1.05) ;
+        xxJF=xx0(simMask & maskJF);
+        xxJFd=xx0(simMask & maskJF & densRat>=densThresh);
+        xxJFd2=xx1(simMask & maskJF  & densRat>=densThresh) ;
         xxNJF=xx0(simMask & ~maskJF);
+        rat=densRat(simMask & maskJF  & densRat>=densThresh);
+        
         
         if i==1
             startwith=1;
@@ -223,13 +230,13 @@ for k=1:1 %length(sims)
                     yy0(yy0<=0)=1e4;
                 case 'radiality'
                     yy0=radiality;
-
+                    
                 case 'galGasMassNorm'
                     yy0=galProps.galGasMass./galProps.galStellarMass;
                     yy1=yy0;
                 case 'gasMassNorm'
                     yy0=cgmMass./galProps.galStellarMass;
-                     yy1=yy0;
+                    yy1=yy0;
                 otherwise
                     yy0=galProps.(yfields{j});
                     yy1=yy0;
@@ -241,9 +248,9 @@ for k=1:1 %length(sims)
             end
             
             yy=yy0(simMask);
-            yyJF=yy0(simMask & maskJF); 
-            yyJFd=yy0(simMask & maskJF  & densRat>1.05) ;
-            yyJFd2=yy1(simMask & maskJF  & densRat>1.05) ;
+            yyJF=yy0(simMask & maskJF);
+            yyJFd=yy0(simMask & maskJF  & densRat>=densThresh) ;
+            yyJFd2=yy1(simMask & maskJF  & densRat>=densThresh) ;
             yyNJF=yy0(simMask & ~maskJF);
             
             
@@ -256,8 +263,8 @@ for k=1:1 %length(sims)
                 yl=ylList(j,:);
             end
             %             [bird, binsize, xl,yl]= histogram2d(xxNJF,yyNJF,ones(size(xxNJF)),...
-%                 'xlim',xl0,'ylim',yl0,'len',50);
-%            xl=xl0;yl=yl0;
+            %                 'xlim',xl0,'ylim',yl0,'len',50);
+            %            xl=xl0;yl=yl0;
             
             filt=fspecial('disk',15);
             popContJF=plot_population_contour(xxJF,yyJF,'smooth',filt,'noplot',...
@@ -270,7 +277,7 @@ for k=1:1 %length(sims)
             jfscore=maskJF(simMask);
             
             %% identify points beyond contour2
-                        
+            
             lx=max(diff(popContJF.xx));ly=max(diff(popContJF.yy));
             x0=popContJF.xx(1)-0.5.*lx; y0=popContJF.yy(1)-0.5.*ly;
             
@@ -321,26 +328,26 @@ for k=1:1 %length(sims)
             
             %% contours
             
-             ax1=axes;
-             axPos=get(hh(1),'position');
-             set(ax1,'position',axPos);
-
-             
-             
+            ax1=axes;
+            axPos=get(hh(1),'position');
+            set(ax1,'position',axPos);
             
-           % imagesc(xl,yl,squeeze(bird(:,:,1)))
+            
+            
+            
+            % imagesc(xl,yl,squeeze(bird(:,:,1)))
             set(gca,'ydir','normal','fontsize',14)
             
             %colormap(cmap)
             
             %% non - JF contour
             
-           
+            
             [~,h(1)]=contour(popContNJF.xx,popContNJF.yy,popContNJF.popContour,'ShowText','off',...  %'LineColor',[0 0 1],...
                 'LineColor','none','linewidth',0.05,...
                 'LevelList',[99 75:-25:5 0],'Fill','on','linestyle','-',...
                 'DisplayName','non-Jellyfish');
-             hold on
+            hold on
             colormap(flipud(cmap))
             plot(xxNJF(outScoreNJF>99),yyNJF(outScoreNJF>99),'o',...
                 'color',cols(1,:),'markersize',2.5,...
@@ -348,7 +355,7 @@ for k=1:1 %length(sims)
                 'Displayname','NJF beyond 99 percentile');
             
             
-             %% JF contour
+            %% JF contour
             
             hold on
             [~,h(2)]=contour(popContJF.xx,popContJF.yy,popContJF.popContour,'ShowText','on','LineColor',[0 0 1],...
@@ -363,32 +370,44 @@ for k=1:1 %length(sims)
                 'Displayname','JF beyond 99 percentile');
             
             
-            %% dens compare 
-                           
-            plot(xxJFd,yyJFd,'o','color',otherCol(3,:),'markersize',12,'linewidth',2,'markerfacecolor',otherCol(3,:)) %original position
-            %plot(xxJFd2,yyJFd2,'d','color',otherCol(3,:),'markersize',12,'linewidth',2,'markerfacecolor',otherCol(3,:))  % new position 
+            %% dens compare
+            
+            %plot(xxJFd,yyJFd,'o','color',otherCol(3,:),'markersize',12,'linewidth',2,'markerfacecolor',otherCol(3,:)) %original position
             arrow(cat(2,xxJFd',yyJFd'),cat(2,xxJFd2',yyJFd2'),...
                 'facecolor',otherCol(3,:))
-           
-            
-            
-            
+            rat(rat<2)=rat(rat<2)+2;
+            scatter(xxJFd,yyJFd,17.*rat(rat>2),'linewidth',0.5,'markerfacecolor',otherCol(3,:),'markeredgecolor','k') %original position
+            % plot(xxJFd(rat<=2),yyJFd(rat<=2),'o','color',otherCol(3,:),'markersize',9,'linewidth',2,'markerfacecolor','none') %original position
+            %plot(xxJFd2,yyJFd2,'d','color',otherCol(3,:),'markersize',12,'linewidth',2,'markerfacecolor',otherCol(3,:))  % new position
+            %             arrow(cat(2,xxJFd',yyJFd'),cat(2,xxJFd2',yyJFd2'),...
+            %                 'facecolor',otherCol(3,:))
             
             grid
+            ratLab=[3 5:10:35];
+            xRatLab=4.2:0.6666:7;
+            yRatLab=14.75.*ones(size(xRatLab));
+            scatter(xRatLab,yRatLab,17.*ratLab,'linewidth',0.5,'markerfacecolor',otherCol(3,:),'markeredgecolor','k') %original position
             
-            legend(h([2 1]),'Interpreter','latex','fontsize',16,'location','southEast',...
+            % plot(xRatLab(1),yRatLab,'o','color',otherCol(3,:),'markersize',9,'linewidth',2,'markerfacecolor','none')
+            text(xRatLab-0.1.*[2 2 2 2 2],yRatLab.*ones(size(xRatLab))-0.3,{'$\times 2$' '$\times 5$' '$\times 15$' '$\times 25$' '$\times 35$'},...
+                'Interpreter','latex','fontsize',labFont,'fontweight','bold','color','k')
+            text(4.8, 14.15,'local density ratio',...
+                'Interpreter','latex','fontsize',labFont,'fontweight','bold','color','k')
+            
+            
+            legend(h([2 1]),'Interpreter','latex','fontsize',legFont,'location','southEast',...
                 'box','off','numcolumns',2);
             
             xfac=0.83; yfac=0.12;
             text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),sims{k},...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
-                'Interpreter','latex','fontsize',17,'fontweight','bold','color','k')
+                'Interpreter','latex','fontsize',labFont,'fontweight','bold','color','k')
             
             xlim(xl);ylim(yl);
             
             
-            xlabelmine(xlab{i},16);
-            ylabelmine(ylab{j},16);
-            set(gca,'ydir','normal','fontsize',14)
+            xlabelmine(xlab{i},labFont);
+            ylabelmine(ylab{j},labFont);
+            set(gca,'ydir','normal','fontsize',axFont)
             
             
             linkaxes([hh(1),ax1])
@@ -399,7 +418,7 @@ for k=1:1 %length(sims)
             
             
         end
-  %      close all
+        %      close all
     end
     
     

@@ -119,6 +119,9 @@ otherCol=brewermap(8,'Set1');
 global DEFAULT_PRINTOUT_DIR
 outdir=[DEFAULT_PRINTOUT_DIR '/jellyfish/jfProperties'];
 
+axFont=18;
+legFont=20;
+labFont=20;
 
 for k=1:length(sims)
     
@@ -334,14 +337,14 @@ for k=1:length(sims)
             
             xfac=0.83; yfac=0.08;
             text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),sims{k},...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
-                'Interpreter','latex','fontsize',17,'fontweight','bold','color','k')
+                'Interpreter','latex','fontsize',labFont,'fontweight','bold','color','k')
             
             xlim(xl);ylim(yl);
             
             
-            xlabelmine(xlab{i},16);
-            ylabelmine(ylab{j},16);
-            
+           xlabelmine(xlab{i},labFont);
+           ylabelmine(ylab{j},labFont);
+             set(gca,'ydir','normal','fontsize',axFont)
             
             linkaxes([hh(1),ax1])
             

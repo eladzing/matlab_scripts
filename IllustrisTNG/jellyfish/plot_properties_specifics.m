@@ -1,5 +1,5 @@
 %% batch plot properties
-%printFlag=true;
+printFlag=true;
 if setupFlag
     units;
     sims={'TNG50','TNG100'};
@@ -137,6 +137,10 @@ otherCol=brewermap(8,'Set1');
 
 global DEFAULT_PRINTOUT_DIR
 outdir=[DEFAULT_PRINTOUT_DIR '/jellyfish/jfProperties/paper'];
+
+axFont=20;
+legFont=22;
+labFont=30;
 
 
 for k=1:length(sims)
@@ -325,7 +329,7 @@ for k=1:length(sims)
              
             
            % imagesc(xl,yl,squeeze(bird(:,:,1)))
-            set(gca,'ydir','normal','fontsize',18)
+            set(gca,'ydir','normal','fontsize',axFont)
             
             %colormap(cmap)
             
@@ -365,14 +369,14 @@ for k=1:length(sims)
             
             xfac=0.83; yfac=0.14;
             text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),sims{k},...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
-                'Interpreter','latex','fontsize',22,'fontweight','bold','color','k')
+                'Interpreter','latex','fontsize',legFont,'fontweight','bold','color','k')
             
             xlim(xl);ylim(yl);
             
             
-            xlabelmine(xlab{i},22);
-            ylabelmine(ylab{j},22);
-            set(gca,'ydir','normal','fontsize',18)
+            xlabelmine(xlab{i},labFont);
+            ylabelmine(ylab{j},labFont);
+            set(gca,'ydir','normal','fontsize',axFont)
             
             
             linkaxes([hh(1),ax1])

@@ -181,10 +181,10 @@ for k=1:length(sims)
             xx0=log10(xx0);
         end
         
-        xx=xx0(simMask );
-        xxJF=xx0(simMask & maskJF & rp>=1); 
+        xx=xx0(simMask & rp'>=1);
+        xxJF=xx0(simMask & maskJF & rp'>=1); 
 %         xxJFd=xx0(simMask & maskJF & densRat>1.05);
-        xxNJF=xx0(simMask & ~maskJF & rp>=1);
+        xxNJF=xx0(simMask & ~maskJF & rp'>=1);
         
         if i==1
             startwith=1;
@@ -241,10 +241,10 @@ for k=1:length(sims)
                 yy0=log10(yy0);
             end
             
-            yy=yy0(simMask );
-            yyJF=yy0(simMask & maskJF & rp>=1); 
+            yy=yy0(simMask & rp'>=1);
+            yyJF=yy0(simMask & maskJF & rp'>=1); 
 %             yyJFd=yy0(simMask & maskJF  & densRat>1.05) ;
-            yyNJF=yy0(simMask & ~maskJF & rp>=1);
+            yyNJF=yy0(simMask & ~maskJF & rp'>=1);
             
             
             %% prepare data
@@ -267,7 +267,7 @@ for k=1:length(sims)
             
             
             
-            jfscore=maskJF(simMask);
+            jfscore=maskJF(simMask & rp'>=1);
             
             %% identify points beyond contour2
                         
@@ -382,7 +382,7 @@ for k=1:length(sims)
             linkaxes([hh(1),ax1])
             
             %% print figure
-            fname=sprintf('jfProps_%s_%s_%s',xfields{i},yfields{j},sims{k});
+            fname=sprintf('jfProps_outSkirt_%s_%s_%s',xfields{i},yfields{j},sims{k});
             if  printFlag; printout_fig(gcf,fname,'nopdf','v','dir',outdir); end
             
             

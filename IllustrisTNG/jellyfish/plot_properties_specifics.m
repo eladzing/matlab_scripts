@@ -371,6 +371,13 @@ for k=1:length(sims)
             text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),sims{k},...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
                 'Interpreter','latex','fontsize',legFont,'fontweight','bold','color','k')
             
+            xfac=0.89; yfac=0.93;
+            text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),num2str(length(xxJF)),...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
+                'Interpreter','latex','fontsize',legFont,'fontweight','bold','color',cols(2,:))
+            xfac=0.89; yfac=0.87;
+            text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),num2str(length(xxNJF)),...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
+                'Interpreter','latex','fontsize',legFont,'fontweight','bold','color',cols(1,:))
+            
             xlim(xl);ylim(yl);
             
             

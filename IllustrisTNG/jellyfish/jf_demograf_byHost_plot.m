@@ -89,7 +89,7 @@ printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 %titlemine('TNG50',12);
 %cbh.Layout.Tile = 'east';
 %%
-zr=illustris.utils.snap2redshift(jfStats.snap);
+zr=round(illustris.utils.snap2redshift(jfStats.snap),2);
 gr=ones(size(zr));
 gr(zr<=0.5)=0;
 gr(zr>0.5 & zr<=1)=1;
@@ -250,7 +250,7 @@ printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
 
 %% plot jf fractions
 
-zr=illustris.utils.snap2redshift(jfStats.snap);
+zr=round(illustris.utils.snap2redshift(jfStats.snap),2);
 gr=ones(size(zr));
 gr(zr<=0.5)=0;
 gr(zr>0.5 & zr<=1)=1;

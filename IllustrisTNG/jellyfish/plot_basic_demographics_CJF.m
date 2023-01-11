@@ -23,7 +23,7 @@ if setupFlag
     
     %% add additional data fields
     massRatio=galProps.galStellarMass./galProps.hostM200c;
-    zreds=round(100.*illustris.utils.snap2redshift(galProps.snap))./100;
+    zreds=round(illustris.utils.snap2redshift(galProps.snap),2);
     
     %% Define JF
     threshJF=0.8;
@@ -34,7 +34,7 @@ if setupFlag
     
     % list snaps and redshifts
     snaps=unique(objectTable.snap);
-    redshifts=round(100.*illustris.utils.snap2redshift(snaps))./100;
+    redshifts=round(illustris.utils.snap2redshift(snaps),2);
     
     %% adress 3 strange objects
     
@@ -346,7 +346,7 @@ if 1==1
     %         xx=0.5.*sum(hs(1).BinEdges(ind(i)-1:ind(i)));
     %
     %         yy=hs(1).Values(ind(i))+0.06.*diff(yl);
-    %         zz=round(100*illustris.utils.snap2redshift(xx+1))/100;
+    %         zz=round(illustris.utils.snap2redshift(xx+1))/100;
     %
     %         text(xx,yy,num2str(zz),'fontsize',18,'interpreter','latex')
     %     end
@@ -360,10 +360,9 @@ if 1==1
     
     % another version
     snp100=unique(galProps.snap(mask100));
-    z100=round(100*illustris.utils.snap2redshift(snp100))/100;
+    z100=round(illustris.utils.snap2redshift(snp100),2);
     snp50=unique(galProps.snap(mask50));
-    z50=round(100*illustris.utils.snap2redshift(snp50))/100;
-    
+    z50=round(illustris.utils.snap2redshift(snp50),2);
     hs100=histcounts(galProps.snap(mask100),30.5:1:99.5);
     b100=hs100(hs100>0);
     hs50=histcounts(galProps.snap(mask50),30.5:1:99.5);

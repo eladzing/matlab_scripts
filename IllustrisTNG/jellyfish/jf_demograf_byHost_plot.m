@@ -65,7 +65,7 @@ caxis(cax);
 cbh(1)=colorbar('fontsize',axFont);
 barTitle(cbh(1),'log No. of Hosts')
 fname='cjf_satInHost_TNG100';
-printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
 %titlemine('TNG100',12);
 
 
@@ -83,7 +83,7 @@ caxis(cax);
 cbh=colorbar('fontsize',axFont);
 barTitle(cbh,'log No. of Hosts')
 fname='cjf_satInHost_TNG50';
-printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
 %titlemine('TNG100',12);
 
 %titlemine('TNG50',12);
@@ -147,7 +147,7 @@ cbh.Layout.Tile = 'east';
 
 
 fname='cjf_satInHost_2_TNG100';
-printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
 %titlemine('TNG100',12);
 
 
@@ -205,7 +205,7 @@ cbh.Layout.Tile = 'east';
 
 
 fname='cjf_satInHost_2_TNG50';
-printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
 
  %%
 
@@ -286,6 +286,79 @@ cmap=brewermap(12,'Paired');
 
 msk100=jfStats.sim=="TNG100"  & ~mmm;
 msk50=jfStats.sim=="TNG50" & ~mmm ;
+
+%% print out some stats on JF fractions 
+qn50=[];
+qn100=[];
+for i=[0 1 2]
+    mask50=gr==i & msk50;
+    mask100=gr==i & msk100;
+    qn50(i+1,:)=quantile(jff(mask50),[0.05 0.1 0.2 0.25 0.5 0.75 0.8 0.9 0.95]);
+    qn100(i+1,:)=quantile(jff(mask100),[0.05 0.1 0.2 0.25 0.5 0.75 0.8 0.9 0.95]);
+end
+
+%myFigure
+figure(2)
+xx=[0  0.5 1 2];
+
+ stairs(xx,qn50([1  2 3 3],4),'-r','linewidth',2.5)
+ hold on
+ stairs(xx,qn50([1  2 3 3],2),'-r','linewidth',0.9)
+ stairs(xx,qn50([1  2 3 3],6),'-r','linewidth',0.9)
+% 
+% stairs(xx,qn100([1  2 3 3],4),'-b','linewidth',2.5)
+% stairs(xx,qn100([1  2 3 3],2),'-b','linewidth',0.9)
+% stairs(xx,qn100([1  2 3 3],6),'-b','linewidth',0.9)
+% xlim([0 2]);
+% ylim([0 0.35])
+% xlabelmine('redshift');
+% ylabelmine('median JF fraction');
+%%
+
+grr=ones(size(zr))*-1;
+grr(zr<=0.5 & msk50)=0;
+grr(zr<=0.5 & msk100)=1;
+grr((zr>0.5 & zr<=1) & msk50)=10 ;
+grr((zr>0.5 & zr<=1) & msk100)=11 ;
+grr((zr>1 & zr<=2.1) & msk50)=20;
+grr((zr>1 & zr<=2.1) & msk100)=21;
+% grr=string(gr);
+% grr(zr<=0.5)="$z\leq 0.5$";
+% grr(zr>0.5 & zr<=1)="$z>0.5 \& z\leq 1$";
+% grr(zr>1 & zr<=2.1)="$z>1 \& z\leq 2$";
+colset1=brewermap(2,'Set1');
+cols(1,:)=colset1(1,:);
+cols(3,:)=colset1(1,:);
+cols(5,:)=colset1(1,:);
+cols(2,:)=colset1(2,:);
+cols(4,:)=colset1(2,:);
+cols(6,:)=colset1(2,:);
+
+%%
+
+myFigure('pos',[991   179   875   720]);
+hb=boxplot(jff(grr~=-1),grr(grr~=-1),'PlotStyle','traditional','colors','rbrbrb','jitter',1.2,...
+    'symbol','x','colors',cols,...
+    'labels',{'',' ',' ','','',' '});
+set(hb,'linewidth',1.5,'markersize',8)
+grid
+text(5.2,0.9,'TNG50','color',colset1(1,:),'fontsize',legFont,'Interpreter','latex')
+text(5.2,0.81,'TNG100','color',colset1(2,:),'fontsize',legFont,'Interpreter','latex')
+text(1.1,-0.1,'$z\le0.5$','Interpreter','latex','fontsize',18);
+text(2.9,-0.1,'$0.5<z\le 1$','Interpreter','latex','fontsize',18);
+text(5,-0.1,'$1< z\le 2$','Interpreter','latex','fontsize',18);
+%boxplot(jff(grr~=-1),grr(grr~=-1),'whisker',1,'PlotStyle','compact');
+set(gca,'fontsize',16)
+%xlabelmine('Redshift Bins')
+ylabelmine('JF Fraction',labFont);
+
+
+  fname='cjf_jfhost_jfFrac_boxplot_zredBin';
+    if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
+    
+
+   % fprintf('jf fraction quantilies over hosts with jf: %s \n',num2str(round(median(jff(mask50)),2)))
+% 
 %%
 
 hf=myFigure('pos',[97   444   838   687]);
@@ -330,7 +403,7 @@ hf=myFigure('pos',[97   444   838   687]);
     ylabelmine('log JF Fraction',labFont);
     
     fname='cjf_jfhost_jfFrac_TNG50';
-    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+    if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
     
     
     %%
@@ -377,7 +450,7 @@ hf=myFigure('pos',[97   444   838   687]);
     %ylabelmine('JF Fraction',18);
     
     fname='cjf_jfhost_jfFrac_TNG100';
-    printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+    if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
     %%
     
     
@@ -469,7 +542,7 @@ titlemine('TNG100',18)
 xlim([10 15.])
 ylim([0.5 2000 ])
 fname='cjf_jfhost_hist_TNG100';
-printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
 
 myFigure;
 histogram(log10(jfStats.M200c(mmm & m50)),linspace(10.4,15,50),'facecolor',cmap(2,:));
@@ -491,4 +564,4 @@ titlemine('TNG50',18)
 xlim([10 15.])
 ylim([0.5 2000 ])
 fname='cjf_jfhost_hist_TNG50';
-printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end

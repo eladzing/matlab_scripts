@@ -169,6 +169,97 @@ if 1==1
     
 end
 
+%% plot comparison matrix between raw and weighted scores 
+scR=objectTable.scoreRaw;
+scW=objectTable.scoreWeighted;
+ng=length(scR);
+
+
+myFigure;
+edj=0:0.2:1;
+edj(end)=1.01;
+len=length(edj)-1;
+cdata=zeros(len,len);
+for i=1:len
+    for j=1:len
+        cdata(i,j)=sum((scW>=edj(i) & scW<edj(i+1)) & ...
+            (scR>=edj(j) & scR<edj(j+1)) );
+    end
+end
+ 
+ cdata=cdata./ng.*100;
+ cdata= round(cdata.*100)/100;
+%  lab={'0-0.1' '0.1-0.2' '0.2-0.3' '0.3-0.4' '0.4-0.5' ...
+%      '0.5-0.6' '0.6-0.7' '0.7-0.8' '0.8-0.9' '0.9-1'};
+ lab={'0-0.2' '0.2-0.4' '0.4-0.6' '0.6-0.8' '0.8-1'};
+% imagesc(cdata)
+% caxis([0 10])
+% set(gca,'Ydir','normal','xtick',1:5,'xticklabel',lab,...
+%     'ytick',1:5,'yticklabel',lab)
+% colormap(cmap)
+
+
+ht=heatmap(lab,fliplr(lab),flipud(cdata));
+caxis([0.01 100 ])
+colorbar('off')
+%colormap(brewermap(256,'OrRd'))
+colormap(brewermap(512,'Blues'))
+ht.FontSize=14;
+ht.xlabel('Initital Score')
+ht.ylabel('Weighted Score')
+ht.ColorScaling='log';
+ht.ColorLimits=[-3 2.5];
+ht.NodeChildren(3).XAxis.Label.Interpreter = 'latex';
+ht.NodeChildren(3).XAxis.Label.FontSize=labFont;
+ht.NodeChildren(3).YAxis.Label.Interpreter = 'latex';
+ht.NodeChildren(3).YAxis.Label.FontSize=labFont;
+%ht.NodeChildren(3).Title.Interpreter = 'latex';
+
+ if printFlag
+        fname='cjf_scoreComp_weighted_raw';
+        printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+    end
+    
+%%
+myFigure;
+jfThresh=0.8;
+jfCJF=scW>=jfThresh;
+jf50=scR>=jfThresh;
+
+
+
+jfdata=[sum(jfCJF & ~jf50) , sum(jfCJF & jf50);...
+    sum(~jfCJF & ~jf50) , sum(~jfCJF & jf50)]./ng*100;
+jfdata= round(jfdata.*100)/100;
+ht=heatmap(["no " "yes "],["yes " "no "],jfdata);
+ht.FontSize=14;
+caxis([0 20])
+colorbar('off')
+ht.xlabel('Raw')
+ht.ylabel('Weighted')
+fprintf("total agreement on what is or isn't JF (score>=%s)= %s %% \n",...
+   num2str(jfThresh), num2str(jfdata(1,2)+jfdata(2,1)))
+
+
+[bird, binsize, xl,yl]= histogram2d(scR,scW,ones(size(scR)),'len',21);
+bbird=squeeze(bird(:,:,1));
+myFigure;
+imagesc(xl,yl,log10(bbird))
+hold on
+plot([-0.5 21]./20,[-0.5 21]./20,'--k')
+plot([15.5 15.5]./20,[-0.5 21]./20,':k')
+plot([-0.5 21]./20,[15.5 15.5]./20,':k')
+xlabelmine('Initial Score',labFont);
+ylabelmine('Weighted Score',labFont);
+colormap(brewermap(256,'OrRd'))
+set(gca,'ydir','normal','fontsize',axFont)
+hb=colorbar;
+barTitle(hb,'log N','fontsize',labFont)
+set(hb,'fontsize',axFont)
+ if printFlag
+        fname='cjf_scoreComp_weighted_raw_cmap';
+        printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
+    end
 %% plot stellar mass and host mass functions
 if 1==1
     

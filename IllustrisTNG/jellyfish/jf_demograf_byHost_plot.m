@@ -336,7 +336,7 @@ cols(6,:)=colset1(2,:);
 
 %%
 
-myFigure('pos',[991   179   875   720]);
+myFigure;%('pos',[991   179   875   720]);
 hb=boxplot(jff(grr~=-1),grr(grr~=-1),'PlotStyle','traditional','colors','rbrbrb','jitter',1.2,...
     'symbol','x','colors',cols,...
     'labels',{'',' ',' ','','',' '});

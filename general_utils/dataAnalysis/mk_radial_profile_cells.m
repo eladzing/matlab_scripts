@@ -1,7 +1,10 @@
 function res = mk_radial_profile_cells(cellPos,cellRad,val,varargin)
 %MK_RADIAL_PROFILE_CELLS Given a bunch of cells/particles, create a radial
 % profile, averaged over shells
-%   Detailed explanation goes here
+%   Function assigns cells to bins (the iner and outer edge of the cells
+%   are each given an index). Cells are assumed top be spheres and the fractional 
+%   volume of each part in different radial bins is calculated accordingly.
+
 
 cellPos=double(cellPos);
 cellRad=double(cellRad);
@@ -14,7 +17,7 @@ rmin=0;
 rmax=inf;
 nbins=100;
 center=[0 0 0];
-rRange=[];
+rRange=[]; % radial range 
 wt=[];
 profType='extensive';
 logFlag=false;
@@ -40,7 +43,7 @@ while i<=length(varargin)
         case {'center','cen'}
             i=i+1;
             center=varargin{i};
-        case {'bins'}
+        case {'bins'}  % user supplies the bin Edges 
             i=i+1;
             binFlag=true;
             bins=varargin{i};
@@ -55,22 +58,22 @@ while i<=length(varargin)
             wt=double(varargin{i});
             
             if size(wt)~=size(cellPos)
-                error('MK_RADIAL_PROFILE_CELLS - weights must be same size as cell arrays');
+                error([ current_function().upper ' - weights must be same size as cell arrays']);
             end
             
         case{'log'}
             logFlag=true;
-        case{'mask'}
+        case{'mask'}   % enforce a given mask 
             i=i+1;
             inMask=varargin{i};
         otherwise
-            error('mk_radial_profile_2d - Illegal argument: %s',varargin{i});
+            error('%s - Illegal argument: %s',current_function().upper,varargin{i});
     end
     i=i+1;
 end
 
 if isempty(profType)
-    error('MK_RADIAL_PROFILE_CELLS - Profile type must be given extensive/instensive)');
+    error([ current_function().upper ' - Profile type must be given extensive/instensive)']);
 end
 %% set up stuff
 
@@ -86,10 +89,10 @@ end
 for k=1:3
     cellPos(k,:)=cellPos(k,:)-center(k);
 end
-rCell=sqrt(sum(cellPos.^2,1));
+rCell=sqrt(sum(cellPos.^2,1));  % radial position of cell
 
 
-% set up range
+% set up radial range
 if isempty(rRange)
     if isinf(rmax)% set rmax if unset
         %set rmax to just above furthest cell
@@ -99,7 +102,7 @@ if isempty(rRange)
     rRange=[rmin rmax];
 else
     if length(rRange)~=2
-        error('MK_RADIAL_PROFILE_CELLS - rRange must be a two value array');
+        error([ current_function().upper ' - rRange must be a two value array']);
     end
     
     if diff(rRange)<0
@@ -136,7 +139,7 @@ if logFlag
     cHi=log10(cHi);
 end
 
-mask=(cHi>rp(1) & cLow<rp(end)) & inMask;
+mask=(cHi>rp(1) & cLow<rp(end)) & inMask; 
 
 rCell=rCell(mask);
 cellRad=cellRad(mask);
@@ -147,8 +150,8 @@ cHi =cHi(mask);
 
 % find bin index for each cell, for the lower and higher edges, do not
 % exceed profile edge
-cellBins(1,:)=max(ceil((cLow-rp(1))./(rp(end)-rp(1)).*nbins),1);
-cellBins(2,:)=min(ceil((cHi-rp(1))./(rp(end)-rp(1)).*nbins),nbins);
+cellBins(1,:)=max(ceil((cLow-rp(1))./(rp(end)-rp(1)).*nbins),1); % bin index for inner edge of cell
+cellBins(2,:)=min(ceil((cHi-rp(1))./(rp(end)-rp(1)).*nbins),nbins);% bin index for outer edge of cell
 
 % thisdeals with cells whose lower bound exceeds below zero
 if rp(1)==0 && ~logFlag
@@ -193,12 +196,11 @@ switch profType
     case 'intensiveFancy'
         
         if isempty(wt)
-            error('MK_RADIAL_PROFILE_CELLS - weights must be given for intensive parameters');
+            error([ current_function().upper ' - weights must be given for intensive parameters']);
         end
         
         vv=val.*wt;
-        
-        
+                
         for i=1:length(rCell)
             ind=cellBins(1,i):cellBins(2,i);
             
@@ -262,7 +264,7 @@ switch profType
         
         
     otherwise
-        error('MK_RADIAL_PROFILE_CELLS - Unknown profile type (should be extensive/instensive): %g',profType);
+        error([ current_function().upper ' - Unknown profile type (should be extensive/instensive): %g',profType);
 end
 
 res.profile=profile;

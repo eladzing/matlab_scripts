@@ -29,6 +29,8 @@ rmax=r200.*rFactor;
 % load chunks of the snapshot data, find the relevant particles and create
 % a subset list to work with later 
 
+gasFields={'Coordinates','Density','ElectronAbundance','InternalEnergy','Masses'};%,'Velocities','StarFormationRate'};
+
 % load the header
 
 % identify the no. of particles 
@@ -36,38 +38,35 @@ rmax=r200.*rFactor;
 
 
 % build the subset structure 
-
+subset=...
 % load a chunk of particles 
 
+gas=illustris.snapshot.loadSubset(BASEPATH, snap,'gas',gasFields,subset);
 % idenitfy the relevant particles 
 
 gas.newCoord = illustris.utils.centerObject(gas.Coordinates,center);
 gasDist=sqrt( sum(double(gas.newCoord).^2,1));
+mask=gasDist<=rmax;
 
+gas=mask_structure(ga,mask);
 
-% save to subset
-
-
-
-
-
-%% load gas cells 
-gasFields={'Coordinates','Density','ElectronAbundance','InternalEnergy','Masses'};%,'Velocities','StarFormationRate'};
+% add to list 
+gasCells=illustris.infrastructure.concat_particle_struct(gasCells,gas2);
 
 
 
 
 
-gas=illustris.snapshot.loadSubset(BASEPATH, snap,'gas',gasFields);
 
-gas=illustris.utils.addTemperature(gas);
+%% generate profiles  
 
-gas.newCoord = illustris.utils.centerObject(gas.Coordinates,center);
-gasDist=sqrt( sum(double(gas.newCoord).^2,1));
+% set radial profile 
 
-%% identify all cells within the maximal radius 
-mask=gasDist
+gasCells=illustris.utils.addTemperature(gasCells);
 
+% set cell radius 
 
+%gas.newCoord = illustris.utils.centerObject(gas.Coordinates,center);
+%gasDist=sqrt( sum(double(gas.newCoord).^2,1));
 
-
+ res = mk_radial_profile_cells(cellPos,cellRad,val,varargin)

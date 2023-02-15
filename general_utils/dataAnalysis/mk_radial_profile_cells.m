@@ -153,7 +153,7 @@ cHi =cHi(mask);
 cellBins(1,:)=max(ceil((cLow-rp(1))./(rp(end)-rp(1)).*nbins),1); % bin index for inner edge of cell
 cellBins(2,:)=min(ceil((cHi-rp(1))./(rp(end)-rp(1)).*nbins),nbins);% bin index for outer edge of cell
 
-% thisdeals with cells whose lower bound exceeds below zero
+% this deals with cells whose lower bound exceeds below zero
 if rp(1)==0 && ~logFlag
     negMask=rCell-cellRad<0;
     

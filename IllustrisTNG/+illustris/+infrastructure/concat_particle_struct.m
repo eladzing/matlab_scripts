@@ -1,5 +1,7 @@
 function res = concat_particle_struct(struct1,struct2)
 %CONCAT_PARTICLE_STRUCTURE stitch together 2 particle structres of the same type
+% if the structures contain different fields only the common fields will
+% appear in the resultant structure; 
 
 missingFlag=false;
 
@@ -30,9 +32,6 @@ for i=1:length(fldList)
         res.(fldList{i})=cat(2,struct1.(fldList{i}),struct2.(fldList{i}));
     end
 end
-
-
-
 
 
 end

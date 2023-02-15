@@ -25,8 +25,38 @@ rFactor=5;
 
 rmax=r200.*rFactor;
 
+%% identify the gas cells we are interested in for the halo 
+% load chunks of the snapshot data, find the relevant particles and create
+% a subset list to work with later 
+
+% load the header
+
+% identify the no. of particles 
+
+
+
+% build the subset structure 
+
+% load a chunk of particles 
+
+% idenitfy the relevant particles 
+
+gas.newCoord = illustris.utils.centerObject(gas.Coordinates,center);
+gasDist=sqrt( sum(double(gas.newCoord).^2,1));
+
+
+% save to subset
+
+
+
+
+
 %% load gas cells 
 gasFields={'Coordinates','Density','ElectronAbundance','InternalEnergy','Masses'};%,'Velocities','StarFormationRate'};
+
+
+
+
 
 gas=illustris.snapshot.loadSubset(BASEPATH, snap,'gas',gasFields);
 

@@ -6,6 +6,7 @@ missingFlag=false;
 fldName1=fieldnames(struct1);
 fldName2=fieldnames(struct2);
 
+fldList={};
 % check if structures contain the same fields 
 for i=1:length(fldName1)
     for j=1:length(fldName2)

@@ -2,12 +2,12 @@
 % out to several times R200 of a given Fof.
 
 %% halo ID and parameters 
-sim='TNG50';
+%sim='TNG50';
 snap=99;
 fofID=5;
 
 %% load relevant environmet 
-bp=illustris.set_env(sim);
+bp=illustris.set_env(103);
 illustris.utils.set_illUnits(snap) % set the simulation units for the snapshot.
 
 [subs,fofs,subsInfo]=illustris.loadFofSub(snap);
@@ -49,16 +49,17 @@ subset= illustris.snapshot.getSnapOffsets(BASEPATH,snap,0,'Subhalo');
 firstFlag=true;
 tic;
 for i=1:nChunks
+    fprintf('i=%i \n',i);
     % build the subset structure     
-    startPoint=(i-1).*chunkLength;
-    endPoint=min(i.*chunkLength-1,numPartTotal);
+    startPoint=(i-1).*chunkLength
+    endPoint=min(i.*chunkLength-1,numPartTotal)
     subset.offsetType(nPartType)=startPoint;
-    subset.lenType(nPartType)=endPoint-startPoint;
+    subset.lenType(nPartType)=endPoint-startPoint
 
     % read in the gas particles in the chunk 
     gas=illustris.snapshot.loadSubset(BASEPATH, snap,'gas',gasFields,subset);
 
-
+    fprintf('loaded %i gas cells \n',gas.count);
     % idenitfy the relevant particles
     
     gas.newCoord = illustris.utils.centerObject(gas.Coordinates,center);
@@ -67,7 +68,7 @@ for i=1:nChunks
     
     if sum(mask)>0
         gas=mask_structure(gas,mask);
-        
+        fprintf('Bingo!')
         % add to list
         if ~firstFlag
             gasCells=illustris.infrastructure.concat_particle_struct(gasCells,gas);

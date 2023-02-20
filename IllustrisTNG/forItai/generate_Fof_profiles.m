@@ -54,7 +54,7 @@ for i=1:nChunks
     startPoint=(i-1).*chunkLength
     endPoint=min(i.*chunkLength-1,numPartTotal)
     subset.offsetType(nPartType)=startPoint;
-    subset.lenType(nPartType)=endPoint-startPoint
+    subset.lenType(nPartType)=endPoint-startPoint;
 
     % read in the gas particles in the chunk 
     gas=illustris.snapshot.loadSubset(BASEPATH, snap,'gas',gasFields,subset);

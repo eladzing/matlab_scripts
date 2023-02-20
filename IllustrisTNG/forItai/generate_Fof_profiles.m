@@ -48,6 +48,7 @@ subset= illustris.snapshot.getSnapOffsets(BASEPATH,snap,0,'Subhalo');
 %% load chunks of particles 
 firstFlag=true;
 tic;
+sumPart=0;
 for i=1:nChunks
     fprintf('i=%i \n',i);
     % build the subset structure     
@@ -65,7 +66,7 @@ for i=1:nChunks
     gas.newCoord = illustris.utils.centerObject(gas.Coordinates,center);
     gasDist=sqrt( sum(double(gas.newCoord).^2,1));
     mask=gasDist<=rmax;
-    
+    sumPart=sumPart+sum(mask);
     if sum(mask)>0
         gas=mask_structure(gas,mask);
         fprintf('Bingo!')
@@ -81,8 +82,9 @@ for i=1:nChunks
     fprintf('press\n');pause;
 end
 
+fprintf('sumPart = %i, count= %i \n',sumPart,gasCells.count);
 %% save to mat files. 
-
+fprintf('save?\n');pause;
 global DRACOFLAG
 if DRACOFLAG
     global DEFAULT_MATFILE_DIR

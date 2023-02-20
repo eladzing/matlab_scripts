@@ -7,21 +7,24 @@ missingFlag=false;
 
 fldName1=fieldnames(struct1);
 fldName2=fieldnames(struct2);
+missingFlag1=true(size(fldName1));
+missingFlag2=true(size(fldName2));
 
 fldList={};
 % check if structures contain the same fields 
 for i=1:length(fldName1)
-    for j=1:length(fldName2)
+    for j=i:length(fldName2)
         if strcmp(fldName1{i},fldName2{j})
             fldList{end+1}=fldName1{i};
-            continue
+            missingFlag1(i)=false;
+            missingFlag2(j)=false;
+            break
         end
-        missingFlag=true;
     end
 end
 
-if missingFlag
-    warning('%s - structures contain different fields. Only common fields will be ocnsidered',...
+if any(missingFlag1) || any(missingFlag2)
+    warning('%s - structures contain different fields. Only common fields will be considered',...
         current_function().upper);
 end
 

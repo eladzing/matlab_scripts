@@ -47,10 +47,10 @@ subset= illustris.snapshot.getSnapOffsets(BASEPATH,snap,0,'Subhalo');
 
 %% load chunks of particles 
 firstFlag=true;
-tic;
+%tic;
 sumPart=0;
 for i=1:nChunks
-    fprintf('i=%i \n',i);
+    %fprintf('i=%i \n',i);
     % build the subset structure     
     startPoint=(i-1).*chunkLength;
     endPoint=min(i.*chunkLength-1,numPartTotal);
@@ -68,18 +68,18 @@ for i=1:nChunks
     mask=gasDist<=rmax;
     sumPart=sumPart+sum(mask);
     if sum(mask)>0
-        gas=mask_structure(gas,mask);
+        gasM=mask_structure(gas,mask);
         fprintf('Bingo! %i, %i \n',i,sum(mask))
         % add to list
         if ~firstFlag
-            gasCells=illustris.infrastructure.concat_particle_struct(gasCells,gas);
+            gasCells=illustris.infrastructure.concat_particle_struct(gasCells,gasM);
         else
             gasCells=gas;
             firstFlag=false;
         end
     end
-    toc;
-    %fprintf('press\n');pause;
+    %toc;
+    fprintf('press\n');pause;
 end
 
 fprintf('sumPart = %i, count= %i \n',sumPart,gasCells.count);

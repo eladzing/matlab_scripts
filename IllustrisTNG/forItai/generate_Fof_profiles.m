@@ -52,15 +52,15 @@ sumPart=0;
 for i=1:nChunks
     fprintf('i=%i \n',i);
     % build the subset structure     
-    startPoint=(i-1).*chunkLength
-    endPoint=min(i.*chunkLength-1,numPartTotal)
+    startPoint=(i-1).*chunkLength;
+    endPoint=min(i.*chunkLength-1,numPartTotal);
     subset.offsetType(nPartType)=startPoint;
     subset.lenType(nPartType)=endPoint-startPoint;
 
     % read in the gas particles in the chunk 
     gas=illustris.snapshot.loadSubset(BASEPATH, snap,'gas',gasFields,subset);
 
-    fprintf('loaded %i gas cells \n',gas.count);
+    %fprintf('loaded %i gas cells \n',gas.count);
     % idenitfy the relevant particles
     
     gas.newCoord = illustris.utils.centerObject(gas.Coordinates,center);
@@ -69,7 +69,7 @@ for i=1:nChunks
     sumPart=sumPart+sum(mask);
     if sum(mask)>0
         gas=mask_structure(gas,mask);
-        fprintf('Bingo!')
+        fprintf('Bingo! %i, %i \n',i,sum(mask))
         % add to list
         if ~firstFlag
             gasCells=illustris.infrastructure.concat_particle_struct(gasCells,gas);
@@ -79,7 +79,7 @@ for i=1:nChunks
         end
     end
     toc;
-    fprintf('press\n');pause;
+    %fprintf('press\n');pause;
 end
 
 fprintf('sumPart = %i, count= %i \n',sumPart,gasCells.count);

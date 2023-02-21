@@ -17,8 +17,8 @@ global cosmoStruct
 global BASEPATH
 
 %% get relavent Fof info 
-r200=fofs.Group_M_Crit200(fofID+1);
-m200=fofs.Group_R_Crit200(fofID+1);
+m200=fofs.Group_M_Crit200(fofID+1);
+r200=fofs.Group_R_Crit200(fofID+1);
 center=fofs.GroupPos(:,fofID+1);
 rFactor=1;
 

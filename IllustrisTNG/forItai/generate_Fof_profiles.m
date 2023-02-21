@@ -20,7 +20,7 @@ global BASEPATH
 m200=fofs.Group_M_Crit200(fofID+1);
 r200=fofs.Group_R_Crit200(fofID+1);
 center=fofs.GroupPos(:,fofID+1);
-rFactor=1;
+rFactor=2.5;
 
 
 rmax=r200.*rFactor;
@@ -84,6 +84,25 @@ for i=1:nChunks
 end
 
 fprintf('sumPart = %i, count= %i \n',sumPart,gasCells.count);
+
+
+%% calculate profiles
+
+% rp=
+% 
+% % set radial profile 
+% 
+% % add temperature
+% gasCells=illustris.utils.addTemperature(gasCells);
+% 
+% % set cell radius 
+% gasCells=illustris.utils.addCellRadius(gasCells);
+% 
+% %gasDist=sqrt( sum(double(gasCells.newCoord).^2,1));
+% 
+% profs = mk_radial_profile_cells(gasCells.newCoord,gasCells.CellRadius,val,varargin)
+
+
 %% save to mat files. 
 fprintf('save?\n');pause;
 global DRACOFLAG

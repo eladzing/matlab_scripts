@@ -169,8 +169,8 @@ end
 
 %% loop over cells, according to method  and add accordingly
 
-switch profType
-    case 'extensiveFancy'
+switch lower(profType)
+    case 'extensivefancy'
         
         for i=1:length(rCell)
             ind=cellBins(1,i):cellBins(2,i);
@@ -193,7 +193,7 @@ switch profType
             weights(ind)=weights(ind)+fracVol.*(4*pi/3*cellRad(i)^3);
         end
         
-    case 'intensiveFancy'
+    case 'intensivefancy'
         
         if isempty(wt)
             error([ current_function().upper ' - weights must be given for intensive parameters']);
@@ -264,7 +264,7 @@ switch profType
         
         
     otherwise
-        error([ current_function().upper ' - Unknown profile type (should be extensive/instensive): %g',profType);
+        error('%s - Unknown profile type (should be extensive/instensive): %g',current_function().upper,profType);
 end
 
 res.profile=profile;

@@ -68,7 +68,8 @@ for i=1:nChunks
     mask=gasDist<=rmax;
     sumPart=sumPart+sum(mask);
     if sum(mask)>0
-        gasM=mask_structure(gas,mask);
+        gas=mask_structure(gas,mask);
+        gas.count=length(gasM.Masses);
         fprintf('Bingo! %i, %i \n',i,sum(mask))
         % add to list
         if ~firstFlag
@@ -79,7 +80,7 @@ for i=1:nChunks
         end
     end
     %toc;
-    fprintf('press\n');pause;
+    %fprintf('press\n');pause;
 end
 
 fprintf('sumPart = %i, count= %i \n',sumPart,gasCells.count);

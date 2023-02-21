@@ -1,6 +1,8 @@
 function gasStruct =  addCellRadius( gasStruct )
-%ADDTEMP calculate temperature and add as array to gas structure
-%   Makes use of the calcTemperature function
+%ADDCEELLRADIUS calculate the 'spherical' cell radius returns in adjusted
+%units
+%   assume cell is a sphere and find the radius based on mass and density. 
+%    mass and density are in adjusted (no /h)  physical units. 
 
 global illUnits
 

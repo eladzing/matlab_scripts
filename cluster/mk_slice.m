@@ -37,7 +37,7 @@ switch lower(type)
             end
         end
     otherwise
-        error('MK_SLICE - Illegal type: %s')
+        error('%s - Illegal type: %s',current_function().upper,type);
 end
 
 end

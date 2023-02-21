@@ -63,25 +63,25 @@ while i<=length(varargin)
             mappingType='maximal';
         case{'notcentered','nocentered'}
             centeredFlag=false;
-            fprintf('CAUTION: DOES NOT ACCOUNT FOR PERIODIC BOUNDARIES!! \n');
+            warning('%s - CAUTION: DOES NOT ACCOUNT FOR PERIODIC BOUNDARIES!! \n',current_function().uppper);
         case{'buffer','bf','buff'}
             i=i+1;
             buffer=varargin{i};
         otherwise
-            error('CELL2GRID - Illegal argument: %s',varargin{i})
+            error('%s - Illegal argument: %s',current_function().upper,varargin{i})
     end
     i=i+1;
 end
 
 if strcmp(mappingType,'null')
-    error('CELL2GRID - Must state mapping type: extensive, intensive or maximal');
+    error('%s - Must state mapping type: extensive, intensive or maximal',current_function().upper);
 end
 if ~any(size(coords)==3)
-    error('CELL2GRID - Coordinates are not 3D');
+    error('%s - Coordinates are not 3D',current_function().upper);
 end
 
 if length(size(coords))~=2
-    error('CELL2GRID - Coordinates wrong shape');
+    error('%s - Coordinates wrong shape',current_function().upper);
 end
 
 
@@ -99,7 +99,7 @@ if boxSide==0
         clear m1 m2 ll
         
     else
-        error('Non-centered positions not yet possible')
+        error('%s - Non-centered positions not yet possible',current_function().upper)
         %         m1=max(max(coords,[],dim));
         %         m2=min(min(coords,[],dim));
         %

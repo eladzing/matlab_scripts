@@ -427,7 +427,9 @@ end
 if isempty(gasMask)
     gasMask=true(1,gasStruct.count);
 end
+if isfield(gasStruct,'StarFormationRate')
 sfrMask=gasStruct.StarFormationRate(gasMask)==0;
+end
 coord=gasStruct.newCoord(:,gasMask);
 mass=gasStruct.Masses(gasMask);
 cellSize=2.*(3.*mass./(4.*pi.*gasStruct.Density(gasMask))).^(1/3); % "diameter" of a cell

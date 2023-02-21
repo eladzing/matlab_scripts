@@ -4,6 +4,9 @@ function  hf=mkmapGas(varargin )
 %
 
 
+wargning('%s - This function does not fix the length units - make sure your coordinates are scales accordingly!',...
+    current_function().upper);
+
 %% defuals and globals
 global DEFAULT_PRINTOUT_DIR
 global DEFAULT_MATFILE_DIR

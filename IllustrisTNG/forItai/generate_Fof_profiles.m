@@ -69,7 +69,7 @@ for i=1:nChunks
     sumPart=sumPart+sum(mask);
     if sum(mask)>0
         gas=mask_structure(gas,mask);
-        gas.count=length(gasM.Masses);
+        gas.count=length(gas.Masses);
         fprintf('Bingo! %i, %i \n',i,sum(mask))
         % add to list
         if ~firstFlag

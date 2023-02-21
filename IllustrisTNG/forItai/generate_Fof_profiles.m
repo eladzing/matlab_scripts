@@ -26,6 +26,7 @@ rFactor=2.5;
 rmax=r200.*rFactor;
  
 
+
 %% identify the gas cells we are interested in for the halo 
 % load chunks of the snapshot data, find the relevant particles and create
 % a subset list to work with later 
@@ -122,7 +123,7 @@ if DRACOFLAG
     global simDisplayName
     %fname=sprintf('gasProperties_z%s_%s',num2str(illustris.utils.get_zred(snap)),simDisplayName);
     fname=sprintf('gasCutoutTest_snp%s_%s.mat',num2str(snap),simDisplayName);
-    save([DEFAULT_MATFILE_DIR '/' fname],'gasCells','-v7.3')
+    save([DEFAULT_MATFILE_DIR '/' fname],'gasCells','profs','-v7.3')
     
     fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
     

@@ -24,6 +24,7 @@ rFactor=2.5;
 
 
 rmax=r200.*rFactor;
+ 
 
 %% identify the gas cells we are interested in for the halo 
 % load chunks of the snapshot data, find the relevant particles and create
@@ -88,19 +89,29 @@ fprintf('sumPart = %i, count= %i \n',sumPart,gasCells.count);
 
 %% calculate profiles
 
-% rp=
-% 
-% % set radial profile 
-% 
-% % add temperature
-% gasCells=illustris.utils.addTemperature(gasCells);
-% 
-% % set cell radius 
-% gasCells=illustris.utils.addCellRadius(gasCells);
-% 
-% %gasDist=sqrt( sum(double(gasCells.newCoord).^2,1));
-% 
-% profs = mk_radial_profile_cells(gasCells.newCoord,gasCells.CellRadius,val,varargin)
+% set radial profile 
+nbins=1000;
+rp=linspace(0,rmax,nbins);
+
+% add temperature
+gasCells=illustris.utils.addTemperature(gasCells);
+
+% set cell radius 
+gasCells=illustris.utils.addCellRadius(gasCells);
+
+%gasDist=sqrt( sum(double(gasCells.newCoord).^2,1));
+vol=gasCells.Masses./gasCells.Density.*illUnits.volumeUnit;
+mass=gasCells.Masses.*illUnits.massUnit;
+coords=gasCells.newCoord.*illUnits.lengthUnit;
+cellRad=gasCells.CellRadius.*illUnits.lengthUnit;
+profs.density = mk_radial_profile_cells(coords,cellRad,...
+    gasCells.Density.*illUnits.densityUnit,...
+    'bins',rp,'wt',vol,'type','intensiveFancy');
+profs.temperature = mk_radial_profile_cells(coords,cellRad,...
+    gasCells.Temperature,...
+    'bins',rp,'wt',mass,'type','intensiveFancy');
+
+
 
 
 %% save to mat files. 

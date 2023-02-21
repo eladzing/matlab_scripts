@@ -67,13 +67,13 @@ for i=1:nChunks
     gasDist=sqrt( sum(double(gas.newCoord).^2,1));
     mask=gasDist<=rmax;
     sumPart=sumPart+sum(mask);
-    if sum(mask)>0
+    if any(mask)
         gas=mask_structure(gas,mask);
         gas.count=length(gas.Masses);
-        fprintf('Bingo! %i, %i \n',i,sum(mask))
+        fprintf('Bingo! %i, %i %i \n',i,sum(mask),gas.count)
         % add to list
         if ~firstFlag
-            gasCells=illustris.infrastructure.concat_particle_struct(gasCells,gasM);
+            gasCells=illustris.infrastructure.concat_particle_struct(gasCells,gas);
         else
             gasCells=gas;
             firstFlag=false;

@@ -51,7 +51,7 @@ gasMask=[];
 figureColorBk=[1 1 1]; %'w';
 figureColorText=[ 0 0 0];%'k';
 nanVal='none';
-lengthUnit='kpc';
+lengthUnit='kpc/h';
 idObj=[];
 r200c=[];
 guassSigma=0.5;
@@ -117,6 +117,11 @@ while i<=length(varargin)
             Ngrid=varargin{i};
         case{'lengthunt','hublength','/h'}
             lengthUnit=[lengthUnit '/h'];
+        case{'fixed length','no hub length','no /h','no\h'}
+            lengthUnit='kpc';
+        case{'lengthunit'}
+            i=i+1;
+            lengthUnit=varargin{i};
         case{'mask','gasmask'}
             i=i+1;
             gasMask=varargin{i};
@@ -436,7 +441,7 @@ sfrMask=gasStruct.StarFormationRate(gasMask)==0;
 end
 coord=gasStruct.newCoord(:,gasMask);
 mass=gasStruct.Masses(gasMask);
-cellSize=2.*(3.*mass./(4.*pi.*gasStruct.Density(gasMask))).^(1/3); % "diameter" of a cell
+cellSize=2.*(3.*mass./(4.*pi.*gasStruct.Density(gasMask))).^(1/3); % "diameter" of a cell 
 cellCount=sum(gasMask);
 
 

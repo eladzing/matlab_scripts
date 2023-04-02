@@ -366,7 +366,7 @@ hf=myFigure('pos',[97   444   838   687]);
    scatterhist(log10(jfStats.M200c(msk50)),log10(jff(msk50)),...
         'group',gr(msk50),'legend','off','style','stairs',...
         'location','Northwest','Direction','out','kernel','off',...
-        'nbins',10,'markersize',[4,6,8],'marker','osd','color',cmap([4 8 10 ],:));%[5 2 3]
+        'nbins',10,'markersize',[5,8,10],'marker','osd','color',cmap([4 8 10 ],:));%[5 2 3]
     set(gca,'xaxislocation','bottom',...
         'yaxislocation','right','fontsize',axFont)
     
@@ -524,16 +524,16 @@ m50=jfStats.sim=='TNG50';
 
 
 myFigure;
-histogram(log10(jfStats.M200c(mmm & m100)),linspace(10.4,15,50),'facecolor',cmap(2,:));
+histogram(log10(jfStats.M200c(mmm & m100)),linspace(10.4,15,50),'facecolor',cmap(6,:));
 hold on;
-histogram(log10(jfStats.M200c(~mmm & m100)),linspace(10.4,15,50),'facecolor',cmap(6,:));
+histogram(log10(jfStats.M200c(~mmm & m100)),linspace(10.4,15,50),'facecolor',cmap(2,:));
 histogram(log10(jfStats.M200c(mmm)),linspace(10.4,15,50),'displayStyle','stairs',...
-    'edgecolor',cmap(2,:),'linewidth',1.5);
-histogram(log10(jfStats.M200c(~mmm)),linspace(10.4,15,50),'displayStyle','stairs',...
     'edgecolor',cmap(6,:),'linewidth',1.5);
+histogram(log10(jfStats.M200c(~mmm)),linspace(10.4,15,50),'displayStyle','stairs',...
+    'edgecolor',cmap(2,:),'linewidth',1.5);
 %text(10^14.2,1000,num2str(sum(mmm)),'Interpreter','latex','Color',cmap(2,:));
 %text(10^14.2,700,num2str(sum(~mmm)),'Interpreter','latex','Color',cmap(1,:));
-legend({['No JF (' num2str(sum(mmm & m100)) ')'], ['JF (' num2str(sum(~mmm & m100)) ')'] },'Interpreter','latex','fontsize',18,'box','off' )
+legend({['Non-JF (' num2str(sum(mmm & m100)) ')'], ['JF (' num2str(sum(~mmm & m100)) ')'] },'Interpreter','latex','fontsize',18,'box','off' )
 xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$',labFont);
 ylabelmine('No. of Hosts',labFont);
 set(gca,'yscale','log','fontsize',axFont)
@@ -545,17 +545,17 @@ fname='cjf_jfhost_hist_TNG100';
 if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
 
 myFigure;
-histogram(log10(jfStats.M200c(mmm & m50)),linspace(10.4,15,50),'facecolor',cmap(2,:));
+histogram(log10(jfStats.M200c(mmm & m50)),linspace(10.4,15,50),'facecolor',cmap(6,:));
 hold on;
-histogram(log10(jfStats.M200c(~mmm & m50)),linspace(10.4,15,50),'facecolor',cmap(6,:));
+histogram(log10(jfStats.M200c(~mmm & m50)),linspace(10.4,15,50),'facecolor',cmap(2,:));
 
 histogram(log10(jfStats.M200c(mmm)),linspace(10.4,15,50),'displayStyle','stairs',...
-    'edgecolor',cmap(2,:),'linewidth',1.5);
-histogram(log10(jfStats.M200c(~mmm)),linspace(10.4,15,50),'displayStyle','stairs',...
     'edgecolor',cmap(6,:),'linewidth',1.5);
+histogram(log10(jfStats.M200c(~mmm)),linspace(10.4,15,50),'displayStyle','stairs',...
+    'edgecolor',cmap(2,:),'linewidth',1.5);
 %text(10^14.2,1000,num2str(sum(mmm)),'Interpreter','latex','Color',cmap(2,:));
 %text(10^14.2,700,num2str(sum(~mmm)),'Interpreter','latex','Color',cmap(1,:));
-legend({['No JF (' num2str(sum(mmm & m50)) ')'], ['JF (' num2str(sum(~mmm & m50)) ')'] },'Interpreter','latex','fontsize',18,'box','off'   )
+legend({['Non-JF (' num2str(sum(mmm & m50)) ')'], ['JF (' num2str(sum(~mmm & m50)) ')'] },'Interpreter','latex','fontsize',18,'box','off'   )
 xlabelmine('log Host Mass $(M_\mathrm{200,c})\,[\mathrm{M_\odot}]$',labFont);
 ylabelmine('No. of Hosts',labFont);
 set(gca,'yscale','log','fontsize',axFont)

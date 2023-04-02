@@ -22,7 +22,7 @@ histogram(objectTableComp.scoreWeightedRand)
 hold on 
 histogram(objectTableComp.scoreWeightedPref)
 plot([0.8 0.8],[0 6000],':k','linewidth',1.5)
-legend('Random','Preferred','Interpreter','latex','fontsize',16);
+legend('Random','Optimized','Interpreter','latex','fontsize',16);
 %set(gca,'yscale','log')
 box(axes1,'on');
 hold(axes1,'off');
@@ -61,7 +61,7 @@ grid
 set(gca,'yscale','log')
 xlim([-1.025 1.025])
 %legend('Raw','weighted','Interpreter','latex','fontsize',14);
-xlabelmine('Score Preferred - Random');
+xlabelmine('Score Optimized - Random');
 ylabelmine('No. of objects');
 
 
@@ -97,7 +97,7 @@ plot([-0.5 21]./20,[-0.5 21]./20,'--k','linewidth',1.5)
 plot([15.5 15.5]./20,[-0.5 21]./20,':k','linewidth',1.5)
 plot([-0.5 21]./20,[15.5 15.5]./20,':k','linewidth',1.5)
 xlabelmine('Random',labFont);
-ylabelmine('Preferred',labFont);
+ylabelmine('Optimized',labFont);
 %colormap(brewermap(256,'Reds'))
 colormap(flipud(magma(256)));
 caxis(log10([0.01 20])); 
@@ -128,7 +128,7 @@ if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
 % %plot([15.5 15.5]./20,[-0.5 21]./20,':k','linewidth',1.5)
 % %plot([-0.5 21]./20,[15.5 15.5]./20,':k','linewidth',1.5)
 % xlabelmine('Random',labFont);
-% ylabelmine('Preferred-Random',labFont);
+% ylabelmine('Optimized-Random',labFont);
 % %colormap(brewermap(256,'Reds'))
 % colormap(flipud(magma(256)));
 % %caxis(log10([0.01 20])); 
@@ -156,8 +156,8 @@ if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
 % %plot([-0.5 21]./20,[-0.5 21]./20,'--k','linewidth',1.5)
 % %plot([15.5 15.5]./20,[-0.5 21]./20,':k','linewidth',1.5)
 % %plot([-0.5 21]./20,[15.5 15.5]./20,':k','linewidth',1.5)
-% xlabelmine('Preferred',labFont);
-% ylabelmine('Preferred-Random',labFont);
+% xlabelmine('Optimized',labFont);
+% ylabelmine('Optimized-Random',labFont);
 % %colormap(brewermap(256,'Reds'))
 % colormap(flipud(magma(256)));
 % %caxis(log10([0.01 20])); 

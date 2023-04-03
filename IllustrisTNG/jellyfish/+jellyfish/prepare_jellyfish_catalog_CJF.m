@@ -65,7 +65,8 @@ for k=1:length(sims)
         
         
         
-        outStruct=struct('done',[],'Score',[],'ClassificationNum',[],'ScoreTotal',[]);
+        outStruct=struct('done',[],'ScoreRaw',[],'ClassificationNumRaw',[],'ScoreRawTotal',[],...
+           'ScoreWeighted',[],'ClassificationNumWeighted',[],'Weight',[],'expertNum',[]);
         
             
         
@@ -78,6 +79,7 @@ for k=1:length(sims)
         galScoreWeighted=zeros(length(subs),1)-1;
         galNclsWeighted=zeros(length(subs),1)-1;
         galWeight=zeros(length(subs),1)-1;
+        expNum=zeros(length(subs),1)-1;
         
         tabInd=find(fullMask); % indices in objectTable from the right simulation and snpashot
         
@@ -92,7 +94,7 @@ for k=1:length(sims)
         galScoreWeighted(subfindInd)=objectTable.scoreWeighted(tabInd);
         galNclsWeighted(subfindInd)=objectTable.clsNumWeighted(tabInd);
         galWeight(subfindInd)=objectTable.weight(tabInd);
-        
+        expNum(subfindInd)=objectTable.expNum(tabInd);
         
         %         %% address funky galaxyis
         %         funkyID=funky.(['snap' num2str(snaps(i))]);
@@ -107,9 +109,10 @@ for k=1:length(sims)
         outStruct.ClassificationNumRaw=galNcls;
         outStruct.ScoreRawTotal=galScoreTot;
         
-        outStruct.galScoreWeighted=galScoreWeighted;
-        outStruct.galNclsWeighted=galNclsWeighted;
-        outStruct.galWeight=galWeight;
+        outStruct.ScoreWeighted=galScoreWeighted;
+        outStruct.ClassificationNumWeighted=galNclsWeighted;
+        outStruct.Weight=galWeight;
+        outStruct.expertNum=expNum;
         
         outStruct.done=int8(galScore~=-1);
         

@@ -112,7 +112,7 @@ if structFlag
     end
 else
     
-    dataSet   = char(dataSets(1));
+    dataSet = char(dataSets(1));
     h5write([fullPath '/' fullName], ['/' dataSet], catalog, 'WriteMode', 'append');
 end
 

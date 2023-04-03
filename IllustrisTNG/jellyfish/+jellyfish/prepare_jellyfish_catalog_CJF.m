@@ -75,7 +75,9 @@ for k=1:length(sims)
         galNcls=zeros(length(subs),1)-1;
         galScoreTot=zeros(length(subs),1)-1;
         
-        
+        galScoreWeighted=zeros(length(subs),1)-1;
+        galNclsWeighted=zeros(length(subs),1)-1;
+        galWeight=zeros(length(subs),1)-1;
         
         tabInd=find(fullMask); % indices in objectTable from the right simulation and snpashot
         
@@ -83,9 +85,14 @@ for k=1:length(sims)
         subfindInd=objectTable.subfind(fullMask)+1; % subfind is zero based, so index is increases by 1
         
         %prepare the scores
-        galScore(subfindInd)=objectTable.score(tabInd);
-        galNcls(subfindInd)=objectTable.clsNum(tabInd);
-        galScoreTot(subfindInd)=objectTable.scoreTotal(tabInd);
+        galScore(subfindInd)=objectTable.scoreRaw(tabInd);
+        galNcls(subfindInd)=objectTable.clsNumRaw(tabInd);
+        galScoreTot(subfindInd)=objectTable.scoreTotalRaw(tabInd);
+        
+        galScoreWeighted(subfindInd)=objectTable.scoreWeighted(tabInd);
+        galNclsWeighted(subfindInd)=objectTable.clsNumWeighted(tabInd);
+        galWeight(subfindInd)=objectTable.weight(tabInd);
+        
         
         %         %% address funky galaxyis
         %         funkyID=funky.(['snap' num2str(snaps(i))]);
@@ -96,9 +103,14 @@ for k=1:length(sims)
         %             galScoreTot(funkyID+1)=0;
         %         end
         
-        outStruct.Score=galScore;
-        outStruct.ClassificationNum=galNcls;
-        outStruct.ScoreTotal=galScoreTot;
+        outStruct.ScoreRaw=galScore;
+        outStruct.ClassificationNumRaw=galNcls;
+        outStruct.ScoreRawTotal=galScoreTot;
+        
+        outStruct.galScoreWeighted=galScoreWeighted;
+        outStruct.galNclsWeighted=galNclsWeighted;
+        outStruct.galWeight=galWeight;
+        
         outStruct.done=int8(galScore~=-1);
         
         

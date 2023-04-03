@@ -46,27 +46,34 @@ for k=1:length(sims)
         illustris.utils.set_illUnits(snap);
         
         fprintf('   running over hosts \n');
-        
-        
+              
         
         for j=1:length(hostList)
             indx=indx+1;
             
             tag=join([sims(k) 'snp' num2str(snap,'%03.f') 'hostID' num2str(hostList(j))],'');
-            
+            r200=double(fofs.Group_R_Crit200(hostInds(j))).*illUnits.lengthUnit;
             jfStats.GroupNsubs(indx)=fofs.GroupNsubs(hostInds(j));
             jfStats.sim(indx)=sims(k);
             jfStats.tag(indx)=tag;
             jfStats.snap(indx)=snap;
             jfStats.M200c(indx)=double(fofs.Group_M_Crit200(hostInds(j))).*illUnits.massUnit;
+            jfStats.R200c(indx)=r200;
             jfStats.hostID(indx)=hostList(j);
             
-                        % find the relavent subs
+            % find the relavent subs
             satList=find(snapMask & simMask & galProps.hostID'==hostList(j)); %indices of subs in the objectTable
             
             jfStats.sampleSats(indx)=length(satList);
             jfStats.JFNumRaw(indx)=sum(objectTable.scoreRaw(satList)>15);
-            jfStats.JFNumWeighted(indx)=sum(objectTable.scoreWeighted(satList)>0.8);
+            jfStats.JFNumWeighted(indx)=sum(objectTable.scoreWeighted(satList)>=0.8);
+            
+            % count JF within 1 and 2 RV
+            radialPos=galProps.rpos(satList)'./r200;
+           
+            jfStats.JFNum1R200(indx)=sum(objectTable.scoreWeighted(satList)>=0.8 & radialPos<=1);
+            jfStats.JFNum2R200(indx)=sum(objectTable.scoreWeighted(satList)>=0.8 & radialPos<=2);
+                        
             
             % fill out host info
             jfStats.halo(indx).tag=tag;
@@ -75,7 +82,7 @@ for k=1:length(sims)
             jfStats.halo(indx).satIndxInTable=satList;
             jfStats.halo(indx).scoreRaw=objectTable.scoreRaw(satList);
             jfStats.halo(indx).scoreWeighted=objectTable.scoreWeighted(satList);
-            %jfStats.halo(indx).rpos=galProps.rpos(satList)./galProps.hostR200c(satList);
+            jfStats.halo(indx).rpos=radialPos;
             
             
         end

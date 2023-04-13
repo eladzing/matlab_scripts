@@ -565,3 +565,103 @@ xlim([10 15.])
 ylim([0.5 2000 ])
 fname='cjf_jfhost_hist_TNG50';
 if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
+
+%% plot average number of JF by mass 
+massBins=10:1:15;
+
+massInd=discretize(round(log10(jfStats.M200c),1),massBins);
+
+mask50=jfStats.sim=="TNG50";
+
+
+
+myFigure;%('pos',[991   179   875   720]);
+hb=boxplot(jfStats.JFNum2R200(mask50),massInd(mask50),'PlotStyle','traditional','jitter',1.2,'symbol','x',...
+    'labels',{'$10^{10\--11}$','$10^{11\--12}$','$10^{12\--13}$','$10^{13\--14}$','$>10^{14}$'});
+%,'colors','rbrbrb','jitter',1.2,...
+%    'symbol','x','colors',cols,...
+%    'labels',{'',' ',' ','','',' '});
+set(hb,'linewidth',1.5,'markersize',8)
+set(gca,'fontsize',16,'ticklabelInterpreter','latex');
+xlabelmine('Mass Range $[\mathrm{M_\odot}]$');
+ylabelmine('No. of JF',labFont);
+
+grid
+titlemine('TNG50');
+
+
+myFigure;%('pos',[991   179   875   720]);
+hb=boxplot(jfStats.JFNum2R200(~mask50),massInd(~mask50),'PlotStyle','traditional','jitter',1.2,'symbol','x',...
+    'labels',{'$10^{11\--12}$','$10^{12\--13}$','$10^{13\--14}$','$>10^{14}$'});
+%,'colors','rbrbrb','jitter',1.2,...
+%    'symbol','x','colors',cols,...
+%    'labels',{'',' ',' ','','',' '});
+set(hb,'linewidth',1.5,'markersize',8)
+set(gca,'fontsize',16,'ticklabelInterpreter','latex')
+grid
+xlabelmine('Mass Range $[\mathrm{M_\odot}]$');
+ylabelmine('No. of JF',labFont);
+titlemine('TNG100');
+
+%%
+
+massInd2=massInd;
+massInd2(~mask50)=massInd2(~mask50)-0.5;
+
+colset1=brewermap(2,'Set1');
+cols(1,:)=colset1(1,:);
+cols(3,:)=colset1(1,:);
+cols(5,:)=colset1(1,:);
+cols(7,:)=colset1(1,:);
+cols(9,:)=colset1(1,:);
+cols(2,:)=colset1(2,:);
+cols(4,:)=colset1(2,:);
+cols(6,:)=colset1(2,:);
+cols(8,:)=colset1(2,:);
+
+labs={'$<10^{11}$','$10^{11\--12}$','$10^{12\--13}$','$10^{13\--14}$','$>10^{14}$'};
+
+hf=myFigure;%('pos',[991   179   875   720]);
+axes1 = axes('Parent',hf,...
+    'Position',[0.1290    0.180    0.8070    0.7630]);
+
+hb=boxplot(jfStats.JFNum2R200,massInd2,'PlotStyle','traditional','jitter',1.2,'symbol','x','colors',cols,...
+        'labels',{'','','','','','','','',''});
+    %'labels',{'$10^{10\--11}$','$10^{11\--12}$','$10^{12\--13}$','$10^{13\--14}$','$>10^{14}$'},...
+    %'colors',cols);
+%    'symbol','x','colors',cols,...
+    %'labels',{'','','','','','','','',''});
+set(hb,'linewidth',1.5,'markersize',8)
+set(axes1,'fontsize',16,'ticklabelInterpreter','latex','XTick',[]);
+
+text(1.2,23.5,'TNG50','color',colset1(1,:),'fontsize',legFont,'Interpreter','latex')
+text(1.2,21.5,'TNG100','color',colset1(2,:),'fontsize',legFont,'Interpreter','latex')
+
+text(0.5,-3,labs{1},'Interpreter','latex','fontsize',16);
+text(2.0,-3,labs{2},'Interpreter','latex','fontsize',16);
+text(4.0,-3,labs{3},'Interpreter','latex','fontsize',16);
+text(6.0,-3,labs{4},'Interpreter','latex','fontsize',16);
+text(8.0,-3,labs{5},'Interpreter','latex','fontsize',16);
+
+%text(1.1,-0.1,'$z\le0.5$','Interpreter','latex','fontsize',18);
+%text(2.9,-0.1,'$0.5<z\le 1$','Interpreter','latex','fontsize',18);
+%text(5,-0.1,'$1< z\le 2$','Interpreter','latex','fontsize',18);
+text 
+
+text(2.7,-6,'Host Mass Range $[\mathrm{M_\odot}]$','Interpreter','latex','fontsize',labFont);
+
+ylabelmine('No. of JF within $2 \times R_\mathrm{200,c}$',labFont);
+
+grid
+
+
+% text(5.2,0.9,'TNG50','color',colset1(1,:),'fontsize',legFont,'Interpreter','latex')
+% text(5.2,0.81,'TNG100','color',colset1(2,:),'fontsize',legFont,'Interpreter','latex')
+% text(1.1,-0.1,'$z\le0.5$','Interpreter','latex','fontsize',18);
+% text(2.9,-0.1,'$0.5<z\le 1$','Interpreter','latex','fontsize',18);
+% text(5,-0.1,'$1< z\le 2$','Interpreter','latex','fontsize',18);
+% %boxplot(jff(grr~=-1),grr(grr~=-1),'whisker',1,'PlotStyle','compact');
+% 
+
+fname='cjf_jfhost_jfNum_boxplot';
+if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end

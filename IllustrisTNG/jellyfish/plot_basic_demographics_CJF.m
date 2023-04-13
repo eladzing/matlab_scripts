@@ -98,7 +98,7 @@ if 1==1
     %ylabelmine('fraction of populaiton');
     %titlemine('TNG50');
     
-    ylabel(t,'Fraction of Population','fontsize',labFont,'interpreter','latex')
+    ylabel(t,'Fraction of inspected satellites','fontsize',labFont,'interpreter','latex')
     t.TileSpacing='tight';
     t.Padding='compact';
     
@@ -123,11 +123,11 @@ if 1==1
     ylim(yl)
     hold on
     plot(0.775.*ones(size(yl)),yl,':k' ,'linewidth',1.8)
-    legend(["Weighted Score","Initial Score"] ,'Interpreter','latex','FontSize',legFont)
+    legend(["Adjusted Score","Raw Score"] ,'Interpreter','latex','FontSize',legFont)
     %xlabelmine('Score');
     set(gca,'Yscale','log','fontsize',axFont,'Ytick',[0.01 0.1])
     xlabelmine('Score',labFont);
-    ylabelmine('Fraction of Population',labFont);
+    ylabelmine('Fraction of inspected satellites',labFont);
     set(gca,'fontsize',axFont)
     %ylabelmine('fraction of populaiton');
     %titlemine('All');
@@ -249,8 +249,8 @@ hold on
 plot([-0.5 21]./20,[-0.5 21]./20,'--k')
 plot([15.5 15.5]./20,[-0.5 21]./20,':k')
 plot([-0.5 21]./20,[15.5 15.5]./20,':k')
-xlabelmine('Initial Score',labFont);
-ylabelmine('Weighted Score',labFont);
+xlabelmine('Raw Score',labFont);
+ylabelmine('Adjusted Score',labFont);
 colormap(brewermap(256,'OrRd'))
 set(gca,'ydir','normal','fontsize',axFont)
 hb=colorbar;
@@ -275,14 +275,14 @@ if 1==1
     hs(2)=histogram(log10(galProps.galStellarMass(mask100)),bins,'facecolor',colors(1,:),...
         'DisplayName',"TNG100");
     hs(3)=histogram(log10(galProps.galStellarMass),bins,'Displaystyle','stairs','edgecolor','k',...
-        'linewidth',1.5,'DisplayName',"All satellites");
+        'linewidth',1.5,'DisplayName',"TNG50+TNG100");
     %     hold on
     %     hs(2)=histogram(log10(galProps.galStellarMass(mask50)),bins,'facecolor',colors(2,:),...
     %         'DisplayName',"TNG50");
     set(gca,'fontsize',axFont,'box','on');%,'Yscale','log')
-    legend(hs,'Interpreter','latex','FontSize',legFont,'numcolumns',3,'box','off')
+    legend(hs,'Interpreter','latex','FontSize',legFont,'numcolumns',2,'box','off','location','northwest')
     xlabelmine('log Stellar Mass',labFont);
-    ylabelmine('No. of Satellites',labFont);
+    ylabelmine('No. of inspectd satellites',labFont);
     hold(axes1,'off');
     % Create inset axes
     axes2 = axes('Parent',hf,...
@@ -325,7 +325,7 @@ if 1==1
     set(gca,'fontsize',axFont,'box','on','Yscale','log')
     legend(hs,'Interpreter','latex','FontSize',legFont,'numcolumns',3,'box','off')
     xlabelmine('log Stellar Mass',labFont);
-    ylabelmine('No. of Satellites',labFont);
+    ylabelmine('No. of inspectd satellites',labFont);
     if printFlag
         fname='cjf_stellarMassFunction_JF';
         printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir);
@@ -385,7 +385,7 @@ if 1==1
     %legend(hs,'Interpreter','latex','FontSize',legFont)
     ylim([0 4500])
     xlabelmine('log Host Mass',labFont);
-    ylabelmine('No. of Satellites',labFont);
+    ylabelmine('No. of inspectd satellites',labFont);
     %titlemine("Number of Sat's found in hosts");
     if printFlag
         fname='cjf_satNumber';
@@ -405,7 +405,7 @@ if 1==1
     set(gca,'fontsize',axFont,'box','on');%,'Yscale','log')
     %legend(hs,'Interpreter','latex','FontSize',legFont)
     xlabelmine('log Stellar/Host Mass ratio',labFont);
-    ylabelmine('No. of Satellites',labFont);
+    ylabelmine('No. of inspectd satellites',labFont);
     %titlemine("stellar=to-host mass ratio");
     % Create inset axes
     %     axes2 = axes('Parent',hf,...
@@ -473,7 +473,7 @@ if 1==1
     legend(h,'Interpreter','latex','FontSize',18,'Location','northwest')
     set(gca,'fontsize',axFont,'box','on');
     xlabelmine('Snapshot',labFont);
-    ylabelmine('Number of Satellites',labFont);
+    ylabelmine('No. of inspectd satellites',labFont);
     
     ax2 = axes('Position', get(ax1,'Position'), ...
         'XAxisLocation','top', ...

@@ -22,13 +22,13 @@ histogram(objectTableComp.scoreWeightedRand)
 hold on 
 histogram(objectTableComp.scoreWeightedPref)
 plot([0.8 0.8],[0 6000],':k','linewidth',1.5)
-legend('Random','Optimized','Interpreter','latex','fontsize',16);
+legend('Random','Optimized','Interpreter','latex','fontsize',legFont);
 %set(gca,'yscale','log')
 box(axes1,'on');
 hold(axes1,'off');
-set(axes1,'fontsize',axFont)
+set(axes1,'fontsize',axFont,'TickLabelInterpreter','latex')
 ylim([0 5e3])
-xlabelmine('Score');
+xlabelmine('Score',labFont);
 ylabelmine('No. of objects',labFont);
 %titlemine('weighted Score',labFont);
 
@@ -43,11 +43,11 @@ plot([0.8 0.8],[1 10000],':k','linewidth',1.8)
 ylim([50 5e3])
 box(axes2,'on');
 hold(axes2,'off');
-set(gca,'FontSize',axFont,'YMinorTick','on','YScale','log');
+set(gca,'FontSize',axFont,'YMinorTick','on','YScale','log','TickLabelInterpreter','latex');
 
 
 fname='cjf_rand_pref_weight_hist';
-if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
 
 
 
@@ -110,13 +110,13 @@ text(0.05,0.7,[num2str(q3,2) '\%'],'Interpreter','latex',...
 text(0.8,0.7,[num2str(q4,2) '\%'],'Interpreter','latex',...
     'fontsize',22)
 
-set(gca,'ydir','normal','fontsize',axFont)
-hb=colorbar;
+set(gca,'ydir','normal','fontsize',axFont,'TickLabelInterpreter','latex')
+hb=colorbar('fontsize',axFont,'TickLabelInterpreter','latex');
 barTitle(hb,'log \%','fontsize',labFont)
 %titlemine('Weighted Score');
 
 fname='cjf_rand_pref_weight_2dhist';
-if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
 
 
 %% 
@@ -147,7 +147,7 @@ if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
 % %titlemine('Weighted Score');
 % 
 % fname='cjf_rand_pref_weight_2dhist_diffR';
-% if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
+% if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
 % 
 % %% plot 2D histogram of difference 
 % hf=myFigure;
@@ -176,7 +176,7 @@ if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
 % %titlemine('Weighted Score');
 % 
 % fname='cjf_rand_pref_weight_2dhist_diffP';
-% if printFlag; printout_fig(gcf,fname,'nopdf','v','printoutdir',outdir); end
+% if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
 
 %% Some stats 
 

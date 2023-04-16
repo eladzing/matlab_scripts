@@ -17,7 +17,7 @@ fullLegend='';
 xxGiven=[];
 
 axFont=18;
-legFont=18;
+legFont=20;
 labFont=20;
 
 legLoc={'NorthEast','northwest'};
@@ -203,7 +203,7 @@ end
 grid
 xlabelmine(xLab,labFont);
 ylabelmine('JF Fraction',labFont);
-set(gca,'fontsize',axFont,'box','on')
+set(gca,'fontsize',axFont,'box','on','TickLabelInterpreter','latex')
 
 ah1=axes('position',get(gca,'position'),'visible','off');
 

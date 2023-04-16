@@ -124,12 +124,13 @@ end
 
 % PDF version
 if pdfFlag
-    %fullname=sprintf('%s/%s.%s',printoutDir,name,'eps');
+    fullname=sprintf('%s/%s.%s',printoutDir,name,'pdf');
     %fulln=sprintf('%s/%s',printoutDir,name);
     if verboseflag
-        fprintf('printing to %s.pdf \n',fulln);
+        fprintf('printing to %s \n',fullname);
     end
-    export_fig(fulln,'-pdf','-transparent')
+    exportgraphics(figHandle,fullname,'ContentType','vector')
+    %export_fig(fulln,'-pdf','-transparent')
 end
 
 

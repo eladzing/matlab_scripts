@@ -2,7 +2,7 @@
 bp=illustris.set_env(50);
 global DEFAULT_MATFILE_DIR
 
-load([DEFAULT_MATFILE_DIR '\cosmic_jellyfish_objectTable.mat']);
+load([DEFAULT_MATFILE_DIR '/cosmic_jellyfish_objectTable.mat']);
 load([DEFAULT_MATFILE_DIR '/jf_galProperties_CJF.mat']);
 
 snaps=unique(objectTable.snap(objectTable.sim=="TNG50"));

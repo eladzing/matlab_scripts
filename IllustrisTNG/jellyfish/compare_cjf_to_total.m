@@ -45,3 +45,5 @@ for k=1:length(snaps)
    outStruct.cjfSatNum100(k)=sum(mask);
    outStruct.cjfhostNum100(k)=length(unique(galProps.hostID(msk)));
 end
+
+save([DEFAULT_MATFILE_DIR '/cjf_total_sample_comp.mat'],'outStruct');

@@ -91,7 +91,7 @@ for k=1:2:length(imageStruct)
     
     
     outname=sprintf('cjf_mosaic_appendix_scoreBin_%i',ceil(k/2));
-    if printFlag; printout_fig(gcf,outname,'nopdf','v','printoutdir',outdir); end
+    if printFlag; printout_fig(gcf,outname,'pdf','v','printoutdir',outdir); end
     
 end
 

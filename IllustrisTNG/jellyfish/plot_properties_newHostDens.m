@@ -125,9 +125,9 @@ otherCol=brewermap(8,'Set1');
 global DEFAULT_PRINTOUT_DIR
 outdir=[DEFAULT_PRINTOUT_DIR '/jellyfish/jfProperties/paper'];
 
- axFont=18;
- legFont=20;
- labFont=20;
+ axFont=22;
+legFont=26;
+labFont=34;
  
 for k=1:1 %length(sims)
     
@@ -307,7 +307,7 @@ for k=1:1 %length(sims)
             
             %% plot
             
-            myFigure('pos',[1432 421 1000 750]);
+           myFigure('pos',[ 829         127        1071         803]);
             
             %% underlying hist
             
@@ -316,7 +316,7 @@ for k=1:1 %length(sims)
                 'markersize',1);
             
             %0.6950    0.6960
-            set(hh(1),'position',[0.1000    0.1000   0.7 0.7 ],'fontsize',14);
+            set(hh(1),'position',[0.1000    0.1000   0.7 0.7 ],'fontsize',16,'TickLabelInterpreter','latex');
             hh(1).YLabel.String='';
             hh(1).XLabel.String='';
             %'XTick',[],'YTick',[],'YAxisLocation','left','XAxisLocation','bottom');
@@ -336,7 +336,7 @@ for k=1:1 %length(sims)
             
             
             % imagesc(xl,yl,squeeze(bird(:,:,1)))
-            set(gca,'ydir','normal','fontsize',14)
+            set(gca,'ydir','normal','fontsize',axFont,'TickLabelInterpreter','latex')
             
             %colormap(cmap)
             
@@ -362,7 +362,7 @@ for k=1:1 %length(sims)
                 'LineColor',cols(2,:),'linewidth',2,...
                 'LevelList',[99 75:-25:5],'Fill','off','linestyle','-',...
                 'DisplayName','Jellyfish');
-            
+             clabel([],h(2),'fontsize',16,'margin',5,'backgroundcolor','none');
             
             plot(xxJF(outScoreJF>99),yyJF(outScoreJF>99),'^',...
                 'color',cols(2,:),'markersize',6.5,...
@@ -390,15 +390,15 @@ for k=1:1 %length(sims)
             
             % plot(xRatLab(1),yRatLab,'o','color',otherCol(3,:),'markersize',9,'linewidth',2,'markerfacecolor','none')
             text(xRatLab-0.1.*[2 2 2 2 2],yRatLab.*ones(size(xRatLab))-0.3,{'$\times 2$' '$\times 5$' '$\times 15$' '$\times 25$' '$\times 35$'},...
-                'Interpreter','latex','fontsize',labFont,'fontweight','bold','color','k')
-            text(4.8, 14.15,'local density ratio',...
-                'Interpreter','latex','fontsize',labFont,'fontweight','bold','color','k')
+                'Interpreter','latex','fontsize',22,'fontweight','bold','color','k')
+            text(4.6, 14.1,'local density ratio',...
+                'Interpreter','latex','fontsize',22,'fontweight','bold','color','k')
             
             
             legend(h([2 1]),'Interpreter','latex','fontsize',legFont,'location','southEast',...
                 'box','off','numcolumns',2);
             
-            xfac=0.83; yfac=0.12;
+            xfac=0.77; yfac=0.14;
             text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),sims{k},...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
                 'Interpreter','latex','fontsize',labFont,'fontweight','bold','color','k')
             
@@ -407,14 +407,14 @@ for k=1:1 %length(sims)
             
             xlabelmine(xlab{i},labFont);
             ylabelmine(ylab{j},labFont);
-            set(gca,'ydir','normal','fontsize',axFont)
+            set(gca,'ydir','normal','fontsize',axFont,'TickLabelInterpreter','latex')
             
             
             linkaxes([hh(1),ax1])
             
             %% print figure
             fname=sprintf('jfProps_%s_%s_%s_closeHost',xfields{i},yfields{j},sims{k});
-            if  printFlag; printout_fig(gcf,fname,'nopdf','v','dir',outdir); end
+            if  printFlag; printout_fig(gcf,fname,'pdf','v','dir',outdir); end
             
             
         end

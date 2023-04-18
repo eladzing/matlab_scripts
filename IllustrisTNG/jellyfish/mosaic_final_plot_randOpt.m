@@ -88,7 +88,7 @@ for i=1:length(list)
     %% print
      outname=sprintf('cjf_randJF_OptN_mosaic_%i',i);
 %outname=sprintf('cjf_randOpt_same2_mosaic_%i',i);
-    if printFlag; printout_fig(gcf,outname,'nopdf','v','printoutdir',outdir); end
+    if printFlag; printout_fig(gcf,outname,'pdf','v','printoutdir',outdir); end
 end
 %%  opt non / rand JFn : set indices
 

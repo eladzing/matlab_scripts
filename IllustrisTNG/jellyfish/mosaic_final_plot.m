@@ -47,6 +47,6 @@ tt.YLabel.Interpreter='latex';
 tt.YLabel.FontSize=18;
 %% print
 outname=sprintf('cjf_scoreMosaic');
-if printFlag; printout_fig(gcf,outname,'nopdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,outname,'pdf','v','printoutdir',outdir); end
 
 

@@ -1,5 +1,5 @@
 %% batch plot properties
-%printFlag=true;
+printFlag=true;
 if setupFlag
     units;
     sims={'TNG50','TNG100'};
@@ -310,7 +310,7 @@ for k=1:length(sims)
                 'markersize',1);
             
             %0.6950    0.6960
-            set(hh(1),'position',[0.1000    0.1000   0.7 0.7 ],'fontsize',14,'TickLabelInterpreter','latex');
+            set(hh(1),'position',[0.1000    0.1000   0.7 0.7 ],'fontsize',16,'TickLabelInterpreter','latex');
             hh(1).YLabel.String='';
             hh(1).XLabel.String='';
             %'XTick',[],'YTick',[],'YAxisLocation','left','XAxisLocation','bottom');
@@ -368,7 +368,7 @@ for k=1:length(sims)
             legend(h([2 1]),'Interpreter','latex','fontsize',legFont,'location','southEast',...
                 'box','off','numcolumns',2);
             
-            xfac=0.83; yfac=0.14;
+            xfac=0.80; yfac=0.14;
             text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),sims{k},...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
                 'Interpreter','latex','fontsize',legFont,'fontweight','bold','color','k')
             

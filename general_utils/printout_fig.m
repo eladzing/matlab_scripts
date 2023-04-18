@@ -12,6 +12,7 @@ verboseflag=false ;
 figFlag=false;
 epsFlag=false;
 pdfFlag=false;
+pdfFlag_vec=false;
 pngFlag=true;
 
 i=1;
@@ -36,6 +37,8 @@ while i<=length(varargin)
             epsFlag=true;
         case {'pdf'}
             pdfFlag=true;
+            case {'pdfv','pdfvec'}
+            pdfFlag_vec=true;
         case {'nopdf'}
             pdfFlag=false;
         case {'nopng'}
@@ -124,6 +127,15 @@ end
 
 % PDF version
 if pdfFlag
+    fullname=sprintf('%s/%s.%s',printoutDir,name,'pdf');
+    %fulln=sprintf('%s/%s',printoutDir,name);
+    if verboseflag
+        fprintf('printing to %s \n',fullname);
+    end
+    exportgraphics(figHandle,fullname,'ContentType','image')
+    %export_fig(fulln,'-pdf','-transparent')
+end
+if pdfFlag_vec
     fullname=sprintf('%s/%s.%s',printoutDir,name,'pdf');
     %fulln=sprintf('%s/%s',printoutDir,name);
     if verboseflag

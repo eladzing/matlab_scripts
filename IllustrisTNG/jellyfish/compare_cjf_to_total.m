@@ -21,8 +21,8 @@ for k=1:length(snaps)
    
    mskCJF=objectTable.sim=="TNG50" & objectTable.snap==snaps(k);
      
-   outStruct.cjfSatNum50(k)=sum(mask);
-   outStruct.cjfhostNum50(k)=length(unique(galProps.hostID(msk)));
+   outStruct.cjfSatNum50(k)=sum(mskCJF);
+   outStruct.cjfhostNum50(k)=length(unique(galProps.hostID(mskCJF)));
 end
 fprintf(';\n');
 %% TNG100 
@@ -44,8 +44,8 @@ for k=1:length(snaps)
    
    mskCJF=objectTable.sim=="TNG100" & objectTable.snap==snaps(k);
      
-   outStruct.cjfSatNum100(k)=sum(mask);
-   outStruct.cjfhostNum100(k)=length(unique(galProps.hostID(msk)));
+   outStruct.cjfSatNum100(k)=sum(mskCJF);
+   outStruct.cjfhostNum100(k)=length(unique(galProps.hostID(mskCJF)));
 end
 fprintf(';\n');
 save([DEFAULT_MATFILE_DIR '/cjf_total_sample_comp.mat'],'outStruct');

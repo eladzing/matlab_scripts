@@ -66,7 +66,7 @@ for k=1:length(sims)
         
         
         outStruct=struct('done',[],'ScoreRaw',[],'ClassificationNumRaw',[],'ScoreRawTotal',[],...
-           'ScoreWeighted',[],'ClassificationNumWeighted',[],'Weight',[],'expertNum',[]);
+           'ScoreAdjusted',[],'ClassificationNumAdjusted',[],'AdjustedWeight',[],'expertNum',[]);
         
             
         
@@ -109,9 +109,9 @@ for k=1:length(sims)
         outStruct.ClassificationNumRaw=galNcls;
         outStruct.ScoreRawTotal=galScoreTot;
         
-        outStruct.ScoreWeighted=galScoreWeighted;
-        outStruct.ClassificationNumWeighted=galNclsWeighted;
-        outStruct.Weight=galWeight;
+        outStruct.ScoreAdjusted=galScoreWeighted;
+        outStruct.ClassificationNumAdjusted=galNclsWeighted;
+        outStruct.AdjustedWeight=galWeight;
         outStruct.expertNum=expNum;
         
         outStruct.done=int8(galScore~=-1);

@@ -47,7 +47,7 @@ set(gca,'FontSize',axFont,'YMinorTick','on','YScale','log','TickLabelInterpreter
 
 
 fname='cjf_rand_pref_weight_hist';
-if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
 
 
 
@@ -116,7 +116,7 @@ barTitle(hb,'log \%','fontsize',labFont)
 %titlemine('Weighted Score');
 
 fname='cjf_rand_pref_weight_2dhist';
-if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
 
 
 %% 
@@ -147,7 +147,7 @@ if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
 % %titlemine('Weighted Score');
 % 
 % fname='cjf_rand_pref_weight_2dhist_diffR';
-% if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+% if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
 % 
 % %% plot 2D histogram of difference 
 % hf=myFigure;
@@ -176,7 +176,7 @@ if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
 % %titlemine('Weighted Score');
 % 
 % fname='cjf_rand_pref_weight_2dhist_diffP';
-% if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+% if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
 
 %% Some stats 
 

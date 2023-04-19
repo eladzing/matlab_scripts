@@ -62,6 +62,6 @@ set(gca,'TickLabelInterpreter','latex','fontsize',18);
 global DEFAULT_PRINTOUT_DIR
 outdir=[DEFAULT_PRINTOUT_DIR '/jellyfish/paper'];
 outname='cjf_distance_popFraction';
-if printFlag; printout_fig(gcf,outname,'pdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,outname,'pdfv','v','printoutdir',outdir); end
 
 

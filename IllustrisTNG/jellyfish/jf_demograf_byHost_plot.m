@@ -65,7 +65,7 @@ caxis(cax);
 cbh(1)=colorbar('fontsize',axFont,'TickLabelInterpreter','latex');
 barTitle(cbh(1),'log No. of Hosts')
 fname='cjf_satInHost_TNG100';
-if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
 %titlemine('TNG100',12);
 
 
@@ -83,7 +83,7 @@ caxis(cax);
 cbh=colorbar('fontsize',axFont,'TickLabelInterpreter','latex');
 barTitle(cbh,'log No. of Hosts')
 fname='cjf_satInHost_TNG50';
-if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
 %titlemine('TNG100',12);
 
 %titlemine('TNG50',12);
@@ -147,7 +147,7 @@ cbh.Layout.Tile = 'east';
 
 
 fname='cjf_satInHost_2_TNG100';
-if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
 %titlemine('TNG100',12);
 
 
@@ -205,7 +205,7 @@ cbh.Layout.Tile = 'east';
 
 
 fname='cjf_satInHost_2_TNG50';
-if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
 
  %%
 
@@ -354,7 +354,7 @@ ylabelmine('JF Fraction',labFont);
 
 
   fname='cjf_jfhost_jfFrac_boxplot_zredBin';
-    if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+    if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
     
 
    % fprintf('jf fraction quantilies over hosts with jf: %s \n',num2str(round(median(jff(mask50)),2)))
@@ -407,7 +407,7 @@ hf=myFigure('pos',[97   444   838   687]);
     ylabelmine('log JF Fraction',labFont);
     
     fname='cjf_jfhost_jfFrac_TNG50';
-    if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+    if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
     
     
     %%
@@ -458,7 +458,7 @@ set(gca,'xaxislocation','bottom',...
     %ylabelmine('JF Fraction',18);
     
     fname='cjf_jfhost_jfFrac_TNG100';
-    if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+    if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
     %%
     
     
@@ -550,7 +550,7 @@ text(10.11,1210,'TNG100','Fontsize',labFont,'interpreter','latex')
 xlim([10 15.])
 ylim([0.5 2000 ])
 fname='cjf_jfhost_hist_TNG100';
-if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
 
 myFigure;
 histogram(log10(jfStats.M200c(mmm & m50)),linspace(10.4,15,50),'facecolor',cmap(6,:));
@@ -574,7 +574,7 @@ text(10.11,1210,'TNG50','Fontsize',labFont,'interpreter','latex')
 xlim([10 15.])
 ylim([0.5 2000 ])
 fname='cjf_jfhost_hist_TNG50';
-if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end
 
 %% plot average number of JF by mass 
 massBins=10:1:15;
@@ -674,4 +674,4 @@ grid
 % 
 
 fname='cjf_jfhost_jfNum_boxplot';
-if printFlag; printout_fig(gcf,fname,'pdf','v','printoutdir',outdir); end
+if printFlag; printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir); end

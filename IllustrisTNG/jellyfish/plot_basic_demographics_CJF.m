@@ -104,7 +104,7 @@ if 1==1
     
     if printFlag
         fname='cjf_scoreHist_initial';
-        printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+        printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
     end
     
     
@@ -163,7 +163,7 @@ if 1==1
 %     
     if printFlag
         fname='cjf_scoreHist_weighted';
-        printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+        printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
     end
     
     
@@ -217,7 +217,7 @@ ht.NodeChildren(3).YAxis.Label.FontSize=labFont;
 
  if printFlag
         fname='cjf_scoreComp_weighted_raw';
-        printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+        printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
     end
     
 %%
@@ -258,7 +258,7 @@ barTitle(hb,'log N','fontsize',labFont)
 set(hb,'fontsize',axFont,'TickLabelInterpreter','latex')
  if printFlag
         fname='cjf_scoreComp_weighted_raw_cmap';
-        printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+        printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
     end
 %% plot stellar mass and host mass functions
 if 1==1
@@ -297,7 +297,7 @@ if 1==1
     set(gca,'fontsize',axFont,'box','on','Yscale','log','ytick',[1 10 100],'TickLabelInterpreter','latex')
     if printFlag
         fname='cjf_stellarMassFunction';
-        printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+        printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
     end
     
     % sstellar mass function for JF 
@@ -328,7 +328,7 @@ if 1==1
     ylabelmine('No. of inspectd satellites',labFont);
     if printFlag
         fname='cjf_stellarMassFunction_JF';
-        printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+        printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
     end
 
     
@@ -368,7 +368,7 @@ if 1==1
     %     titlemine("host mass function");
     if printFlag
         fname='cjf_hostMassFunction';
-        printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+        printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
     end
     
     % no. of sat's
@@ -389,7 +389,7 @@ if 1==1
     %titlemine("Number of Sat's found in hosts");
     if printFlag
         fname='cjf_satNumber';
-        printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+        printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
     end
     
     
@@ -419,7 +419,7 @@ if 1==1
     %     set(gca,'fontsize',axFont,'box','on','Yscale','log')
     if printFlag
         fname='cjf_massRationHist';
-        printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+        printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
     end
     %% snap distribution
     
@@ -462,13 +462,14 @@ if 1==1
     hf=myFigure('pos',[1563         428         818         659]);
     
     ax1 = axes('position',[0.1300    0.1100    0.7750    0.7713]);
+    
     h(2)=bar(snp100,b100,0.16,'facecolor',colors(2,:),...
         'Displayname','TNG100');
     hold on;
     h(1)=bar(snp50,b50,1,'facealpha',0.6,'facecolor',colors(1,:),...
         'Displayname','TNG50');
     
-    
+   
     
     legend(h,'Interpreter','latex','FontSize',18,'Location','northwest')
     set(gca,'fontsize',axFont,'box','on','TickLabelInterpreter','latex');
@@ -488,7 +489,7 @@ if 1==1
     linkprop([ax1 ax2], 'XLim');
     if printFlag
         fname='cjf_snapDistribution';
-        printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+        printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
     end
 end
     
@@ -529,7 +530,7 @@ jellyfish.utils.plot_demographics_2sims(maskJF,galProps.galStellarMass,stellarMa
     'log','label','log stellar mass $[\mathrm{M_\odot}]$','legtag','$M_\mathrm{host}=$','cind',5:-1:1);
 if printFlag
     fname='cjf_jfFrac_demograf_mstar_mhostBin';
-    printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
 end
 %% fraction vs. host mass in Stellar mass bins
 
@@ -546,7 +547,7 @@ jellyfish.utils.plot_demographics_2sims(maskJF,galProps.hostM200c,hostMassBins,g
 
 if printFlag
     fname='cjf_jfFrac_demograf_mhost_mstarBin';
-    printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
 end
 %% fraction vs. mass ratio in Stellar mass bins
 
@@ -562,7 +563,7 @@ jellyfish.utils.plot_demographics_2sims(maskJF,massRatio,massRatBins,galProps.ga
 
 if printFlag
     fname='cjf_jfFrac_demograf_mrat_mstarBin';
-    printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
 end
 
 
@@ -576,7 +577,7 @@ jellyfish.utils.plot_demographics_2sims(maskJF,galProps.galStellarMass,stellarMa
     'log','label','log stellar mass $[\mathrm{M_\odot}]$','legtag','$M_\mathrm{sat}/M_\mathrm{h}$');
 if printFlag
     fname='cjf_jfFrac_demograf_mstar_mratBin';
-    printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
 end
 
 hostMassBins=10.^(11:15);
@@ -585,7 +586,7 @@ jellyfish.utils.plot_demographics_2sims(maskJF,galProps.hostM200c,hostMassBins,m
     'log','label','log host $M_\mathrm{200,c}\,[\mathrm{M_\odot}]$','legtag','$M_\mathrm{sat}/M_\mathrm{h}$');
 if printFlag
     fname='cjf_jfFrac_demograf_mhost_mratBin';
-    printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
 end
 
 
@@ -603,7 +604,7 @@ jellyfish.utils.plot_demographics_2sims(maskJF,massRatio,massRatBins,galProps.ho
     'log','label','log mass ratio','legtag','$M_\mathrm{host}=$','cind',5:-1:1);
 if printFlag
     fname='cjf_jfFrac_demograf_mrat_mhostBin';
-    printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
 end
 %% fraction vs. redshift in host mass bins
 
@@ -625,7 +626,7 @@ jellyfish.utils.plot_demographics_2sims(maskJF,zreds,zredBins,galProps.hostM200c
     'label','redshift','legtag','$M_\mathrm{host}=$','cind',5:-1:1);
 if printFlag
     fname='cjf_jfFrac_demograf_zred_mhostBin';
-    printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
 end
 
 % jellyfish.utils.plot_demographics_2sims(maskJF2,zrBI,zredBins,hmBI,hostMassBins,mask50,'xx',zx,...
@@ -652,7 +653,7 @@ jellyfish.utils.plot_demographics_2sims(maskJF,zreds,zredBins,galProps.galStella
     'label','redshift','legtag','$M_\mathrm{\ast}=$','flip');
 if printFlag
     fname='cjf_jfFrac_demograf_zred_mstarBin';
-    printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
 end
 
 
@@ -666,7 +667,7 @@ jellyfish.utils.plot_demographics_2sims(maskJF,zreds,zredBins,massRatio,massRatB
     'label','redshift','legtag','log mass ratio$=$');
 if printFlag
     fname='cjf_jfFrac_demograf_zred_mratBin';
-    printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
 end
 
 
@@ -692,7 +693,7 @@ jellyfish.utils.plot_demographics_2sims(maskJF,galProps.galStellarMass,stellarMa
      'log','label','log stellar mass $[\mathrm{M_\odot}]$','legend',zleg,'flip');
 if printFlag
     fname='cjf_jfFrac_demograf_mstar_zredBin';
-    printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
 end
 
 % host mass
@@ -708,7 +709,7 @@ jellyfish.utils.plot_demographics_2sims(maskJF,galProps.hostM200c,hostMassBins,z
     'log','label','log host $M_\mathrm{200,c}\,[\mathrm{M_\odot}]$','legend',zleg,'cind',[1:5 7],'legLoc',{'northwest','northeast'},'flip');
 if printFlag
     fname='cjf_jfFrac_demograf_mhost_zredBin';
-    printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
 end
 
 % mass ratio
@@ -721,7 +722,7 @@ jellyfish.utils.plot_demographics_2sims(maskJF,massRatio,massRatBins,zreds,zredB
 %     'log','label','log mass ratio','legend',zleg,'cind',[1:5 7]);
 if printFlag
     fname='cjf_jfFrac_demograf_mrat_zredBin';
-    printout_fig(gcf,fname,'pdf','v','printoutdir',outdir);
+    printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
 end
 
 

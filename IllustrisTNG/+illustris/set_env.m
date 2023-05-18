@@ -116,14 +116,14 @@ while(i<=length(varargin))
             DRACO_SIMPATH = '/virgotng/mpia/TNG-Cluster';%   
             HOME_SIMPATH = [ mountPath '\IllustrisTNG\TNG-Cluster'];
         
-        case{'clusters_dm','tngclusters_dm','clustersdm','tngclustersdm'}
-            simName='L680n2048TNG_DM';
-            simDisplayName='TNGclust';
-             LBox=680e3; %in kpc/h
-            
-            
-            DRACO_SIMPATH = '/virgotng/mpia/TNG-Cluster';%    '/ptmp/apillepi/IllustrisTNG';          
-            HOME_SIMPATH = [ mountPath '\IllustrisTNG\TNG-Cluster'];
+%         case{'clusters_dm','tngclusters_dm','clustersdm','tngclustersdm'}
+%             simName='L680n2048TNG_DM';
+%             simDisplayName='TNGclustDM';
+%              LBox=680e3; %in kpc/h
+%             
+%             
+%             DRACO_SIMPATH = '/virgotng/mpia/TNG-Cluster';%    '/ptmp/apillepi/IllustrisTNG';          
+%             HOME_SIMPATH = [ mountPath '\IllustrisTNG\TNG-Cluster'];
 
         case{'illustris','illustris1','illustris-1','ill','ill1'}
             DRACO_SIMPATH = '/virgo/simulations/Illustris';%    '/ptmp/apillepi/IllustrisTNG';

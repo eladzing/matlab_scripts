@@ -8,6 +8,7 @@
 global DEFAULT_MATFILE_DIR
 % load object table
 load([ DEFAULT_MATFILE_DIR '/cosmic_jellyfish_objectTable.mat']);
+    load([DEFAULT_MATFILE_DIR '/jf_galProperties_CJF.mat']);
 
 %%
 

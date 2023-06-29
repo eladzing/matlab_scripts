@@ -11,7 +11,7 @@ load([ DEFAULT_MATFILE_DIR '/cosmic_jellyfish_objectTable.mat']);
     load([DEFAULT_MATFILE_DIR '/jf_galProperties_CJF.mat']);
 
 %%
-
+units;
 maskJF=objectTable.scoreWeighted>=0.8;
 
 

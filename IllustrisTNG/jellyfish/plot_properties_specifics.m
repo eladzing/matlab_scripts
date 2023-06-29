@@ -87,6 +87,10 @@ ylList=[10 15;0 10;0 0;0 0;0 0;0 0;0 0;0 0;-6.2 -1.25;0 0; -6 1.5; -5 2;8.2 12.5
 skip=true(length(xfields),length(yfields));
 skip(1,1)=false;
 skip(3,[1 13])=false;
+
+
+
+
 % skip([1 2 3],[1 2 11 12] )=false;
 %skip(3,[1 9 13])=false;
 %skip([1:3 7],11:12)=false;
@@ -139,10 +143,10 @@ otherCol=brewermap(8,'Set1');
 global DEFAULT_PRINTOUT_DIR
 outdir=[DEFAULT_PRINTOUT_DIR '/jellyfish/paper'];
 
-axFont=22;
-legFont=26;
+axFont=24;
+legFont=30;
 labFont=34;
-
+contLabel=20;
 
 for k=1:length(sims)
     
@@ -301,7 +305,7 @@ for k=1:length(sims)
             
             %% plot
             
-            myFigure('pos',[ 829         127        1071         803]);
+            myFigure('pos',[ 829 127 1000 800]);
             
             %% underlying hist
             
@@ -310,7 +314,7 @@ for k=1:length(sims)
                 'markersize',1);
             
             %0.6950    0.6960
-            set(hh(1),'position',[0.1000    0.1000   0.7 0.7 ],'fontsize',16,'TickLabelInterpreter','latex');
+            set(hh(1),'position',[0.1100    0.1100   0.69 0.69 ],'fontsize',22,'TickLabelInterpreter','latex');
             hh(1).YLabel.String='';
             hh(1).XLabel.String='';
             %'XTick',[],'YTick',[],'YAxisLocation','left','XAxisLocation','bottom');
@@ -356,7 +360,7 @@ for k=1:length(sims)
                 'LineColor',cols(2,:),'linewidth',2,...
                 'LevelList',[99 75:-25:5],'Fill','off','linestyle','-',...
                 'DisplayName','Jellyfish');
-           clabel([],h(2),'fontsize',16,'margin',5,'backgroundcolor','none');
+           clabel([],h(2),'fontsize',contLabel,'margin',5,'backgroundcolor','none');
             
             plot(xxJF(outScoreJF>99),yyJF(outScoreJF>99),'^',...
                 'color',cols(2,:),'markersize',6.5,...
@@ -366,16 +370,16 @@ for k=1:length(sims)
             grid
             
             legend(h([2 1]),'Interpreter','latex','fontsize',legFont,'location','southEast',...
-                'box','off','numcolumns',2);
+                'box','off','numcolumns',1);
             
-            xfac=0.80; yfac=0.14;
+            xfac=0.77; yfac=0.93;
             text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),sims{k},...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
                 'Interpreter','latex','fontsize',legFont,'fontweight','bold','color','k')
             
-            xfac=0.86; yfac=0.93;
+            xfac=0.84; yfac=0.83;
             text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),num2str(length(xxJF)),...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
                 'Interpreter','latex','fontsize',legFont,'fontweight','bold','color',cols(2,:))
-            xfac=0.86; yfac=0.87;
+            xfac=0.84; yfac=0.77;
             text(xfac.*diff(xl)+xl(1),yfac.*diff(yl)+yl(1),num2str(length(xxNJF)),...%'Edgecolor','k','backgroundcolor',[1,0.97,0.97],...
                 'Interpreter','latex','fontsize',legFont,'fontweight','bold','color',cols(1,:))
             
@@ -395,7 +399,7 @@ for k=1:length(sims)
             
             
         end
-        close all
+        %close all
     end
     
     

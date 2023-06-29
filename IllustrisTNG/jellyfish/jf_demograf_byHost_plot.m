@@ -13,9 +13,9 @@ cmap(1,:)=[1 1 1];
 cmap2=(viridis(256));
 cmap2(1,:)=[1 1 1];
 
- axFont=18;
- legFont=20;
- labFont=20;
+ axFont=20;
+ legFont=22;
+ labFont=22;
  
 %%  
 % figure
@@ -127,9 +127,9 @@ for k=1:3
 nexttile([2,1])
 ccm=squeeze(cntMap(:,:,k));
 imagesc(xl,yl,log10(ccm));
-set(gca,'ydir','normal','fontsize',12,'TickLabelInterpreter','latex')
-text(10.2,55,tag{k},'Fontsize',18,'interpreter','latex')
-text(10.2,40,num2str(sum(sum(ccm))),'Fontsize',18,'interpreter','latex')
+set(gca,'ydir','normal','fontsize',axFont,'TickLabelInterpreter','latex','xtick',10:2:15)
+text(10.2,55,tag{k},'Fontsize',legFont,'interpreter','latex')
+text(10.2,40,num2str(sum(sum(ccm))),'Fontsize',legFont,'interpreter','latex')
 colormap(cmap2)
 caxis(cax);
 end
@@ -185,9 +185,9 @@ for k=1:3
 nexttile([2,1])
 ccm=squeeze(cntMap(:,:,k));
 imagesc(xl,yl,log10(ccm));
-set(gca,'ydir','normal','fontsize',12,'TickLabelInterpreter','latex')
-text(10.2,55,tag{k},'Fontsize',18,'interpreter','latex')
-text(10.2,40,num2str(sum(sum(ccm))),'Fontsize',18,'interpreter','latex')
+set(gca,'ydir','normal','fontsize',axFont,'TickLabelInterpreter','latex','xtick',10:2:15)
+text(10.2,55,tag{k},'Fontsize',legFont,'interpreter','latex')
+text(10.2,40,num2str(sum(sum(ccm))),'Fontsize',legFont,'interpreter','latex')
 colormap(cmap2)
 caxis(cax);
 end
@@ -361,7 +361,7 @@ ylabelmine('JF Fraction',labFont);
 % 
 %%
 
-hf=myFigure('pos',[97   444   838   687]);
+hf=myFigure('pos',[[ 97   364   951   767]]);
   
 %    scatterhist(log10(jfStats.M200c(msk50)),log10(jff(msk50)),...
 %         'group',gr(msk50),'legend','off','style','stairs',...
@@ -411,7 +411,7 @@ hf=myFigure('pos',[97   444   838   687]);
     
     
     %%
-    hf=myFigure('pos',[97   444   838   687]);
+    hf=myFigure('pos',[ 97   364   951   767]);
   
 %    scatterhist(log10(jfStats.M200c(msk100)),log10(jff(msk100)),...
 %         'group',gr(msk100),'legend','on','style','stairs',...

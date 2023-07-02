@@ -63,7 +63,7 @@ for k=1:2
         
         cnt=cnt+1;
         
-        res.hist(i).tableIndx=ii;
+        outskirtJF_histories.hist(i).tableIndx=ii;
         
         
         prc=floor(cnt./sum(mask)*100);
@@ -87,30 +87,30 @@ for k=1:2
         
         zlast=zr(find(rposHist<1,1,'first'));
         if ~isempty(zlast)
-        timeLastInRv(ii)=redshift2time(zr(1),'cosmo',cosmoStruct).age-...
+        timeLastInRv(i)=redshift2time(zr(1),'cosmo',cosmoStruct).age-...
             redshift2time(zlast,'cosmo',cosmoStruct).age;  % time since last time it was within r200 of host.
         end
         
-        res.hist(i).zr=zr;
-        res.hist(i).rpos=rposHist;
-        res.hist(i).isSat=isSat;
+        outskirtJF_histories.hist(i).zr=zr;
+        outskirtJF_histories.hist(i).rpos=rposHist;
+        outskirtJF_histories.hist(i).isSat=isSat;
     end
 end
 
 
-res.mask=mask;
-res.indices=indx;
-res.rposJF=rposJF;
-res.rposMin=rposMin;
-res.timeMin=timeMin;
-res.timeLastInRv=timeLastInRv;
+outskirtJF_histories.mask=mask;
+outskirtJF_histories.indices=indx;
+outskirtJF_histories.rposJF=rposJF;
+outskirtJF_histories.rposMin=rposMin;
+outskirtJF_histories.timeMin=timeMin;
+outskirtJF_histories.timeLastInRv=timeLastInRv;
 
 
 %% save to file
 
 fname=sprintf('outskirt_JF_backsplash');
 
-save([DEFAULT_MATFILE_DIR '/' fname],'centralHist','done','-v7.3')
+save([DEFAULT_MATFILE_DIR '/' fname],'outskirtJF_histories','done','-v7.3')
 
 fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
 

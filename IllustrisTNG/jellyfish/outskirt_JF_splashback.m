@@ -85,7 +85,7 @@ for k=1:2
         timeMin(i)=redshift2time(zr(1),'cosmo',cosmoStruct).age-...
             redshift2time(zr(ix),'cosmo',cosmoStruct).age;    % time of minimal distance 
         
-        zlast=zr(find(rposHist<1,1,'first'));
+        zlast=zr(find(rposHist(isSat)<1,1,'first'));
         if ~isempty(zlast)
         timeLastInRv(i)=redshift2time(zr(1),'cosmo',cosmoStruct).age-...
             redshift2time(zlast,'cosmo',cosmoStruct).age;  % time since last time it was within r200 of host.
@@ -110,7 +110,7 @@ outskirtJF_histories.timeLastInRv=timeLastInRv;
 
 fname=sprintf('outskirt_JF_backsplash');
 
-save([DEFAULT_MATFILE_DIR '/' fname],'outskirtJF_histories','done','-v7.3')
+save([DEFAULT_MATFILE_DIR '/' fname],'outskirtJF_histories','-v7.3')
 
 fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
 

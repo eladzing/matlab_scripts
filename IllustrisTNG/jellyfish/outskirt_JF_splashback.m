@@ -61,9 +61,11 @@ for k=1:2
             continue;
         end
         
-        res.hist(ii).tableIndx=ii;
-        
         cnt=cnt+1;
+        
+        res.hist(i).tableIndx=ii;
+        
+        
         prc=floor(cnt./sum(mask)*100);
         if (prc>=stepNext)
             
@@ -78,19 +80,20 @@ for k=1:2
         
         isSat=tree.GroupFirstSub~=tree.SubfindID;
         
-        [rposMin(ii),ix]=min(rposHist(isSat)); % minimal distance form host when sat
+        [rposMin(i),ix]=min(rposHist(isSat)); % minimal distance form host when sat
         
-        timeMin(ii)=redshift2time(zr(1),'cosmo',cosmoStruct).age-...
+        timeMin(i)=redshift2time(zr(1),'cosmo',cosmoStruct).age-...
             redshift2time(zr(ix),'cosmo',cosmoStruct).age;    % time of minimal distance 
         
         zlast=zr(find(rposHist<1,1,'first'));
+        if ~isempty(zlast)
         timeLastInRv(ii)=redshift2time(zr(1),'cosmo',cosmoStruct).age-...
             redshift2time(zlast,'cosmo',cosmoStruct).age;  % time since last time it was within r200 of host.
+        end
         
-        
-        res.hist(ii).zr=zr;
-        res.hist(ii).rpos=rposHist;
-        res.hist(ii).isSat=isSat;
+        res.hist(i).zr=zr;
+        res.hist(i).rpos=rposHist;
+        res.hist(i).isSat=isSat;
     end
 end
 
@@ -101,6 +104,8 @@ res.rposJF=rposJF;
 res.rposMin=rposMin;
 res.timeMin=timeMin;
 res.timeLastInRv=timeLastInRv;
+
+
 %% save to file
 
 fname=sprintf('outskirt_JF_backsplash');

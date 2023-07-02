@@ -8,8 +8,10 @@
 global DEFAULT_MATFILE_DIR
 % load object table
 load([ DEFAULT_MATFILE_DIR '/cosmic_jellyfish_objectTable.mat']);
-    load([DEFAULT_MATFILE_DIR '/jf_galProperties_CJF.mat']);
+load([DEFAULT_MATFILE_DIR '/jf_galProperties_CJF.mat']);
 
+global cosmoStruct
+global LBox
 %%
 units;
 maskJF=objectTable.scoreWeighted>=0.8;
@@ -32,13 +34,15 @@ plot([1 10],[0 0],':k')
 
 %%
 treeType='SubLink_gal';
-treeFields={'SnapNum','SubfindID','SubhaloPos','SubhaloSFRinRad',...
-    'SubhaloID','SubhaloMassInRadType','Group_M_Crit200',...
+treeFields={'SnapNum','SubfindID','SubhaloPos',...
+    'SubhaloID',...
     'GroupFirstSub','GroupPos','Group_R_Crit200'};
-
+%'SubhaloSFRinRad','SubhaloMassInRadType','Group_M_Crit200',
 
 rposJF=rpos(mask);
-rposMin=zeros(size(rposJF));
+rposMin=-1.*ones(size(rposJF));
+timeLastInRv=rposMin;
+timeMin=rposMin;
 
 indx=find(mask);
 
@@ -51,27 +55,42 @@ for k=1:2
     
     bp=illustris.set_env(sims(k));
     
-    for i=1:length(mask)
+    for i=1:length(indx)
         ii=indx(i);
         if galProps.sim(ii)~=sims(k)
             continue;
         end
         
-         cnt=cnt+1;
+        res.hist(ii).tableIndx=ii;
+        
+        cnt=cnt+1;
         prc=floor(cnt./sum(mask)*100);
         if (prc>=stepNext)
             
             fprintf(' *** %i %% of histories completed  *** \n',prc);
-           stepNext=stepNext+step;
+            stepNext=stepNext+step;
         end
         
         tree = illustris.sublink.loadTree(bp,galProps.snap(ii),galProps.subfind(ii),treeFields,true,treeType);
         
+        zr=illustris.utils.snap2redshift(tree.SnapNum);
         rposHist=findDistance(tree.SubhaloPos(:,:),tree.GroupPos(:,:),LBox,3)./tree.Group_R_Crit200'; %.*unitFactors.lengthUnit;
-        isSat=tree.GroupFirstSub~=tree.SubfindID;
-        rposMin(ii)=min(rposHist(isSat));
         
-       
+        isSat=tree.GroupFirstSub~=tree.SubfindID;
+        
+        [rposMin(ii),ix]=min(rposHist(isSat)); % minimal distance form host when sat
+        
+        timeMin(ii)=redshift2time(zr(1),'cosmo',cosmoStruct).age-...
+            redshift2time(zr(ix),'cosmo',cosmoStruct).age;    % time of minimal distance 
+        
+        zlast=zr(find(rposHist<1,1,'first'));
+        timeLastInRv(ii)=redshift2time(zr(1),'cosmo',cosmoStruct).age-...
+            redshift2time(zlast,'cosmo',cosmoStruct).age;  % time since last time it was within r200 of host.
+        
+        
+        res.hist(ii).zr=zr;
+        res.hist(ii).rpos=rposHist;
+        res.hist(ii).isSat=isSat;
     end
 end
 
@@ -80,11 +99,13 @@ res.mask=mask;
 res.indices=indx;
 res.rposJF=rposJF;
 res.rposMin=rposMin;
-%% save to file 
-    
+res.timeMin=timeMin;
+res.timeLastInRv=timeLastInRv;
+%% save to file
+
 fname=sprintf('outskirt_JF_backsplash');
-    
-    save([DEFAULT_MATFILE_DIR '/' fname],'centralHist','done','-v7.3')
-    
-    fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
-    
+
+save([DEFAULT_MATFILE_DIR '/' fname],'centralHist','done','-v7.3')
+
+fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
+

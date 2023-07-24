@@ -1,5 +1,5 @@
 %% jf beyond r200 - spshaback or not
-% how man y of the JF found beyond r200 have not crossed r200 yet
+% how many of the JF found beyond r200 have not crossed r200 yet
 % and how many are 'splashback'
 
 
@@ -19,8 +19,8 @@ maskJF=objectTable.scoreWeighted>=0.8;
 
 rpos= (galProps.rpos./galProps.hostR200c)';
 distMask=rpos>=1;
-distMask15=rpos>=1.5;
-distMask2=rpos>=2;
+%distMask15=rpos>=1.5;
+%distMask2=rpos>=2;
 vv=sqrt(Units.GG.*galProps.hostM200c./galProps.hostR200c);
 vr=galProps.vrad'./vv';
 
@@ -39,12 +39,12 @@ treeFields={'SnapNum','SubfindID','SubhaloPos',...
     'GroupFirstSub','GroupPos','Group_R_Crit200'};
 %'SubhaloSFRinRad','SubhaloMassInRadType','Group_M_Crit200',
 
-rposJF=rpos(mask);
-rposMin=-1.*ones(size(rposJF));
+rposOut=rpos(distMask);
+rposMin=-1.*ones(size(rposOut));
 timeLastInRv=rposMin;
 timeMin=rposMin;
 
-indx=find(mask);
+indx=find(distMask);
 
 sims=unique(galProps.sim);
 
@@ -64,6 +64,10 @@ for k=1:2
         cnt=cnt+1;
         
         outskirtJF_histories.hist(i).tableIndx=ii;
+        
+        outskirtJF_histories.isJF=maskJF(ii);
+        
+        
         
         
         prc=floor(cnt./sum(mask)*100);

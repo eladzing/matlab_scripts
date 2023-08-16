@@ -74,8 +74,8 @@ res.area=area;
 %% plot diagnostics
 if plotFlag
     figure
-    plot(theta,area./(4*pi/length(area)))
-    xlabelmine('$\theta$');
+    plot(theta/pi,area./(4*pi/length(area)))
+    xlabelmine('$\theta/\pi$');
     ylabelmine('$\mathrm{area}/(4\pi/N))$');
     
     figure

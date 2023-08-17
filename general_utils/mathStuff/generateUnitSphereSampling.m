@@ -74,18 +74,10 @@ res.area=area;
 %% plot diagnostics
 if plotFlag
     figure
-    plot(theta/pi,area./(4*pi/length(area)))
-    xlabelmine('$\theta/\pi$');
-    ylabelmine('$\mathrm{area}/(4\pi/N))$');
+    tt=tiledlayout(3,2);
     
-    figure
-    histogram(area./(4*pi/length(area)),50)
-    xlabelmine('$\mathrm{area}/(4\pi/N))$');
-    ylabelmine('$N$');
-    
-    
-    
-    figure
+   
+    nexttile([2 2])
     plot3(xs,ys,zs,'x')
     hold on
     surf(xx,yy,zz,'faceAlpha',0.75)
@@ -95,5 +87,20 @@ if plotFlag
     zlabelmine('$Z$');
     axis equal
     
+    
+    nexttile
+    plot(theta/pi,area./(4*pi/length(area)))
+    xlabelmine('$\theta/\pi$');
+    ylabelmine('$\mathrm{area}/(4\pi/N))$');
+    
+    %figure
+    nexttile
+    histogram(area./(4*pi/length(area)),50)
+    xlabelmine('$\mathrm{area}/(4\pi/N))$');
+    ylabelmine('$N$');
+    
+    
+    
+   
       
 end

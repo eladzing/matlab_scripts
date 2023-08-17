@@ -52,7 +52,15 @@ zzz=[];
 %% generate unit sphere sampleing
 nsamp=nSample(1);
 smplePnt=generateUnitSphereSampling(nsamp);
+stp=10;
+prc=stp;
 for i=1:rSample
+    
+    if i>=(prc/100)*rSample
+        fprintf('completed %i %% \n',prc);
+        prc=prc+stp;
+    end
+    
     
     if nSample(i)>nsamp
         nsamp=nSample(i);

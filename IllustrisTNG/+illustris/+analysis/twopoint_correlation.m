@@ -1,8 +1,6 @@
-function [outputArg1,outputArg2] = twopoint_correlation(pos,rprof,boxSize)
+function res = twopoint_correlation(pos,rprof,boxSize)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
-
-
 
 if ~exist('boxSize','var')
     global LBox
@@ -17,7 +15,20 @@ for i=1:length(pos)
     dist=sqrt(sum(newPos.^2,1));
     
     ncount=ncount+histcounts(dist,rprof); 
-    
+    %[ncount, rprof]=ncount+histcounts(dist); 
     
 end
+
+%% get shell volume 
+shellVolume = illustris.analysis.shellVolume_2pcf(rprof,boxSize);
+
+%% 
+nObject=length(pos);
+
+numberDens=nObject./boxSize^3;
+
+
+res= ( ncount./shellVolume.shellVolume)./(nObject.*numberDens);
+%res.rprof=rprof;
+
 

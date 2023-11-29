@@ -30,6 +30,7 @@ if setupFlag
     fprintf('JF Threshold set to %i and above. \n', threshJF);
     
     maskJF=objectTable.scoreWeighted>=0.8;
+    maskJFraw=objectTable.scoreRaw>=0.8;
     maskNJF=objectTable.scoreWeighted<=0.2;
     
     % list snaps and redshifts
@@ -38,13 +39,24 @@ if setupFlag
     
     %% adress 3 strange objects
     
-    mm=galProps.hostM200c<1e11 & maskJF';
+%     mm=galProps.hostM200c<1e11 & maskJF';
     %ind=find(mm); index of 3 weird objects
     %maskJF_full=maskJF;
     %maskJF(mm)=false;
     
     mask100=objectTable.sim=="TNG100";
     mask50=~mask100;
+    
+    
+    %% create TNG50 matched sample 
+     snaps100=unique(objectTable.snap(mask100));
+       
+     mskMass=log10(galProps.galStellarMass)'>=9.5;
+     snapMask=false(size(objectTable.snap));
+     for i=1:length(snaps100)
+         snapMask=snapMask | objectTable.snap==snaps100(i);
+     end
+    
 end
 
 %% plot some general info about the sample
@@ -75,8 +87,8 @@ if 1==1
     ylim(yl)
     %yl=ylim;
     hold on
-    plot(0.775.*ones(size(yl)),yl,':k' ,'linewidth',1.8)
-    legend("Full Sample",'Interpreter','latex','FontSize',legFont)
+    plot(0.775.*ones(size(yl)),yl,'--k' ,'linewidth',1.8)
+    %legend("Full Sample",'Interpreter','latex','FontSize',legFont)
     %xlabelmine('Score');
     set(gca,'fontsize',axFont,'TickLabelInterpreter','latex')
     %ylabelmine('fraction of populaiton');
@@ -84,15 +96,22 @@ if 1==1
     
     nexttile
     yl2=[0.001 0.5];
-    histogram(objectTable.scoreRaw(mask50),bins,'normalization','probability','facecolor',colors(2,:))
-    hold on
-    histogram(objectTable.scoreRaw(mask100),bins,'normalization','probability','facecolor',colors(5,:))
     
+    h=[];
+    hc=histcounts(objectTable.scoreRaw(mask50 & mskMass & snapMask ),bins);
+    hc2=[hc hc(end)]./sum(hc);
+    
+    %b1=hs1.BinEdges;vb1=[hs1.Values hs1.Values(end)];
+    
+    h(1)=histogram(objectTable.scoreRaw(mask50),bins,'normalization','probability','facecolor',colors(2,:),'DisplayName','TNG50');
+    hold on
+    h(2)=histogram(objectTable.scoreRaw(mask100),bins,'normalization','probability','facecolor',colors(5,:),'DisplayName','TNG100');
+    h(3)=stairs(bins,hc2,'linestyle',':','linewidth',2.5,'Color','k','DisplayName','matched');
     %yl=ylim;
     ylim(yl2)
-    hold on
-    plot(0.775.*ones(size(yl2)),yl2,':k'  ,'linewidth',1.8)
-    legend(["TNG50","TNG100"],'Interpreter','latex','FontSize',legFont)
+    
+    plot(0.775.*ones(size(yl2)),yl2,'--k'  ,'linewidth',1.8)
+    legend(h([2 1 3]),'Interpreter','latex','FontSize',18,'NumColumns',3)
     set(gca,'Yscale','log','fontsize',axFont,'Ytick',[0.01 0.1],'TickLabelInterpreter','latex')
     xlabelmine('Score',20);
     %ylabelmine('fraction of populaiton');
@@ -107,12 +126,13 @@ if 1==1
         printout_fig(gcf,fname,'pdfv','v','printoutdir',outdir);
     end
     
+    %%
     
     % plot weighted scores 
     myFigure('pos',figPos);
     yl=[0.005 0.5];
-%     t=tiledlayout(2,1);
-%     nexttile
+     t=tiledlayout(2,1);
+     nexttile
     histogram(objectTable.scoreWeighted,bins,'normalization','probability',...
         'facecolor',colors(1,:),'edgecolor','none')
     hold on 
@@ -122,32 +142,39 @@ if 1==1
     
     ylim(yl)
     hold on
-    plot(0.775.*ones(size(yl)),yl,':k' ,'linewidth',1.8)
+    plot(0.775.*ones(size(yl)),yl,'--k' ,'linewidth',1.8)
     legend(["Adjusted Score","Raw Score"] ,'Interpreter','latex','FontSize',legFont)
     %xlabelmine('Score');
     set(gca,'Yscale','log','fontsize',axFont,'Ytick',[0.01 0.1],'TickLabelInterpreter','latex')
-    xlabelmine('Score',labFont);
-    ylabelmine('Fraction of inspected satellites',labFont);
+    %xlabelmine('Score',labFont);
+    %ylabelmine('Fraction of inspected satellites',labFont);
     set(gca,'fontsize',axFont,'TickLabelInterpreter','latex')
     %ylabelmine('fraction of populaiton');
     %titlemine('All');
     
-%     nexttile
-%     yl2=[0.001 0.5];
-%     histogram(objectTable.scoreWeighted(mask50),bins,'normalization','probability',...
-%         'facecolor',colors(2,:),'edgecolor','none')
-%     hold on
-%     histogram(objectTable.scoreWeighted(mask100),bins,'normalization','probability',...
-%         'facecolor',colors(5,:),'edgecolor','none')
-%     
-%     histogram(objectTable.scoreRaw(mask50),bins,'normalization','probability',...
-%         'edgecolor',colors(2,:),'facecolor','none')
-%     histogram(objectTable.scoreRaw(mask100),bins,'normalization','probability',...
-%         'edgecolor',colors(5,:),'facecolor','none')
-%     
-%     
-%     
-%     %yl=ylim;
+     nexttile
+     yl2=[0.001 0.5];
+     h=[];
+      hc1=histcounts(objectTable.scoreRaw(mask50),bins);
+      hc1=[hc1 hc1(end)]./sum(hc1);
+      hc2=histcounts(objectTable.scoreRaw(mask100),bins);
+      hc2=[hc2 hc2(end)]./sum(hc2);
+     
+      h(1)=histogram(objectTable.scoreWeighted(mask50),bins,'normalization','probability','facecolor',colors(2,:),'DisplayName','TNG50 Adjusted');
+    hold on
+    % histogram(objectTable.scoreWeighted(mask50 & mskMass & snapMask ),bins,'linestyle',':','linewidth',2,'normalization','probability','facecolor','none','EdgeColor','k');
+    h(2)=histogram(objectTable.scoreWeighted(mask100),bins,'normalization','probability','facecolor',colors(5,:),'DisplayName','TNG100 Adjusted');
+
+    h(3)=stairs(bins,hc1,'linestyle',':','linewidth',2.5,'Color',colors(1,:),'DisplayName',' Raw');
+    h(4)=stairs(bins,hc2,'linestyle',':','linewidth',2.5,'Color','k','DisplayName',' Raw');
+
+     plot(0.775.*ones(size(yl2)),yl2,'--k'  ,'linewidth',1.8)
+    legend(h,'Interpreter','latex','FontSize',16,'NumColumns',2)
+    ylim(yl2)
+    set(gca,'Yscale','log','fontsize',axFont,'Ytick',[0.01 0.1],'TickLabelInterpreter','latex')
+  %  xlabelmine('Score',20);
+    
+    %     %yl=ylim;
 %     ylim(yl2)
 %     hold on
 %     plot(0.775.*ones(size(yl2)),yl2,':k'  ,'linewidth',1.8)
@@ -157,9 +184,10 @@ if 1==1
 %     %ylabelmine('fraction of populaiton');
 %     %titlemine('TNG50');
 %     
-%     ylabel(t,'fraction of populaiton','fontsize',labFont,'interpreter','latex')
-%     t.TileSpacing='tight';
-%     t.Padding='compact';
+    xlabel(t,'Score','fontsize',labFont,'interpreter','latex')
+    ylabel(t,'fraction of populaiton','fontsize',labFont,'interpreter','latex')
+    t.TileSpacing='tight';
+    t.Padding='compact';
 %     
     if printFlag
         fname='cjf_scoreHist_weighted';

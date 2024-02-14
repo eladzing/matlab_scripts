@@ -25,19 +25,23 @@ CUBE_SIZE = size(cube,1);
 SPHERE_RES = CUBE_SIZE-1;
 INTERP = 'linear';
 
-[Sx, Sy, Sz] = uni_sphere(SPHERE_RES);
+% create sperical coordinates for a given resolution. coordinates are chosen 
+% to create a roughly constant area on the spherical shell per point. 
+[Sx, Sy, Sz] = uni_sphere(SPHERE_RES);  
 RR = [0.5:0.5:(CUBE_SIZE/2)];
 
 if ~exist('MAX_R')
     MAX_R = length(RR);
 end
 
+% loop on radial shells
 for ridx = 1:MAX_R
     RSx = RR(ridx)*Sx+(128.5)+cm(1);
     RSy = RR(ridx)*Sy+(128.5)+cm(2);
     RSz = RR(ridx)*Sz+(128.5)+cm(3);
     
-    result(ridx,:,:) = single(interp3(cube, RSx, RSy, RSz, INTERP));
+    % interpolate data from unifom grid to spherical shell
+    result(ridx,:,:) = single(interp3(cube, RSx, RSy, RSz, INTERP));  
 end
 
 end

@@ -469,7 +469,7 @@ if typeFlag
             logFlag=false;
             %weight=cubeStr.weights; % cube of mass in each uniform grid cell
             bartag='$\rho v_r\,[\mathrm{M_\odot/kpc^3\,km/sec}]$';
-            slTypeDef='avg';
+            slTypeDef='sum';
             map = brewermap(256,'*RdBu');
             
             %             %find radial velocity component

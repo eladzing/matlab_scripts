@@ -4,7 +4,7 @@ function  hf=mkmapGas(varargin )
 %
 
 
-wargning('%s - This function does not fix the length units - make sure your coordinates are scales accordingly!',...
+warning('%s - This function does not fix the length units - make sure your coordinates are scales accordingly!',...
     current_function().upper);
 
 %% defuals and globals
@@ -465,11 +465,11 @@ if typeFlag
             vrr=sum(vr,1);
             
             cubeStr=cell2grid(coord,vrr.*mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-            cube=cubeStr.cube./(cubeStr.cellVol).*illUnits.densityUnit;  % Msun/kpc^3*km/sec
+            cube=cubeStr.cube./(cubeStr.cellVol).*illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas');  % Msun/kpc^3*km/sec
             logFlag=false;
             %weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$v_r\,[\mathrm{km/sec}]$';
-            slTypeDef='sum';
+            bartag='$\rho v_r\,[\mathrm{M_\odot/kpc^3\,km/sec}]$';
+            slTypeDef='avg';
             map = brewermap(256,'*RdBu');
             
             %             %find radial velocity component
@@ -534,6 +534,19 @@ if typeFlag
             slTypeDef='avg';
             
             printTypeTag='nDens';
+            
+%         case {'coldensity','columndensity','rhocol','gascol','rhogascol'}
+%             cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+%             
+%             %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
+%             cube=(cubeStr.cube)./(cubeStr.).*illUnits.densityUnit; % in Msun/kpc^3
+%             weight=ones(size(cube));
+%             logFlag=true;
+%             bartag='$\log \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
+%             slTypeDef='sum';
+%             printTypeTag='dens';
+			
+            
             
         case {'hi','hidensity'}
             mhi=gas.mHi_BR(gasMask);
@@ -752,7 +765,7 @@ if typeFlag
             cubeStr=cell2grid(coord,vv,cellSize,...
                 'ngrid',Ngrid,'intensive','weights',mass,'box',boxSize);
             
-            cube=cubeStr.cube.*sqrt(illUnits.aexp); %in km/sec
+            cube=cubeStr.cube.*illustris.utils.velocityFactor(illUnits.snap,'gas'); %in km/sec
             logFlag=true;
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
             bartag='$\log |v|\,[\mathrm{km/sec}]$';
@@ -772,7 +785,7 @@ if typeFlag
             
             cubeStr=cell2grid(coord,vrr,cellSize,...
                 'ngrid',Ngrid,'intensive','weights',mass,'box',boxSize);
-            cube=cubeStr.cube.*sqrt(illUnits.aexp); %in km/sec
+            cube=cubeStr.cube.*illustris.utils.velocityFactor(illUnits.aexp,'gas'); %in km/sec
             logFlag=false;
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
             bartag='$v_r\,[\mathrm{km/sec}]$';

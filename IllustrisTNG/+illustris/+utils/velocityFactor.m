@@ -6,8 +6,13 @@ function unitFac = velocityFactor(snap,velType)
 %   function supplies the right conversion factor
 
 if snap<=0
-    error('velocityFactor - snap must be positive: %s',snap);
+    error('%s - snap must be positive: %s',current_function().upper,snap);
 end
+
+if floor(snap)~=snap
+    error('%s - snap should be an integer: %s',current_function().upper,snap);
+end
+
 
 switch(lower(velType))
     case{'gas','dm','darkmatter','particle','part','particles','bh','stars'}

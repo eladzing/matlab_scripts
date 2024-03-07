@@ -227,6 +227,7 @@ while i<=length(varargin)
             if length(vcm)~=3
                error('%s - vcm must be a 3-component array',current_function().upper)
             end
+            warning('%s - Make sure VCM units are compatible with the gas velocities!',current_function().upper);
             % basic arguments for plotting
         case{'log','log10'}
             logFlag=true;
@@ -785,7 +786,7 @@ if typeFlag
             
             cubeStr=cell2grid(coord,vrr,cellSize,...
                 'ngrid',Ngrid,'intensive','weights',mass,'box',boxSize);
-            cube=cubeStr.cube.*illustris.utils.velocityFactor(illUnits.aexp,'gas'); %in km/sec
+            cube=cubeStr.cube.*illustris.utils.velocityFactor(illUnits.snap,'gas'); %in km/sec
             logFlag=false;
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
             bartag='$v_r\,[\mathrm{km/sec}]$';

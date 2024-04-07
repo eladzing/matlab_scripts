@@ -42,7 +42,7 @@ list4=["TNG100snp099subid00381151" ...
     "TNG50snp067subid00258172"];
 
 
-list=list4;
+%list=list;
 
 
 
@@ -50,7 +50,7 @@ list=list4;
 %ranges=fliplr({'0--0.2','0.2--0.4','0.4--0.6','0.6--0.8','0.8--1.0'});
 
 %%
-list=list3;
+list=list1;
 sameTag='_same';
 
 imsgtr=imageStruct;
@@ -70,7 +70,7 @@ end
 
 for i=1:length(list)
     
-    hf=myFigure('pos',[ 666  325 1200 600]);
+    hf=myFigure('pos',[ 666  325 1800 900]);
     
     tt=tiledlayout(1,2);
     
@@ -104,6 +104,7 @@ for i=1:length(list)
     outname=sprintf('cjf_%s_mosaic_%i',tag,i);
     %outname=sprintf('cjf_randOpt_same2_mosaic_%i',i);
     if printFlag; printout_fig(gcf,outname,'pdf','v','printoutdir',outdir); end
+    pause
 end
 %%  opt non / rand JFn : set indices
 

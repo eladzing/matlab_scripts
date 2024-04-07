@@ -1,6 +1,6 @@
 
 
-function slice=mk_slice(cube,weight,slind,type)
+function slice=mk_slice_cluster(cube,weight,slind,type)
 % creates 3 slices for x,y,z projections. slices can be weighted.
 %  slind is the index range for the slice
 

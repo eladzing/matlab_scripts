@@ -20,6 +20,12 @@ function res=cell2grid(coords,vals,cellSize,varargin)
 %            the number of cell lengths added to the boxside is set by the
 %            variable 'buffer' which is set to 10 by default but can be set
 %            in varargin.
+% 
+%            the contirbution of a simulation cell to a grid cell is
+%            modulated by the number of grid cell vertices is found within
+%            the simulation cell radius. 
+
+
 
 
 %% defaults and perliminatries

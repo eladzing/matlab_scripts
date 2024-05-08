@@ -125,6 +125,10 @@ indX=ceil((coords(1,:)./boxSide+0.5).*Ngrid);
 indY=ceil((coords(2,:)./boxSide+0.5).*Ngrid);
 indZ=ceil((coords(3,:)./boxSide+0.5).*Ngrid);
 
+% ignore cells whose center is out of bounds
+skipFlag= indX > Ngrid | indX < 1 | indY>Ngrid | indY<1 | indZ>Ngrid | indZ<1 ;
+%skipFlag= indXlo>Ngrid | indXhi < 1 | indYlo>Ngrid | indYhi<1 | indZlo>Ngrid | indZhi<1 ;
+
 
 gcl=ceil(cellSize./(boxSide/Ngrid));     %"diameter" of sim cells in grid units
 %if strcmp(mappingType,'extensive-gaussian')
@@ -140,11 +144,7 @@ indXlo=indX-gind;indXhi=indX+gind;
 indYlo=indY-gind;indYhi=indY+gind;
 indZlo=indZ-gind;indZhi=indZ+gind;
 
-
-% ignore cells whose center is out of bounds
-skipFlag= indX > Ngrid | indX < 1 | indY>Ngrid | indY<1 | indZ>Ngrid | indZ<1 ;
-%skipFlag= indXlo>Ngrid | indXhi < 1 | indYlo>Ngrid | indYhi<1 | indZlo>Ngrid | indZhi<1 ;
-
+% don't let the grid-patch extend beyond the actual grid 
 indXlo(indXlo<1)=1;
 indYlo(indYlo<1)=1;
 indZlo(indZlo<1)=1;
@@ -192,7 +192,7 @@ switch(mappingType)
                 (vertZ(xvi,yvi,zvi)-coords(3,i)).^2);
             
             
-            vertMask=vertRad<=cellSize(i)/2;
+            vertMask=vertRad<=cellSize(i)/2; % factor of half since cellSize is a diameter.
             
             % for each grid cell, count how many of its 8 vertices is enclosed in cell
             vw=zeros(length(xi),length(yi),length(zi));

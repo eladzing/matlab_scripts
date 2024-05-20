@@ -465,11 +465,15 @@ if typeFlag
             end
             vrr=sum(vr,1);
             
-            cubeStr=cell2grid(coord,vrr.*mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-            cube=cubeStr.cube./(cubeStr.cellVol).*illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas');  % Msun/kpc^3*km/sec
+            cubeStr=cell2grid(coord,vrr.*mass.*dist.^2,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+            %cubeStr=cell2grid(coord,vrr.*mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+            unitFac=illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas').*illUnits.lengthUnit.^2.*...
+                illUnits.physUnits.kpc./illUnits.physUnits.km./illUnits.physUnits.Gyr;
+            cube=cubeStr.cube./(cubeStr.cellVol).*unitFac; %.*illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas');  % Msun/kpc^3*km/sec
             logFlag=false;
             %weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$\rho v_r\,[\mathrm{M_\odot/kpc^3\,km/sec}]$';
+            %bartag='$\rho v_r\,[\mathrm{M_\odot/kpc^3\,km/sec}]$';
+            bartag='$\frac{\dot{M}_{gas}}{d\Omega}\,[\mathrm{M_\odot/Gyr}]$';
             slTypeDef='avg';
             map = brewermap(256,'*RdBu');
             

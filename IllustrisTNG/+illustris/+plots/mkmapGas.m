@@ -71,6 +71,7 @@ velFlag=false;
 strmFlag=false;
 %mvirboxFlag=false;
 logFlag=false;
+logFlagSign=false;
 comoveFlag=true;
 vcubeFlag(1:3)=false;
 rogFlag=false;
@@ -82,6 +83,7 @@ brewerFlag=false;
 gasStructFlag=false;
 newFigFlag=true;
 backgroundFlag=false; %true;
+
 map = brewermap(256,'*Spectral');
 saveFigFlag=false;
 visibleFlag=true;
@@ -451,7 +453,7 @@ cellCount=sum(gasMask);
 %% build data cube
 if typeFlag
     switch lower(type)
-        case {'flux','massflux','f'}
+        case {'flux','massflux','f','flux2'}
             %fluxnorm=(0.1117.*(MVIR./1e15).^0.15*(1+zred)^2.25)./(4.*pi); % normalization for flux
             
             % find vr
@@ -465,12 +467,20 @@ if typeFlag
             end
             vrr=sum(vr,1);
             
-            cubeStr=cell2grid(coord,vrr.*mass.*dist.^2,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-            %cubeStr=cell2grid(coord,vrr.*mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-            unitFac=illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas').*illUnits.lengthUnit.^2.*...
-                illUnits.physUnits.kpc./illUnits.physUnits.km./illUnits.physUnits.Gyr;
+            if ~strcmpi(type,'flux2')
+                cubeStr=cell2grid(coord,vrr.*mass.*dist.^2,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+                unitFac=illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas').*illUnits.lengthUnit.^2.*...
+                    illUnits.physUnits.kpc./illUnits.physUnits.km./illUnits.physUnits.Gyr;
+                bartag='$\frac{\dot{M}_{gas}}{d\Omega}\,[\mathrm{M_\odot/Gyr}]$';
+            else
+                
+                cubeStr=cell2grid(coord,vrr.*mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+                unitFac=illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas');
+                bartag='$\rho v_r\,[\mathrm{M_\odot/kpc^3\,km/sec}]$';
+            end
+            
             cube=cubeStr.cube./(cubeStr.cellVol).*unitFac; %.*illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas');  % Msun/kpc^3*km/sec
-            logFlag=false;
+            %logFlag=false;
             %weight=cubeStr.weights; % cube of mass in each uniform grid cell
             %bartag='$\rho v_r\,[\mathrm{M_\odot/kpc^3\,km/sec}]$';
             bartag='$\frac{\dot{M}_{gas}}{d\Omega}\,[\mathrm{M_\odot/Gyr}]$';
@@ -921,7 +931,7 @@ end
 %% perpare slice to be plotted.
 slice=mk_slice(cube,weight,slind,slType);
 if logFlag
-    slice=log10(slice);
+    slice=sign(slice).*log10(abs(slice));
 end
 
 

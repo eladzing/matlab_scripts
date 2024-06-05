@@ -33,7 +33,7 @@ end
 fileThere=exist(fullName,'file');
 
 if fileThere==0
-    fprintf('MOVE2OLD - The folder %s does not contain the a file by the name %s. A O K. \n',pathe,fileName);
+    fprintf('%s - The folder %s does not contain the a file by the name %s. A O K. \n',current_function().upper,pathe,fileName);
     status=true;
 elseif fileThere==2
     if rmFlag
@@ -48,7 +48,7 @@ elseif fileThere==2
         status=movefile(fullName,[pathe 'old/' fileName]);
     end
 else
-    error('MOVE2OLD - strange error');
+    error('%s- strange error',current_function().upper);
 end
         
         

@@ -3,7 +3,7 @@ function res = calcTemperature(internalEnergy,electronAbundance)
 % electron abundance in the Illustris simulation. Result is in K.
 % Internal Energy is in (km/sec)^2 ( per unit mass)
 
-units;
+global illUnits
 global cosmoStruct
 
 % define default values 
@@ -16,9 +16,9 @@ if ~exist('electronAbundance','var')
     electronAbundance=1+2*ep;
 end
 
-mu= 4./(1+3*Xh+4.*Xh.*electronAbundance).*Units.mp;
+mu= 4./(1+3*Xh+4.*Xh.*electronAbundance).*illUnits.physUnits.mp;
 
-res=(gamma-1).*(internalEnergy.*(Units.km).^2)./Units.kb.*mu;
+res=(gamma-1).*(internalEnergy.*(illUnits.physUnits.km).^2)./illUnits.physUnits.kb.*mu;
 
 end
 

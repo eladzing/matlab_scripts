@@ -9,7 +9,7 @@ global illUnits
 
 
 ndensity=density.*illUnits.numberDensityFactor;
-res=Units.kb.*temperature./(ndensity).^(2/3)./(Units.ev.*1000);
+res=illUnits.physUnits.kb.*temperature./(ndensity).^(2/3)./(illUnits.physUnits.ev.*1000);
 
 end
 

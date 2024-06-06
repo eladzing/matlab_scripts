@@ -3,18 +3,18 @@ function res = calcCoolingTime(density,energy,coolingRate)
 % electron abundance in the Illustris simulation. Result is in K.
 % Internal Energy is in (km/sec)^2 ( per unit mass)
 
-units;
+%units;
 global illUnits
 global cosmoStruct
 
 eps=(1/cosmoStruct.Hfraction-1)/4;
 
-densCGS=density.*illUnits.densityUnit.*(Units.Ms/Units.kpc^3); %density in cgs
-energyCGS=energy.*(Units.km)^2; %internal energy (per mass) in cgs
-coolingRateFac=(1+eps)*(1+2*eps).*(cosmoStruct.Hfraction/Units.mp).^2.*densCGS; 
+densCGS=density.*illUnits.densityUnit.*(illUnits.physUnits.Ms/illUnits.physUnits.kpc^3); %density in cgs
+energyCGS=energy.*(illUnits.physUnits.km)^2; %internal energy (per mass) in cgs
+coolingRateFac=(1+eps)*(1+2*eps).*(cosmoStruct.Hfraction/illUnits.physUnits.mp).^2.*densCGS; 
 % simulation cooling rate is lambda/n_H^2. 
 
-res=-1.*energyCGS./(coolingRate.*coolingRateFac)./Units.Gyr;
+res=-1.*energyCGS./(coolingRate.*coolingRateFac)./illUnits.physUnits.Gyr;
 
 res(coolingRate>=0)=0;
 

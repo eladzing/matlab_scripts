@@ -70,8 +70,7 @@ clim_Flag=false; % no colorbar limits given, use min max
 velFlag=false;
 strmFlag=false;
 %mvirboxFlag=false;
-logFlag=false;
-logFlagSign=false;
+logFlag='none';
 comoveFlag=true;
 vcubeFlag(1:3)=false;
 rogFlag=false;
@@ -232,9 +231,11 @@ while i<=length(varargin)
             warning('%s - Make sure VCM units are compatible with the gas velocities!',current_function().upper);
             % basic arguments for plotting
         case{'log','log10'}
-            logFlag=true;
+            logFlag='log';
+        case{'logsign','logflux','logvel'}
+            logFlag='logsign';
         case{'nolog','linear'}
-            logFlag=false;
+            logFlag='none';
         case{'width','thick'} %thicknes of slice in ckpc/h comoving (like box)
             i=i+1;
             thick=varargin{i};
@@ -529,8 +530,8 @@ if typeFlag
             %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
             cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.densityUnit; % in Msun/kpc^3
             weight=ones(size(cube));
-            logFlag=true;
-            bartag='$\log \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
+            logFlag='log';
+            bartag='$ \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
             slTypeDef='avg';
             printTypeTag='dens';
 			
@@ -544,8 +545,8 @@ if typeFlag
             %rhoFac=illUnits.densityUnit.*(Units.Ms/Units.kpc^3/Units.mm); %in cm^-3
             cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.numberDensityFactor; % in cm^-3
             weight=ones(size(cube));
-            logFlag=true;
-            bartag='$\log n\,[\mathrm{cm^{-3}}]$';
+            logFlag='log';
+            bartag='$ n\,[\mathrm{cm^{-3}}]$';
             slTypeDef='avg';
             
             printTypeTag='nDens';
@@ -556,8 +557,8 @@ if typeFlag
 %             %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
 %             cube=(cubeStr.cube)./(cubeStr.).*illUnits.densityUnit; % in Msun/kpc^3
 %             weight=ones(size(cube));
-%             logFlag=true;
-%             bartag='$\log \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
+%             logFlag='log';
+%             bartag='$ \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
 %             slTypeDef='sum';
 %             printTypeTag='dens';
 			
@@ -574,8 +575,8 @@ if typeFlag
             cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.densityUnit.*... % this        is in Msun/kpc^3
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^3/illUnits.physUnits.mp); % and this changes to atoms/cm^3
             weight=ones(size(cube));
-            logFlag=true;
-            bartag='$\log n_\mathrm{HI}\,[\mathrm{cm^{-3}}]$';
+            logFlag='log';
+            bartag='$ n_\mathrm{HI}\,[\mathrm{cm^{-3}}]$';
             slTypeDef='avg';
             
             printTypeTag='hiDens';
@@ -587,8 +588,8 @@ if typeFlag
             cube=(cubeStr.cube)./(cubeStr.cellArea).*illUnits.surfaceDensityUnit.*... % this is in Msun/kpc^2
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^2/illUnits.physUnits.mp); % and this changes to atoms/cm^2
             weight=ones(size(cube));
-            logFlag=true;
-            bartag='$\log n_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$';
+            logFlag='log';
+            bartag='$ n_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$';
             slTypeDef='sum';
             
             printTypeTag='hiColDens';
@@ -604,8 +605,8 @@ if typeFlag
             cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.densityUnit.*... % this        is in Msun/kpc^3
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^3/(2*illUnits.physUnits.mp)); % and this changes to atoms/cm^3
             weight=ones(size(cube));
-            logFlag=true;
-            bartag='$\log n_\mathrm{HI}\,[\mathrm{cm^{-3}}]$';
+            logFlag='log';
+            bartag='$ n_\mathrm{HI}\,[\mathrm{cm^{-3}}]$';
             slTypeDef='avg';
             
             printTypeTag='hiDens';
@@ -617,8 +618,8 @@ if typeFlag
             cube=(cubeStr.cube)./(cubeStr.cellArea).*illUnits.surfaceDensityUnit.*... % this is in Msun/kpc^2
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^2/(2*illUnits.physUnits.mp)); % and this changes to atoms/cm^2
             weight=ones(size(cube));
-            logFlag=true;
-            bartag='$\log n_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$';
+            logFlag='log';
+            bartag='$ n_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$';
             slTypeDef='sum';
             
             printTypeTag='hiColDens';
@@ -635,7 +636,7 @@ if typeFlag
             cubeStr=cell2grid(coord(:,msk),ent(msk),cellSize(msk),...
                 'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
             cube=cubeStr.cube; %in K
-            logFlag=true;
+            logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
             bartag='$ S\,[\mathrm{KeV\, cm^2}]$';
             slTypeDef='avg';
@@ -652,9 +653,9 @@ if typeFlag
             cubeStr=cell2grid(coord(:,msk),tcool(msk),cellSize(msk),...
                 'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
             cube=cubeStr.cube; %in K
-            logFlag=true;
+            logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag= '$\log t_\mathrm{cool}\,[\mathrm{Gyr}]$' ;
+            bartag= '$ t_\mathrm{cool}\,[\mathrm{Gyr}]$' ;
             slTypeDef='avg';
             printTypeTag='tcool';
             
@@ -670,7 +671,7 @@ if typeFlag
                 'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
             cube=cubeStr.cube; %in K
             
-            logFlag=true;
+            logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
             
             load([DEFAULT_MATFILE_DIR '/freeFallTime_profiles_snp' num2str(illUnits.snap) '_' simDisplayName '.mat'])
@@ -691,7 +692,7 @@ if typeFlag
             
             cube=cube./tffCube;
             
-            bartag= '$\log t_\mathrm{cool}/t_\mathrm{ff}$' ;
+            bartag= '$ t_\mathrm{cool}/t_\mathrm{ff}$' ;
             slTypeDef='avg';
             printTypeTag='tctff';
             
@@ -708,9 +709,9 @@ if typeFlag
             cubeStr=cell2grid(coord(:,msk), temp(msk),cellSize(msk),...
                 'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
             cube=cubeStr.cube; %in K
-            logFlag=true;
+            logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$\log T\,[\mathrm{K}]$';
+            bartag='$ T\,[\mathrm{K}]$';
             slTypeDef='avg';
             printTypeTag='temp';
             
@@ -719,7 +720,7 @@ if typeFlag
             cubeStr=cell2grid(coord,gasStruct.Machnumber(gasMask),ones(size(cellSize)),...
                 'ngrid',Ngrid,'intensive','weights',gasStruct.EnergyDissipation(gasMask),'box',boxSize);
             cube=cubeStr.cube; %in K
-            logFlag=true;
+            logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
             bartag='$\mathcal{M}$';
             slTypeDef='avg';
@@ -734,11 +735,11 @@ if typeFlag
                 'ngrid',Ngrid,'max','box',boxSize);
             %cubeStr=cell2grid(coord,gasStruct.EnergyDissipation(gasMask),cellSize,...
             %    'ngrid',Ngrid,'extensive','weights',mass,'box',boxSize);
-            cube=cubeStr.cube.*illUnits.EnergyDissipationUnit; %in K
-            logFlag=true;
+            cube=cubeStr.cube.*illUnits.EnergyDissipationUnit; %
+            logFlag='log';
             %weight=cubeStr.weights; % cube of mass in each uniform grid cell
             weight=ones(size(cube));
-            bartag='$\log E_\mathrm{dis}\,[10^{45}\mathrm{erg/yr}]$';
+            bartag='$ E_\mathrm{dis}\,[10^{45}\mathrm{erg/yr}]$';
             slTypeDef='avg';
             printTypeTag='ediss';
             
@@ -752,9 +753,9 @@ if typeFlag
             cubeStr=cell2grid(coord(:,msk),pre(msk),cellSize(msk),...
                 'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
             cube=cubeStr.cube./1e-10; %in 10^-10 erg/cm^3
-            logFlag=true;
+            logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$\log P\,[\mathrm{10^{-10}erg/cm^3}]$';
+            bartag='$ P\,[\mathrm{10^{-10}erg/cm^3}]$';
             slTypeDef='avg';
             printTypeTag='press';
             cmap=brewermap(256,'PuRd');
@@ -764,9 +765,9 @@ if typeFlag
             cubeStr=cell2grid(coord,gasStruct.GFM_Metallicity(gasMask),cellSize,...
                 'ngrid',Ngrid,'intensive','weights',mass,'box',boxSize);
             cube=cubeStr.cube; %i
-            logFlag=true;
+            logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$\log Z\,[\mathrm{Z_\odot}]$';
+            bartag='$ Z\,[\mathrm{Z_\odot}]$';
             slTypeDef='avg';
             cmap=brewermap(256,'BuPu');
         case {'potential','potent'}
@@ -781,9 +782,9 @@ if typeFlag
                 'ngrid',Ngrid,'intensive','weights',mass,'box',boxSize);
             
             cube=cubeStr.cube.*illustris.utils.velocityFactor(illUnits.snap,'gas'); %in km/sec
-            logFlag=true;
+            logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$\log |v|\,[\mathrm{km/sec}]$';
+            bartag='$ |v|\,[\mathrm{km/sec}]$';
             slTypeDef='avg';
             printTypeTag='vMag';
             
@@ -930,8 +931,17 @@ end
 
 %% perpare slice to be plotted.
 slice=mk_slice(cube,weight,slind,slType);
-if logFlag
-    slice=sign(slice).*log10(abs(slice));
+
+
+
+switch lower(logFlag)
+    case {'none','no'}
+    case {'log'}
+        %slice=log10(slice);
+    case {'logsign'}
+        slice=sign(slice).*log10(abs(slice));
+    otherwise
+        error('%s - Illegal log option: %s',current_function().upper,logFlag);
 end
 
 
@@ -967,7 +977,9 @@ end
 if ~clim_Flag
     clims(1) = min(slice(slice>-Inf));
     clims(2) = max(slice(slice<Inf));
-    
+    if strcmpi(logFlag,'log')
+        clims(1) = min(slice(slice>0));
+    end
 end
 for projection = 1:3
     if plotproj(projection)
@@ -1000,12 +1012,7 @@ for projection = 1:3
         
         imj=squeeze(slice(:,:,projection));
         
-        switch imageSmoothFlag
-            case 'filter'
-            imj=imfilter(imj,imageFilter);
-            case 'gauss'
-                imj=imgaussfilt(imj,gaussSigma);
-        end
+        
         
         switch(lower(nanVal))
             case 'none'
@@ -1019,7 +1026,13 @@ for projection = 1:3
             otherwise
                error('%s - illegal value for nanVal: %s',current_function().upper,nanVal)
         end
-                
+          
+        switch imageSmoothFlag
+            case 'filter'
+            imj=imfilter(imj,imageFilter);
+            case 'gauss'
+                imj=imgaussfilt(imj,gaussSigma);
+        end
         
         %if ~pointPlotFlag
         imagesc(side,side,imj,clims);%axis equal tight;
@@ -1343,6 +1356,10 @@ for projection = 1:3
         end
         
         set(gcf,'Colormap',map);
+        if strcmpi(logFlag,'log')
+            set(gca,'ColorScale','log');
+            caxis(10.^[min(log10(clims))
+        end
         %set(gcf,'Colormap',avijet);
         %title(sprintf('%s %s, Thickness=%s Mpc/h',CLUSTER,type,num2str(thick,3)),'Fontsize',12,'Interpreter','latex');
         

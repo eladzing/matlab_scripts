@@ -14,6 +14,7 @@ zFac=illustris.utils.set_redshiftFactor(snap);
 global cosmoStruct
 %global illUnits 
 units;
+
 res.snap=snap;
 res.aexp=zFac.length;
 res.zred=zFac.zred;

@@ -2,7 +2,7 @@ global illUnits
 global cosmoStruct
 global simDisplayName
 
-load('/home/zinger/workProjects/matlab_scripts/IllustrisTNG/matFiles/freeFallTime_profiles_snp99_TNG100.mat')
+%load('/home/zinger/workProjects/matlab_scripts/IllustrisTNG/matFiles/freeFallTime_profiles_snp99_TNG100.mat')
 
 mv=tffProfile.NFW.mv(mask);
 galMass=subs.SubhaloMassInRadType(illustris.partTypeNum('stars')+1,mask).*illUnits.massUnit;
@@ -19,7 +19,7 @@ lrr=cat(2,lr.^2,lr,ones(size(lr)));
 
 profs=lrr*cof;
 
-% figure
+% myFigure;
 % plot(lr,profs)
 
 
@@ -41,7 +41,7 @@ for i=1:length(massB)-1
     quant(:,:,i)=quantile(pr,[0.1 0.9],2);
     
         
-    figure
+    myFigure;
     plot(lr,pr,'color',[0.75 0.75 0.75])
     hold on
     
@@ -56,13 +56,15 @@ for i=1:length(massB)-1
     xlabelmine('$\log\, r/R_\mathrm{200,c}$');
     ylabelmine('$\log t_\mathrm{ff} \, [\mathrm{Gyr}]$');
     
-    printout_fig(gcf,...
-        sprintf(fnam,num2str(massB(i)),num2str(massB(i+1)),num2str(snap),simDisplayName))
+   % printout_fig(gcf,...
+   %     sprintf(fnam,num2str(massB(i)),num2str(massB(i+1)),num2str(snap),simDisplayName))
 end
+
+%%
 
 
 h=[];
-figure
+myFigure;
 
 kCol=[1:5 7];
 for i=1:length(massB)-1
@@ -107,7 +109,7 @@ for i=1:length(massB)-1
     quant(:,:,i)=quantile(pr,[0.1 0.9],2);
     
         
-    figure
+    myFigure;
     plot(lr,pr,'color',[0.75 0.75 0.75])
     hold on
     
@@ -116,14 +118,14 @@ for i=1:length(massB)-1
       
     plot(lr,mpr(:,i),'color',cc(2,:),'linewidth',2);
     
-    set(gca,'fontsize',14);
+    %set(gca,'fontsize',14);
     grid   
-    titlemine(sprintf('stellar mass range:%s - %s',num2str(massB(i)),num2str(massB(i+1))));
+    titlemine(sprintf('Halo Mass range:%s - %s',num2str(massB(i)),num2str(massB(i+1))));
     xlabelmine('$\log\, r/R_\mathrm{200,c}$');
     ylabelmine('$\log t_\mathrm{ff} \, [\mathrm{Gyr}]$');
-     
-    printout_fig(gcf,...
-        sprintf(fnam,num2str(massB(i)),num2str(massB(i+1)),num2str(snap),simDisplayName))
+    myAxis; 
+ %   printout_fig(gcf,...
+ %       sprintf(fnam,num2str(massB(i)),num2str(massB(i+1)),num2str(snap),simDisplayName))
 
     
     
@@ -131,7 +133,7 @@ end
 
 
 h=[];
-figure
+myFigure;
 kCol=1:5;
 for i=1:length(massB)-1
     nam=[num2str(massB(i)) '-' num2str(massB(i+1))];
@@ -153,8 +155,8 @@ set(gca,'fontsize',14);
 xlabelmine('$\log\, r/R_\mathrm{200,c}$');
 ylabelmine('$\log t_\mathrm{ff} \, [\mathrm{Gyr}]$');  
 titlemine('$t_\mathrm{ff}$ profiles in halo mass bins');
- printout_fig(gcf,...
-        sprintf('tffProfile_mhal_%s_%s_snp%s_%s',num2str(snap),simDisplayName));
+ %printout_fig(gcf,...
+ %       sprintf('tffProfile_mhal_%s_%s_snp%s_%s',num2str(snap),simDisplayName));
 
 
 
@@ -164,7 +166,7 @@ ptsP(i) = mk_meanMedian_bin(log10(mv),tffProfile.polyfit.residuals(i,mask),'nb',
 end
 
 
-figure
+myFigure;
 cc=brewermap(6,'Set1');
 for k=1:6
     nam=num2str(k);
@@ -187,7 +189,7 @@ ptsN(i) = mk_meanMedian_bin(log10(mv),tffProfile.NFW.residuals(i,mask),'nb',20);
 end
 
 
-figure
+myFigure;
 cc=brewermap(6,'Set1');
 for k=1:6
     nam=num2str(k);

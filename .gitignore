@@ -10,6 +10,7 @@ rpsProject/matFiles/
 cluster/mat_files/
 cluster/obsolete/
 teach/
+nofi/
 scp*
 sync*
 matSync

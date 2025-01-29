@@ -1,7 +1,7 @@
 
 function [bird, binsize, xxlimH]= histogram1d(xx,vv,varargin)
 %% 2D histogram
-% This function creates a 2-D histogram - the result ('bird') is a
+% This function creates a 1-D histogram - the result ('bird') is a
 % len(1) X 2 array. The first index along the 2nd dimension is the
 % 1D array for the sum of values which belong in each bin. Each value is
 % weighted by the array wt which is one by defualt.

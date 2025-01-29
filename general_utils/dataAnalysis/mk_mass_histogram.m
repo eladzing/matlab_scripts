@@ -16,6 +16,7 @@ massDist=bird(:,1);
 massDistC=cumsum(bird(:,1))./sum(mass);
 %xx=xxlim(1)+0.5*binsize:binsize:xxlim(end)-0.5*binsize;
 
+%% Calculate the mass quantiles 
 mus=zeros(size(qus));
 for j=1:length(qus)
     ind=find(massDistC>qus(j),1,'first');

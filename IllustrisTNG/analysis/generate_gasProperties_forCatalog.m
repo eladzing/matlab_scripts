@@ -90,10 +90,10 @@ propNames=["MeanMW", "StdDevMW", "MassMedian", "MassQuantiles"];
 
 %% initialize output
 
-for fld=compNames
+for fld=compNames  % different components of the SubHalo
     PropStruct.(fld).mask=int8(galMask);
-    for param=paramNames
-        for prop=propNames
+    for param=paramNames % physical parameters we look at 
+        for prop=propNames % type of metric produced 
             pname=strcat(fld,param,prop);
             switch prop
                 case 'MassQuantiles'
@@ -132,8 +132,8 @@ for id=0:len-1
         
         
         cnt=cnt+1;
-        % load gas from in sub halo
         
+        % load gas from in sub halo
         gas=illustris.snapshot.loadSubhalo(bp, snap, id, 'gas');
         
         if gas.count==0

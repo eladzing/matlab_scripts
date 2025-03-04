@@ -19,7 +19,7 @@ global subBox
 global MOUNTEDFLAG
 
 systemPath='C:\Users\eladz\Documents\workProjects';
-mountPath='\\wsl.localhost\Ubuntu-20.04\home\kipod\sshfsMounts\vera';
+mountPath='\\wsl.localhost\Ubuntu-24.04\home\eladzing\sshfsMounts\vera';
 veraPath='/vera/ptmp/gc/eladzing';
 
 
@@ -211,7 +211,7 @@ DRACOFLAG= strcmp(pp(1:6),'/vera/');
 %% Set the environmmet for accssing IllustrisTNG data
 if ~DRACOFLAG
     
-    mPath='/home/kipod/sshfsMounts/vera';
+    mPath='/home/eladzing/sshfsMounts/vera';
     
     %fprintf('*** Checking if Mounting simulation files *** \n');
     

@@ -1358,7 +1358,7 @@ for projection = 1:3
         set(gcf,'Colormap',map);
         if strcmpi(logFlag,'log')
             set(gca,'ColorScale','log');
-            caxis(10.^[min(log10(clims))
+            caxis(10.^[min(log10(clims)) max(log10(clims))]);
         end
         %set(gcf,'Colormap',avijet);
         %title(sprintf('%s %s, Thickness=%s Mpc/h',CLUSTER,type,num2str(thick,3)),'Fontsize',12,'Interpreter','latex');

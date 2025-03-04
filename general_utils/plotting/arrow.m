@@ -1,4 +1,4 @@
- function [h,yy,zz] = arrow(varargin)
+function [h,yy,zz] = arrow(varargin)
 % ARROW  Draw a line with an arrowhead.
 %
 %  ARROW(Start,Stop) draws a line with an arrow from Start to Stop (points
@@ -47,23 +47,47 @@
 %  ARROW([1 2 3],[0 0 0],36,'BaseAngle',60) creates an arrow from (1,2,3) to
 %  the origin, with an arrowhead of length 36 pixels and 60-degree base angle.
 %
+%  Normally, an ARROW is a PATCH object, so any valid PATCH property/value pairs
+%  can be passed, e.g., ARROW(Start,Stop,'EdgeColor','r','FaceColor','g').
+%  ARROW will use LINE objects when requested by ARROW(...,'Type','line') or,
+%  using LINE property/value pairs, ARROW(Start,Stop,'Type','line','Color','b').
+%
 %  The basic arguments or properties can generally be vectorized to create
 %  multiple arrows with the same call.  This is done by passing a property
 %  with one row per arrow, or, if all arrows are to have the same property
 %  value, just one row may be specified.
 %
-%  You may want to execute AXIS(AXIS) before calling ARROW so it doesn't change
-%  the axes on you; ARROW determines the sizes of arrow components BEFORE the
+%  You may want to execute AXIS('manual') before calling ARROW so it doesn't
+%  change the axes; ARROW determines the sizes of arrow components BEFORE the
 %  arrow is plotted, so if ARROW changes axis limits, arrows may be malformed.
-%
+
 %  This version of ARROW uses features of MATLAB 6.x and is incompatible with
 %  earlier MATLAB versions (ARROW for MATLAB 4.2c is available separately);
 %  some problems with perspective plots still exist.
 
-% Copyright (c)1995-2009, Dr. Erik A. Johnson <JohnsonE@usc.edu>, 5/20/2009
-% http://www.usc.edu/civil_eng/johnsone/
+% Copyright (c)1995-2021, Dr. Erik A. Johnson <JohnsonE@usc.edu>, 5/02/2023
+% https://viterbi.usc.edu/directory/faculty/Johnson/Erik
 
 % Revision history:
+%    5/02/23  EAJ  Enable using the 'Parent' property
+%    6/26/21  EAJ  viewmtx() is slightly inaccurate (round-off) when AZ & EL
+%                    are multiples of 90 degrees; fix this
+%    5/12/21  EAJ  Change output from handle double to graphics objects.
+%                  Add warning and error identifiers.
+%                  Temporarily disable pan/zoom/rotate3d to use arrow's
+%                    click-to-draw
+%    5/25/16  EAJ  Add documentation of 'Type','line'
+%                  Add documentation of how to set color
+%                  Add 'Color' property (which sets both 'EdgeColor' and
+%                    'FaceColor' for patch objects)
+%    5/24/16  EAJ  Remove 'EraseMode' in HG2
+%    7/16/14  EAJ  R2014b HandleGraphics2 compatibility
+%    7/14/14  EAJ  5/20/13 patch extension didn't work right in HG2
+%                    so break the arrow along its length instead
+%    5/20/13  EAJ  Extend patch line one more segment so EPS/PDF printed versions
+%                    have nice rounded tips when the LineWidth is wider
+%    2/06/13  EAJ  Add ShortenLength property to shorten length if arrow is short
+%    1/24/13  EAJ  Remove some old comments.
 %    5/20/09  EAJ  Fix view direction in (3D) demo.
 %    6/26/08  EAJ  Replace eval('trycmd','catchcmd') with try, trycmd; catch,
 %                    catchcmd; end; -- break's MATLAB 5 compatibility.
@@ -93,9 +117,6 @@
 %    Fall 94  EAJ  Original code.
 
 % Things to be done:
-%  - in the arrow_clicks section, prompt by printing to the screen so that
-%    the user knows what's going on; also make sure the figure is brought
-%    to the front.
 %  - segment parsing, computing, and plotting into separate subfunctions
 %  - change computing from Xform to Camera paradigms
 %     + this will help especially with 3-D perspective plots
@@ -107,11 +128,10 @@
 %       empty) the values specified as default; or use a cell containing
 %       an empty matrix for a default value
 %  - add functionality of GET to retrieve current values of ARROW properties
-
-% Many thanks to Keith Rogers <kerog@ai.mit.com> for his many excellent
-% suggestions and beta testing.  Check out his shareware package MATDRAW
-% (at ftp://ftp.mathworks.com/pub/contrib/v5/graphics/matdraw/) -- he has
-% permission to distribute ARROW with MATDRAW.
+% 
+% New list of things to be done:
+%  - rewrite as a graphics or class object that updates itself in real time
+%    (but have a 'Static' or 'DoNotUpdate' property to avoid updating)
 
 % Permission is granted to distribute ARROW with the toolboxes for the book
 % "Solving Solid Mechanics Problems with MATLAB 5", by F. Golnaraghi et al.
@@ -121,18 +141,18 @@
 % software to reproduce the figures in his image analysis text.
 
 % global variable initialization
-global ARROW_PERSP_WARN ARROW_STRETCH_WARN ARROW_AXLIMITS
+persistent ARROW_PERSP_WARN ARROW_STRETCH_WARN ARROW_AXLIMITS ARROW_AX
 if isempty(ARROW_PERSP_WARN  ), ARROW_PERSP_WARN  =1; end;
 if isempty(ARROW_STRETCH_WARN), ARROW_STRETCH_WARN=1; end;
 
 % Handle callbacks
-if (nargin>0 && isstr(varargin{1}) && strcmpi(varargin{1},'callback')),
+if (nargin>0 & isstr(varargin{1}) & strcmp(lower(varargin{1}),'callback')),
 	arrow_callback(varargin{2:end}); return;
 end;
 
 % Are we doing the demo?
 c = sprintf('\n');
-if (nargin==1 && isstr(varargin{1})),
+if (nargin==1 & isstr(varargin{1})),
 	arg1 = lower(varargin{1});
 	if strncmp(arg1,'prop',4), arrow_props;
 	elseif strncmp(arg1,'demo',4)
@@ -140,39 +160,39 @@ if (nargin==1 && isstr(varargin{1})),
 		demo_info = arrow_demo;
 		if ~strncmp(arg1,'demo2',5),
 			hh=arrow_demo3(demo_info);
-		else
+		else,
 			hh=arrow_demo2(demo_info);
 		end;
 		if (nargout>=1), h=hh; end;
 	elseif strncmp(arg1,'fixlimits',3),
-		arrow_fixlimits(ARROW_AXLIMITS);
-		ARROW_AXLIMITS=[];
+		arrow_fixlimits(ARROW_AX,ARROW_AXLIMITS);
+		ARROW_AXLIMITS=[]; ARROW_AX=[];
 	elseif strncmp(arg1,'help',4),
 		disp(help(mfilename));
-	else
-		error([upper(mfilename) ' got an unknown single-argument string ''' deblank(arg1) '''.']);
+	else,
+		error('arrow:unknownCharArg',[upper(mfilename) ' got an unknown single-argument string ''' deblank(arg1) '''.']);
 	end;
 	return;
 end;
 
 % Check # of arguments
-if (nargout>3), error([upper(mfilename) ' produces at most 3 output arguments.']); end;
+if (nargout>3), error('arrow:nargout',[upper(mfilename) ' produces at most 3 output arguments.']); end;
 
 % find first property number
 firstprop = nargin+1;
-for k=1:length(varargin), if ~isnumeric(varargin{k}), firstprop=k; break; end; end;
+for k=1:length(varargin), if ~isnumeric(varargin{k}) && ~all(ishandle(varargin{k})), firstprop=k; break; end; end; %eaj 5/24/16   for k=1:length(varargin), if ~isnumeric(varargin{k}), firstprop=k; break; end; end;
 lastnumeric = firstprop-1;
 
 % check property list
 if (firstprop<=nargin),
 	for k=firstprop:2:nargin,
 		curarg = varargin{k};
-		if ~isstr(curarg) || sum(size(curarg)>1)>1,
-			error([upper(mfilename) ' requires that a property name be a single string.']);
+		if ~isstr(curarg) | sum(size(curarg)>1)>1,
+			error('arrow:invalidProperty',[upper(mfilename) ' requires that a property name be a single string.']);
 		end;
 	end;
 	if (rem(nargin-firstprop,2)~=1),
-		error([upper(mfilename) ' requires that the property ''' ...
+		error('arrow:missingPropertyValue',[upper(mfilename) ' requires that the property ''' ...
 		       varargin{nargin} ''' be paired with a property value.']);
 	end;
 end;
@@ -192,6 +212,7 @@ wid        = [];
 page       = [];
 crossdir   = [];
 ends       = [];
+shorten    = [];
 ax         = [];
 oldh       = [];
 ispatch    = [];
@@ -204,6 +225,7 @@ defwid        = 0;
 defpage       = 0;
 defcrossdir   = [NaN NaN NaN];
 defends       = 1;
+defshorten    = 0;
 defoldh       = [];
 defispatch    = 1;
 
@@ -216,7 +238,7 @@ if (firstprop==2),
 	oldh = varargin{1}(:);
 	if isempty(oldh), return; end;
 elseif (firstprop>9),
-	error([upper(mfilename) ' takes at most 8 non-property arguments.']);
+	error('arrow:maxNonpropArgs',[upper(mfilename) ' takes at most 8 non-property arguments.']);
 elseif (firstprop>2),
 	{start,stop,len,baseangle,tipangle,wid,page,crossdir};
 	args = [varargin(1:firstprop-1) cell(1,length(ans)-(firstprop-1))];
@@ -229,21 +251,23 @@ for k=firstprop:2:nargin,
 	prop = varargin{k};
 	val  = varargin{k+1};
 	prop = [lower(prop(:)') '      '];
-	if     strncmp(prop,'start' ,5),   start      = val;
-	elseif strncmp(prop,'stop'  ,4),   stop       = val;
-	elseif strncmp(prop,'len'   ,3),   len        = val(:);
-	elseif strncmp(prop,'base'  ,4),   baseangle  = val(:);
-	elseif strncmp(prop,'tip'   ,3),   tipangle   = val(:);
-	elseif strncmp(prop,'wid'   ,3),   wid        = val(:);
-	elseif strncmp(prop,'page'  ,4),   page       = val;
-	elseif strncmp(prop,'cross' ,5),   crossdir   = val;
-	elseif strncmp(prop,'norm'  ,4),   if (isstr(val)), crossdir=val; else crossdir=val*sqrt(-1); end;
-	elseif strncmp(prop,'end'   ,3),   ends       = val;
-	elseif strncmp(prop,'object',6),   oldh       = val(:);
-	elseif strncmp(prop,'handle',6),   oldh       = val(:);
-	elseif strncmp(prop,'type'  ,4),   ispatch    = val;
-	elseif strncmp(prop,'userd' ,5),   %ignore it
-	else
+	if     strncmp(prop,'start'  ,5),   start      = val;
+	elseif strncmp(prop,'stop'   ,4),   stop       = val;
+	elseif strncmp(prop,'len'    ,3),   len        = val(:);
+	elseif strncmp(prop,'base'   ,4),   baseangle  = val(:);
+	elseif strncmp(prop,'tip'    ,3),   tipangle   = val(:);
+	elseif strncmp(prop,'wid'    ,3),   wid        = val(:);
+	elseif strncmp(prop,'page'   ,4),   page       = val;
+	elseif strncmp(prop,'cross'  ,5),   crossdir   = val;
+	elseif strncmp(prop,'norm'   ,4),   if (isstr(val)), crossdir=val; else, crossdir=val*sqrt(-1); end;
+	elseif strncmp(prop,'end'    ,3),   ends       = val;
+	elseif strncmp(prop,'shorten',5),   shorten    = val;
+	elseif strncmp(prop,'object' ,6),   oldh       = val(:);
+	elseif strncmp(prop,'handle' ,6),   oldh       = val(:);
+	elseif strncmp(prop,'type'   ,4),   ispatch    = val;
+	elseif strncmp(prop,'userd'  ,5),   %ignore it
+	elseif strncmp(prop,'parent' ,6),   extraprops(1,end+1:end+2) = {varargin{k} val}; % 5/2/2023
+	else,
 		% make sure it is a valid patch or line property
 		try
 			get(0,['DefaultPatch' varargin{k}]);
@@ -253,7 +277,7 @@ for k=firstprop:2:nargin,
 				get(0,['DefaultLine' varargin{k}]);
 			catch
 				errstr(1:max(find(errstr==char(13)|errstr==char(10)))) = '';
-				error([upper(mfilename) ' got ' errstr]);
+				error('arrow:invalidProperty',[upper(mfilename) ' got ' errstr]);
 			end
 		end;
 		extraprops={extraprops{:},varargin{k},val};
@@ -270,12 +294,13 @@ wid       = arrow_defcheck(wid      ,defwid      ,'Width'        );
 crossdir  = arrow_defcheck(crossdir ,defcrossdir ,'CrossDir'     );
 page      = arrow_defcheck(page     ,defpage     ,'Page'         );
 ends      = arrow_defcheck(ends     ,defends     ,''             );
+shorten   = arrow_defcheck(shorten  ,defshorten  ,''             );
 oldh      = arrow_defcheck(oldh     ,[]          ,'ObjectHandles');
 ispatch   = arrow_defcheck(ispatch  ,defispatch  ,''             );
 
 % check transpose on arguments
-[m,n]=size(start   );   if any(m==[2 3])&&(n==1||n>3),   start    = start';      end;
-[m,n]=size(stop    );   if any(m==[2 3])&&(n==1|n>3),   stop     = stop';       end;
+[m,n]=size(start   );   if any(m==[2 3])&(n==1|n>3),   start    = start';      end;
+[m,n]=size(stop    );   if any(m==[2 3])&(n==1|n>3),   stop     = stop';       end;
 [m,n]=size(crossdir);   if any(m==[2 3])&(n==1|n>3),   crossdir = crossdir';   end;
 
 % convert strings to numbers
@@ -291,26 +316,26 @@ if ~isempty(ends) & isstr(ends),
 	ii=find(all(col'==['bot']'*oo)'); if ~isempty(ii), ends(ii)=ones(length(ii),1)*3; end;
 	if any(isnan(ends)),
 		ii = min(find(isnan(ends)));
-		error([upper(mfilename) ' does not recognize ''' deblank(endsorig(ii,:)) ''' as a valid ''Ends'' value.']);
+		error('arrow:invalidEnds',[upper(mfilename) ' does not recognize ''' deblank(endsorig(ii,:)) ''' as a valid ''Ends'' value.']);
 	end;
-else
+else,
 	ends = ends(:);
 end;
-if ~isempty(ispatch) && isstr(ispatch),
+if ~isempty(ispatch) & isstr(ispatch),
 	col = lower(ispatch(:,1));
 	patchchar='p'; linechar='l'; defchar=' ';
 	mask = col~=patchchar & col~=linechar & col~=defchar;
 	if any(mask),
-		error([upper(mfilename) ' does not recognize ''' deblank(ispatch(min(find(mask)),:)) ''' as a valid ''Type'' value.']);
+		error('arrow:invalidType',[upper(mfilename) ' does not recognize ''' deblank(ispatch(min(find(mask)),:)) ''' as a valid ''Type'' value.']);
 	end;
 	ispatch = (col==patchchar)*1 + (col==linechar)*0 + (col==defchar)*defispatch;
-else
+else,
 	ispatch = ispatch(:);
 end;
 oldh = oldh(:);
 
 % check object handles
-if ~all(ishandle(oldh)), error([upper(mfilename) ' got invalid object handles.']); end;
+if ~all(ishandle(oldh)), error('arrow:nonHandles',[upper(mfilename) ' got invalid object handles.']); end;
 
 % expand root, figure, and axes handles
 if ~isempty(oldh),
@@ -330,7 +355,7 @@ end;
 [mstart,junk]=size(start); [mstop,junk]=size(stop); [mcrossdir,junk]=size(crossdir);
 argsizes = [length(oldh) mstart mstop                              ...
             length(len) length(baseangle) length(tipangle)         ...
-			length(wid) length(page) mcrossdir length(ends) ];
+			length(wid) length(page) mcrossdir length(ends) length(shorten)];
 args=['length(ObjectHandle)  '; ...
       '#rows(Start)          '; ...
       '#rows(Stop)           '; ...
@@ -340,7 +365,8 @@ args=['length(ObjectHandle)  '; ...
       'length(Width)         '; ...
       'length(Page)          '; ...
       '#rows(CrossDir)       '; ...
-	  '#rows(Ends)           '];
+      '#rows(Ends)           '; ...
+      'length(ShortenLength) '];
 if (any(imag(crossdir(:))~=0)),
 	args(9,:) = '#rows(NormalDir)      ';
 end;
@@ -363,7 +389,7 @@ if ~isempty(ii),
 	s = s';
 	s = s(:)';
 	s = s(1:length(s)-1);
-	error(setstr(s));
+	error('arrow:incompatibleArgSizes',char(s));
 end;
 
 % check element length in Start, Stop, and CrossDir
@@ -372,7 +398,7 @@ if ~isempty(start),
 	if (n==2),
 		start = [start NaN*ones(m,1)];
 	elseif (n~=3),
-		error([upper(mfilename) ' requires 2- or 3-element Start points.']);
+		error('arrow:invalidStart',[upper(mfilename) ' requires 2- or 3-element Start points.']);
 	end;
 end;
 if ~isempty(stop),
@@ -380,7 +406,7 @@ if ~isempty(stop),
 	if (n==2),
 		stop = [stop NaN*ones(m,1)];
 	elseif (n~=3),
-		error([upper(mfilename) ' requires 2- or 3-element Stop points.']);
+		error('arrow:invalidStop',[upper(mfilename) ' requires 2- or 3-element Stop points.']);
 	end;
 end;
 if ~isempty(crossdir),
@@ -389,9 +415,9 @@ if ~isempty(crossdir),
 		crossdir = [crossdir NaN*ones(m,3-n)];
 	elseif (n~=3),
 		if (all(imag(crossdir(:))==0)),
-			error([upper(mfilename) ' requires 2- or 3-element CrossDir vectors.']);
-        else
-			error([upper(mfilename) ' requires 2- or 3-element NormalDir vectors.']);
+			error('arrow:invalidCrossDir',[upper(mfilename) ' requires 2- or 3-element CrossDir vectors.']);
+		else,
+			error('arrow:invalidNormalDir',[upper(mfilename) ' requires 2- or 3-element NormalDir vectors.']);
 		end;
 	end;
 end;
@@ -406,6 +432,7 @@ if isempty(wid       ),   wid        = Inf;                end;
 if isempty(page      ),   page       = Inf;                end;
 if isempty(crossdir  ),   crossdir   = [Inf Inf Inf];      end;
 if isempty(ends      ),   ends       = Inf;                end;
+if isempty(shorten   ),   shorten    = Inf;                end;
 if isempty(ispatch   ),   ispatch    = Inf;                end;
 
 % expand single-column arguments
@@ -419,19 +446,20 @@ if (length(wid       )==1),   wid        = o * wid       ;   end;
 if (length(page      )==1),   page       = o * page      ;   end;
 if (size(crossdir  ,1)==1),   crossdir   = o * crossdir  ;   end;
 if (length(ends      )==1),   ends       = o * ends      ;   end;
+if (length(shorten   )==1),   shorten    = o * shorten   ;   end;
 if (length(ispatch   )==1),   ispatch    = o * ispatch   ;   end;
-ax = repmat(gca,narrows,1); %ax = o * gca; bug fix(EZ)
+ax = repmat(gca,narrows,1);   %eaj 7/16/14  ax=gca; if ~isnumeric(ax), ax=double(ax); end; ax=o*ax;
 
 % if we've got handles, get the defaults from the handles
 if ~isempty(oldh),
 	for k=1:narrows,
 		oh = oldh(k);
 		ud = get(oh,'UserData');
-		ax(k) = get(oh,'Parent');
+		ax(k) = get(oh,'Parent');   %eaj 7/16/14  get(oh,'Parent'); if ~isnumeric(ans), double(ans); end; ax(k)=ans;
 		ohtype = get(oh,'Type');
 		if strcmp(get(oh,'Tag'),ArrowTag), % if it's an arrow already
 			if isinf(ispatch(k)), ispatch(k)=strcmp(ohtype,'patch'); end;
-			% arrow UserData format: [start' stop' len base tip wid page crossdir' ends]
+			% arrow UserData format: [start' stop' len base tip wid page crossdir' ends shorten]
 			start0 = ud(1:3);
 			stop0  = ud(4:6);
 			if (isinf(len(k))),           len(k)        = ud( 7);   end;
@@ -443,7 +471,8 @@ if ~isempty(oldh),
 			if (isinf(crossdir(k,2))),    crossdir(k,2) = ud(13);   end;
 			if (isinf(crossdir(k,3))),    crossdir(k,3) = ud(14);   end;
 			if (isinf(ends(k))),          ends(k)       = ud(15);   end;
-		elseif strcmp(ohtype,'line')||strcmp(ohtype,'patch'), % it's a non-arrow line or patch
+			if (isinf(shorten(k))),       shorten(k)    = ud(16);   end;
+		elseif strcmp(ohtype,'line')|strcmp(ohtype,'patch'), % it's a non-arrow line or patch
 			convLineToPatch = 1; %set to make arrow patches when converting from lines.
 			if isinf(ispatch(k)), ispatch(k)=convLineToPatch|strcmp(ohtype,'patch'); end;
 			x=get(oh,'XData');  x=x(~isnan(x(:)));  if isempty(x), x=NaN; end;
@@ -451,8 +480,8 @@ if ~isempty(oldh),
 			z=get(oh,'ZData');  z=z(~isnan(z(:)));  if isempty(z), z=NaN; end;
 			start0 = [x(1)   y(1)   z(1)  ];
 			stop0  = [x(end) y(end) z(end)];
-		else
-			error([upper(mfilename) ' cannot convert ' ohtype ' objects.']);
+		else,
+			error('arrow:unknownSourceObjectType',[upper(mfilename) ' cannot convert ' ohtype ' objects.']);
 		end;
 		ii=find(isinf(start(k,:)));  if ~isempty(ii),  start(k,ii)=start0(ii);  end;
 		ii=find(isinf(stop( k,:)));  if ~isempty(ii),  stop( k,ii)=stop0( ii);  end;
@@ -469,10 +498,11 @@ wid(       isinf(wid      )) = NaN;
 page(      isinf(page     )) = NaN;
 crossdir(  isinf(crossdir )) = NaN;
 ends(      isinf(ends     )) = NaN;
+shorten(   isinf(shorten  )) = NaN;
 ispatch(   isinf(ispatch  )) = NaN;
 
 % set up the UserData data (here so not corrupted by log10's and such)
-ud = [start stop len baseangle tipangle wid page crossdir ends];
+ud = [start stop len baseangle tipangle wid page crossdir ends shorten];
 
 % Set Page defaults
 page = ~isnan(page) & trueornan(page);
@@ -485,7 +515,7 @@ ap        = zeros(2,narrows);
 xyzlog    = zeros(3,narrows);
 limmin    = zeros(2,narrows);
 limrange  = zeros(2,narrows);
-oldaxlims = zeros(narrows,7);
+oldaxlims = zeros(6,narrows);
 oneax = all(ax==ax(1));
 if (oneax),
 	T    = zeros(4,4);
@@ -494,14 +524,14 @@ else,
 	T    = zeros(16,narrows);
 	invT = zeros(16,narrows);
 end;
-axnotdone = logical(ones(size(ax)));
+axnotdone = true(size(ax));
 while (any(axnotdone)),
-	ii = min(find(axnotdone));
+	ii = find(axnotdone,1);
 	curax = ax(ii);
 	curpage = page(ii);
 	% get axes limits and aspect ratio
 	axl = [get(curax,'XLim'); get(curax,'YLim'); get(curax,'ZLim')];
-	oldaxlims(min(find(oldaxlims(:,1)==0)),:) = [ii reshape(axl',1,6)];    %oldaxlims(min(find(oldaxlims(:,1)==0)),:) = [curax reshape(axl',1,6)];
+	ax==curax; oldaxlims(:,ans)=repmat(reshape(axl',[],1),1,sum(ans));
 	% get axes size in pixels (points)
 	u = get(curax,'Units');
 	axposoldunits = get(curax,'Position');
@@ -539,7 +569,7 @@ while (any(axnotdone)),
 			ARROW_STRETCH_WARN = 0;
 			strs = {str_stretch{1:2},str_camera{:}};
 			strs = [char(ones(length(strs),1)*sprintf('\n    ')) char(strs)]';
-			warning([upper(mfilename) ' may not yet work quite right ' ...
+			warning('arrow:stretch',[upper(mfilename) ' may not yet work quite right ' ...
 			         'if any of the following are ''manual'':' strs(:).']);
 		end;
 		% find the true pixel size of the actual axes
@@ -564,33 +594,35 @@ while (any(axnotdone)),
 	end;
 	if ARROW_PERSP_WARN & ~strcmp(get(curax,'Projection'),'orthographic'),
 		ARROW_PERSP_WARN = 0;
-		warning([upper(mfilename) ' does not yet work right for 3-D perspective projection.']);
+		warning('arrow:perspective',[upper(mfilename) ' does not yet work right for 3-D perspective projection.']);
 	end;
 	% adjust limits for log scale on axes
-	curxyzlog = [strcmp(get(curax,'XScale'),'log'); ...
-	             strcmp(get(curax,'YScale'),'log'); ...
-	             strcmp(get(curax,'ZScale'),'log')];
+	curxyzlog = strcmp(get(curax,{'XScale' 'YScale' 'ZScale'})','log');
 	if (any(curxyzlog)),
 		ii = find([curxyzlog;curxyzlog]);
 		if (any(axl(ii)<=0)),
-			error([upper(mfilename) ' does not support non-positive limits on log-scaled axes.']);
+			error('arrow:nonpositiveLogLimits',[upper(mfilename) ' does not support non-positive limits on log-scaled axes.']);
 		else,
 			axl(ii) = log10(axl(ii));
 		end;
 	end;
 	% correct for 'reverse' direction on axes;
-	curreverse = [strcmp(get(curax,'XDir'),'reverse'); ...
-	              strcmp(get(curax,'YDir'),'reverse'); ...
-	              strcmp(get(curax,'ZDir'),'reverse')];
+	curreverse = strcmp(get(curax,{'XDir' 'YDir' 'ZDir'})','reverse');
 	ii = find(curreverse);
 	if ~isempty(ii),
 		axl(ii,[1 2])=-axl(ii,[2 1]);
 	end;
 	% compute the range of 2-D values
-	%curT = get(curax,'Xform');
-    [azA,elA] = view(curax);  % bug fix (EZ)
-    curT = viewmtx(azA,elA); % bug fix (EZ)
-    
+	try % works in older MATLAB
+		curT = get(curax,'Xform');
+	catch
+		az_el = get(curax,'View');
+		curT = viewmtx(az_el(1),az_el(2));
+		if all(rem(az_el,90) == 0)
+			% because viewmtx is slightly inaccurate due to round-off in conversion from degrees to radians and then taking sines and cosines of the result
+			curT = round(curT);
+		end
+	end
 	lim = curT*[0 1 0 1 0 1 0 1;0 0 1 1 0 0 1 1;0 0 0 0 1 1 1 1;1 1 1 1 1 1 1 1];
 	lim = lim(1:2,:)./([1;1]*lim(4,:));
 	curlimmin = min(lim')';
@@ -621,7 +653,6 @@ while (any(axnotdone)),
 	end;
 	axnotdone(ii) = zeros(1,length(ii));
 end;
-oldaxlims(oldaxlims(:,1)==0,:)=[];
 
 % correct for log scales
 curxyzlog = xyzlog.';
@@ -655,6 +686,7 @@ ii=find(isnan(baseangle      ));  if ~isempty(ii),  baseangle(ii)   = ones(lengt
 ii=find(isnan(tipangle       ));  if ~isempty(ii),  tipangle(ii)    = ones(length(ii),1)*deftipangle;   end;
 ii=find(isnan(wid            ));  if ~isempty(ii),  wid(ii)         = ones(length(ii),1)*defwid;        end;
 ii=find(isnan(ends           ));  if ~isempty(ii),  ends(ii)        = ones(length(ii),1)*defends;       end;
+ii=find(isnan(shorten        ));  if ~isempty(ii),  shorten(ii)     = ones(length(ii),1)*defshorten;    end;
 
 % transpose rest of values
 len       = len.';
@@ -664,6 +696,7 @@ wid       = wid.';
 page      = page.';
 crossdir  = crossdir.';
 ends      = ends.';
+shorten   = shorten.';
 ax        = ax.';
 
 % given x, a 3xN matrix of points in 3-space;
@@ -715,6 +748,10 @@ end;
 %	compute pixel distance between points
 	D = sqrt(sum(((Xf(1:2,:)-X0(1:2,:)).*(ap./limrange)).^2));
 	D = D + (D==0);  %eaj new 2/24/98
+%       shorten the length if requested % added 2/6/2013
+	numends = (ends==1) + (ends==2) + 2*(ends==3);
+	mask = shorten & D<len.*numends;
+	len(mask) = D(mask) ./ numends(mask);
 %	compute and modify along-arrow distances
 	len1 = len;
 	len2 = len - (len.*tan(tipangle/180*pi)-wid/2).*tan((90-baseangle)/180*pi);
@@ -877,7 +914,11 @@ end;
 	else, tmp1=[tmp1;tmp1;tmp1;tmp1]; tmp1=[invT invT invT invT invT invT invT invT invT invT invT].*tmp1;
 	      tmp2=zeros(4,44*narrows); tmp2(:)=tmp1(:);
 	      tmp3=zeros(4,11*narrows); tmp3(:)=sum(tmp2)'; end;
-	pts = tmp3(1:3,:)./(ones(3,1)*tmp3(4,:)) .* axr11 + axm11;
+	pts_part1 = tmp3(1:3,:)./(ones(3,1)*tmp3(4,:)) .* axr11;
+	pts_part2 = axm11;
+	pts = pts_part1 + pts_part2;
+	pts( equalWithinOneBitRoundoff(pts_part1,-pts_part2) ) = 0;
+
 
 % correct for ones where the crossdir was specified
 ii = find(~(all(crossdir==0)|any(isnan(crossdir))));
@@ -901,16 +942,20 @@ iicols=(1:narrows)'; iicols=iicols(:,ones(1,11)); iicols=iicols(:).';
 tmp1=axrev(:,iicols);
 ii = find(tmp1(:)); if ~isempty(ii), pts(ii)=-pts(ii); end;
 
+% change from starting/ending at the stop point to doing it at the midpoint %eaj 7/14/2014
+(pts(:,2*narrows+1:3*narrows)+pts(:,3*narrows+1:4*narrows))/2;              %eaj 7/14/2014
+pts = [ans pts(:,[3*narrows+1:end narrows+1:3*narrows]) ans];               %eaj 7/14/2014
+
 % readjust for log scale on axes
 tmp1=xyzlog(:,iicols);
 ii = find(tmp1(:)); if ~isempty(ii), pts(ii)=10.^pts(ii); end;
 
 % compute the x,y,z coordinates of the patches;
-ii = narrows*(0:10)'*ones(1,narrows) + ones(11,1)*(1:narrows);
+ii = narrows*(0:size(pts,2)/narrows-1)'*ones(1,narrows) + ones(size(pts,2)/narrows,1)*(1:narrows);
 ii = ii(:)';
-x = zeros(11,narrows);
-y = zeros(11,narrows);
-z = zeros(11,narrows);
+x = zeros(size(pts,2)/narrows,narrows);
+y = zeros(size(pts,2)/narrows,narrows);
+z = zeros(size(pts,2)/narrows,narrows);
 x(:) = pts(1,ii)';
 y(:) = pts(2,ii)';
 z(:) = pts(3,ii)';
@@ -920,10 +965,10 @@ if (nargout<=1),
 %	% create or modify the patches
 	newpatch = trueornan(ispatch) & (isempty(oldh)|~strcmp(get(oldh,'Type'),'patch'));
 	newline = ~trueornan(ispatch) & (isempty(oldh)|~strcmp(get(oldh,'Type'),'line'));
-	if isempty(oldh), H=zeros(narrows,1); else, H=oldh; end;
+	if isempty(oldh), H=gobjects(narrows,1); else, H=oldh; end;
 %	% make or modify the arrows
 	for k=1:narrows,
-		if all(isnan(ud(k,[3 6])))&&arrow_is2DXY(ax(k)), zz=[]; else zz=z(:,k); end;
+		if all(isnan(ud(k,[3 6])))&arrow_is2DXY(ax(k)), zz=[]; else, zz=z(:,k); end;
 		xx=x(:,k); yy=y(:,k);
 		if (0), % this fix didn't work, so let's not use it -- 8/26/03
 			% try to work around a MATLAB 6.x OpenGL bug -- 7/28/02
@@ -931,16 +976,24 @@ if (nargout<=1),
 			  xx=xx(mask); yy=yy(mask); if ~isempty(zz), zz=zz(mask); end;
 		end;
 		% plot the patch or line
+		if newpatch(k) || trueornan(ispatch(k)) %eaj 7/14/2014, 5/25/2016
+			% patch is closed so don't need endpoints %eaj 7/14/2014
+			if ~isempty(xx), xx(end)=[]; end; %eaj 7/14/2014
+			if ~isempty(yy), yy(end)=[]; end; %eaj 7/14/2014
+			if ~isempty(zz), zz(end)=[]; end; %eaj 7/14/2014
+		end %eaj 7/14/2014
 		xyz = {'XData',xx,'YData',yy,'ZData',zz,'Tag',ArrowTag};
-		if newpatch(k)||newline(k),
+		if newpatch(k)|newline(k),
 			if newpatch(k),
 				H(k) = patch(xyz{:});
 			else,
 				H(k) = line(xyz{:});
 			end;
 			if ~isempty(oldh), arrow_copyprops(oldh(k),H(k)); end;
-		else
-			if ispatch(k), xyz={xyz{:},'CData',[]}; end;
+		else,
+			if strcmp(get(H(k),'Type'),'patch') %eaj 5/25/16  if ispatch(k)
+				xyz = {xyz{:},'CData',[]};
+			end;
 			set(H(k),xyz{:});
 		end;
 	end;
@@ -948,26 +1001,53 @@ if (nargout<=1),
 %	% additional properties
 	set(H,'Clipping','off');
 	set(H,{'UserData'},num2cell(ud,2));
-	if (~isempty(extraprops)), set(H,extraprops{:}); end;
+	if length(extraprops)>0
+		ii = find(strcmpi(extraprops(1:2:end),'color')); %eaj 5/25/16
+		ispatch = strcmp(get(H,'Type'),'patch');
+		%eaj start 5/25/16
+			while ~isempty(ii) && any(ispatch)
+				if ii>1, set(H,extraprops{1:2*ii-2}); end;
+				c = extraprops{2*ii};
+				extraprops(1:2*ii) = [];
+				ii(1) = [];
+				if all(ispatch) || ischar(c)&&size(c,1)==1 || isnumeric(c)&&isequal(size(c),[1 3])
+					set(H,'EdgeColor',c,'FaceColor',c)
+				elseif iscell(c) && numel(c)~=numel(H)
+					set(H(ispatch),'EdgeColor',c(ispatch),'FaceColor',c(ispatch));
+					set(H(~ispatch),'Color',c(~ispatch));
+				elseif isnumeric(c) && isequal(size(c),[numel(H) 3])
+					set(H(ispatch),'EdgeColor',num2cell(c(ispatch,:),2),'FaceColor',num2cell(c(ispatch,:),2));
+					set(H(~ispatch),'Color',num2cell(c(~ispatch,:),2));
+				else
+					warning('arrow:invalidColor','ignoring unknown or invalid ''Color'' specification');
+				end
+			end
+		if ~isempty(extraprops)
+		%eaj end   5/25/16
+			set(H,extraprops{:});
+		end %eaj   5/25/16
+	end
 	% handle choosing arrow Start and/or Stop locations if unspecified
 	[H,oldaxlims,errstr] = arrow_clicks(H,ud,x,y,z,ax,oldaxlims);
-	if ~isempty(errstr), error([upper(mfilename) ' got ' errstr]); end;
+	if ~isempty(errstr), error('arrow:arrowclicks',[upper(mfilename) ' got ' errstr]); end;
 	% set the output
 	if (nargout>0), h=H; end;
 	% make sure the axis limits did not change
 	if isempty(oldaxlims),
 		ARROW_AXLIMITS = [];
-    else
-		lims = get(ax(oldaxlims(:,1)),{'XLim','YLim','ZLim'})';%lims = get(oldaxlims(:,1),{'XLim','YLim','ZLim'})';
+		ARROW_AX = [];
+	else,
+		lims = get(ax(:),{'XLim','YLim','ZLim'})';
 		lims = reshape(cat(2,lims{:}),6,size(lims,2));
-		mask = arrow_is2DXY(ax(oldaxlims(:,1)));%mask = arrow_is2DXY(oldaxlims(:,1));
-		oldaxlims(mask,6:7) = lims(5:6,mask)';
-		ARROW_AXLIMITS = oldaxlims(find(any(oldaxlims(:,2:7)'~=lims)),:);
-		if ~isempty(ARROW_AXLIMITS),
-			warning(arrow_warnlimits(ARROW_AXLIMITS,narrows));
+		mask = arrow_is2DXY(ax(:));
+		oldaxlims(5:6,mask) = lims(5:6,mask);
+		% store them for possible restoring
+		mask = any(oldaxlims~=lims,1); ARROW_AX=ax(mask); ARROW_AXLIMITS=oldaxlims(:,mask);
+		if any(mask),
+			warning('arrow:limits',arrow_warnlimits(ARROW_AX,narrows));
 		end;
 	end;
-else
+else,
 	% don't create the patch, just return the data
 	h=x;
 	yy=y;
@@ -980,10 +1060,10 @@ function out = arrow_defcheck(in,def,prop)
 % check if we got 'default' values
 	out = in;
 	if ~isstr(in), return; end;
-	if size(in,1)==1 && strncmpi(in,'def',3),
+	if size(in,1)==1 & strncmp(lower(in),'def',3),
 		out = def;
 	elseif ~isempty(prop),
-		error([upper(mfilename) ' does not recognize ''' in(:)' ''' as a valid ''' prop ''' string.']);
+		error('arrow:defaultCheckInvalidProperty',[upper(mfilename) ' does not recognize ''' in(:)' ''' as a valid ''' prop ''' string.']);
 	end;
 
 
@@ -991,7 +1071,7 @@ function out = arrow_defcheck(in,def,prop)
 function [H,oldaxlims,errstr] = arrow_clicks(H,ud,x,y,z,ax,oldaxlims)
 % handle choosing arrow Start and/or Stop locations if necessary
 	errstr = '';
-	if isempty(H)||isempty(ud)||isempty(x), return; end;
+	if isempty(H)|isempty(ud)|isempty(x), return; end;
 	% determine which (if any) need Start and/or Stop
 	needStart = all(isnan(ud(:,1:3)'))';
 	needStop  = all(isnan(ud(:,4:6)'))';
@@ -1028,50 +1108,101 @@ function [H,oldaxlims,errstr] = arrow_clicks(H,ud,x,y,z,ax,oldaxlims)
 function [wasInterrupted,errstr] = arrow_click(lockStart,H,prop,ax)
 % handle the clicks for one arrow
 	fig = get(ax,'Parent');
+	figure(fig); % make sure figure is in front
 	% save some things
 	oldFigProps = {'Pointer','WindowButtonMotionFcn','WindowButtonUpFcn'};
 	oldFigValue = get(fig,oldFigProps);
-	%oldArrowProps = {'EraseMode'};
-	%oldArrowValue = get(H,oldArrowProps);
-	%set(H,'EraseMode','background'); %because 'xor' makes shaft invisible unless Width>1
+	oldArrowProps = {'EraseMode'};
+	if ~isnumeric(fig), oldArrowProps={}; end %eaj 5/24/16 % only use in HG2
+	oldArrowValue = get(H,oldArrowProps);
+	if isnumeric(fig), %eaj 5/24/16
+		set(H,'EraseMode','background'); %because 'xor' makes shaft invisible unless Width>1 -- only use in HG2
+	end %eaj 5/24/16
+	modeEnabled = findModeEnabledAndDisable(fig);
 	global ARROW_CLICK_H ARROW_CLICK_PROP ARROW_CLICK_AX ARROW_CLICK_USE_Z
 	ARROW_CLICK_H=H; ARROW_CLICK_PROP=prop; ARROW_CLICK_AX=ax;
 	ARROW_CLICK_USE_Z=~arrow_is2DXY(ax)|~arrow_planarkids(ax);
-	set(fig,'Pointer','crosshair');
 	% set up the WindowButtonMotion so we can see the arrow while moving around
-	set(fig,'WindowButtonUpFcn','set(gcf,''WindowButtonUpFcn'','''')', ...
-	        'WindowButtonMotionFcn','');
-	if ~lockStart,
-		set(H,'Visible','on');
-		set(fig,'WindowButtonMotionFcn',[mfilename '(''callback'',''motion'');']);
-	end;
-	% wait for the button to be pressed
-	[wasKeyPress,wasInterrupted,errstr] = arrow_wfbdown(fig);
-	% if we wanted to click-drag, set the Start point
-	if lockStart && ~wasInterrupted,
-		pt = arrow_point(ARROW_CLICK_AX,ARROW_CLICK_USE_Z);
-		feval(mfilename,H,'Start',pt,'Stop',pt);
-		set(H,'Visible','on');
-		ARROW_CLICK_PROP='Stop';
-		set(fig,'WindowButtonMotionFcn',[mfilename '(''callback'',''motion'');']);
-		% wait for the mouse button to be released
-		try
-			waitfor(fig,'WindowButtonUpFcn','');
-		catch
-			errstr = lasterr;
-			wasInterrupted = 1;
+	lastwarn('')
+	modeWarningPriorState = warning('off','MATLAB:modes:mode:InvalidPropertySet'); % hide the warning
+	set(fig,'WindowButtonUpFcn','set(gcf,''WindowButtonUpFcn'','''')')
+	[warnMsg,warnID] = lastwarn;
+	warning(modeWarningPriorState) % restore the warning
+	if isempty(warnID)
+		set(fig,'Pointer','crosshair');
+		set(fig,'WindowButtonMotionFcn','');
+		if ~lockStart,
+			set(H,'Visible','on');
+			set(fig,'WindowButtonMotionFcn',[mfilename '(''callback'',''motion'');']);
+		else
+			disp('Click at the source of the arrow')
+		end
+		% wait for the button to be pressed
+		[wasKeyPress,wasInterrupted,errstr] = arrow_wfbdown(fig);
+		% if we wanted to click-drag, set the Start point
+		if lockStart & ~wasInterrupted,
+			pt = arrow_point(ARROW_CLICK_AX,ARROW_CLICK_USE_Z);
+			feval(mfilename,H,'Start',pt,'Stop',pt);
+			set(H,'Visible','on');
+			ARROW_CLICK_PROP='Stop';
+			set(fig,'WindowButtonMotionFcn',[mfilename '(''callback'',''motion'');']);
+			% wait for the mouse button to be released
+			disp('Drag to where the arrow should point')
+			try
+				waitfor(fig,'WindowButtonUpFcn','');
+			catch
+				errstr = lasterr;
+				wasInterrupted = 1;
+			end;
 		end;
-	end;
-	if ~wasInterrupted, feval(mfilename,'callback','motion'); end;
-	% restore some things
-	set(gcf,oldFigProps,oldFigValue);
-	%set(H,oldArrowProps,oldArrowValue);
+		if ~wasInterrupted, feval(mfilename,'callback','motion'); end;
+	end
+	% restore figure props
+	curFigValue = get(fig,oldFigProps);
+	wasChanged = ~ cellfun(@isequalwithequalnans,oldFigValue,curFigValue);
+	set(fig,oldFigProps(wasChanged),oldFigValue(wasChanged))
+	% restore arrow props
+	curArrowValue = get(H,oldArrowProps);
+	wasChanged = ~ cellfun(@isequalwithequalnans,oldArrowValue,curArrowValue);
+	set(H,oldArrowProps(wasChanged),oldArrowValue(wasChanged));
+	% restore mode
+	modeReEnable(fig,modeEnabled);
+	% throw the warning
+	if strcmp(warnID,'MATLAB:modes:mode:InvalidPropertySet')
+		try
+			currentModeName = ['''' get(get(uigetmodemanager(gcf),'CurrentMode'),'Name') ''''];
+		catch
+			currentModeName = '<unknown>';
+		end
+		error('arrow:cannotClickBecauseOfMode',[upper(mfilename) ' cannot use the click-to-draw function when the figure is in %s mode'],currentModeName)
+	elseif ~isempty(warnID)
+		error('arrow:cannotClickBecauseUnknown',[upper(mfilename) ' cannot use the click-to-draw function because of the following warning: %s'],warnMsg);
+	end
+
+function modeEnabled = findModeEnabledAndDisable(fig)
+% determine current figure mode (pan, zoom, rotate3d, ...), if any, and disable it
+modeEnabled = [];
+for possibleModes = {@pan @zoom @rotate3d @datacursormode @brush}
+	try % because these may not exist in older versions of MATLAB
+		if strcmp(get(feval(possibleModes{1},fig),'Enable'),'on')
+			modeEnabled = possibleModes{1};
+			feval(modeEnabled,'off')
+			return
+		end
+	end
+end
+
+function modeReEnable(fig,modeEnabled)
+% restore the figure mode
+if ~isempty(modeEnabled)
+	feval(modeEnabled,'on')
+end
 
 function arrow_callback(varargin)
 % handle redrawing callbacks
 	if nargin==0, return; end;
 	str = varargin{1};
-	if ~isstr(str), error([upper(mfilename) ' got an invalid Callback command.']); end;
+	if ~isstr(str), error('arrow:invalidCallback',[upper(mfilename) ' got an invalid Callback command.']); end;
 	s = lower(str);
 	if strcmp(s,'motion'),
 		% motion callback
@@ -1079,7 +1210,7 @@ function arrow_callback(varargin)
 		feval(mfilename,ARROW_CLICK_H,ARROW_CLICK_PROP,arrow_point(ARROW_CLICK_AX,ARROW_CLICK_USE_Z));
 		drawnow;
 	else,
-		error([upper(mfilename) ' does not recognize ''' str(:).' ''' as a valid Callback option.']);
+		error('arrow:invalidCallbackOption',[upper(mfilename) ' does not recognize ''' str(:).' ''' as a valid Callback option.']);
 	end;
 
 function out = arrow_point(ax,use_z)
@@ -1123,7 +1254,7 @@ function [wasKeyPress,wasInterrupted,errstr] = arrow_wfbdown(fig)
 function [out,is2D] = arrow_is2DXY(ax)
 % check if axes are 2-D X-Y plots
 	% may not work for modified camera angles, etc.
-	out = logical(zeros(size(ax))); % 2-D X-Y plots
+	out = false(size(ax)); % 2-D X-Y plots
 	is2D = out;                     % any 2-D plots
 	views = get(ax(:),{'View'});
 	views = cat(1,views{:});
@@ -1132,7 +1263,7 @@ function [out,is2D] = arrow_is2DXY(ax)
 
 function out = arrow_planarkids(ax)
 % check if axes descendents all have empty ZData (lines,patches,surfaces)
-	out = logical(ones(size(ax)));
+	out = true(size(ax));
 	allkids = get(ax(:),{'Children'});
 	for k=1:length(allkids),
 		kids = get([findobj(allkids{k},'flat','Type','line')
@@ -1145,13 +1276,13 @@ function out = arrow_planarkids(ax)
 
 
 
-function arrow_fixlimits(axlimits)
+function arrow_fixlimits(ax,lims)
 % reset the axis limits as necessary
-	if isempty(axlimits), disp([upper(mfilename) ' does not remember any axis limits to reset.']); end;
-	for k=1:size(axlimits,1),
-		if any(get(axlimits(k,1),'XLim')~=axlimits(k,2:3)), set(axlimits(k,1),'XLim',axlimits(k,2:3)); end;
-		if any(get(axlimits(k,1),'YLim')~=axlimits(k,4:5)), set(axlimits(k,1),'YLim',axlimits(k,4:5)); end;
-		if any(get(axlimits(k,1),'ZLim')~=axlimits(k,6:7)), set(axlimits(k,1),'ZLim',axlimits(k,6:7)); end;
+	if isempty(ax) || isempty(lims), disp([upper(mfilename) ' does not remember any axis limits to reset.']); end;
+	for k=1:numel(ax),
+		if any(get(ax(k),'XLim')~=lims(1:2,k)'), set(ax(k),'XLim',lims(1:2,k)'); end;
+		if any(get(ax(k),'YLim')~=lims(3:4,k)'), set(ax(k),'YLim',lims(3:4,k)'); end;
+		if any(get(ax(k),'ZLim')~=lims(5:6,k)'), set(ax(k),'ZLim',lims(5:6,k)'); end;
 	end;
 
 
@@ -1164,10 +1295,10 @@ function out = arrow_WarpToFill(notstretched,manualcamera,curax)
 
 
 
-function out = arrow_warnlimits(axlimits,narrows)
+function out = arrow_warnlimits(ax,narrows)
 % create a warning message if we've changed the axis limits
 	msg = '';
-	switch (size(axlimits,1))
+	switch (numel(ax))
 		case 1, msg='';
 		case 2, msg='on two axes ';
 		otherwise, msg='on several axes ';
@@ -1186,6 +1317,7 @@ function arrow_copyprops(fm,to)
 	          'MarkerEdgeColor','MarkerFaceColor','ButtonDownFcn',      ...
 	          'Clipping','DeleteFcn','BusyAction','HandleVisibility',   ...
 	          'Selected','SelectionHighlight','Visible'};
+	if ~isnumeric(findobj('Type','root')), props(strcmp(props,'EraseMode'))=[]; end; %eaj 5/24/16
 	lineprops  = {'Color',    props{:}};
 	patchprops = {'EdgeColor',props{:}};
 	patch2props = {'FaceColor',patchprops{:}};
@@ -1238,9 +1370,16 @@ function arrow_props
 	'                  NormalDir is used as is regardless of log-scaled axes.)' c ...
 	'  Ends            Set which end has an arrowhead.  Valid values are ''none'',' c ...
 	'                  ''stop'', ''start'', and ''both''. [''stop''] (End)' c...
+	'  ShortenLength   Shorten length of arrowhead(s) if line is too short' c ...
 	'  ObjectHandles   Vector of handles to previously-created arrows to be' c ...
 	'                  updated or line objects to be converted to arrows.' c ...
-	'                  [] (Object,Handle)' c ]);
+	'                  [] (Object,Handle)' c ...
+	'  Type            ''patch'' creates the arrow with a PATCH object (the default)' c ...
+	'                  and ''line'' creates it with a LINE object [''patch''].' c ...
+	'  Color           For patch arrows (the default), set both ''FaceColor'' and' c ...
+	'                  ''EdgeColor'' to the given value.  For line arrows, set' c ...
+	'                  the ''Color'' property to the given value.' c ...
+	]);
 
 
 
@@ -1362,7 +1501,7 @@ function h = arrow_demo2(in)
 		if (dolog), set(k,'YData',10.^get(k,'YData')); end;
 	end;
 	if (dolog), axis([axlim(1:2) 10.^axlim(3:4)]); set(gca,'YScale','log');
-	else       axis(axlim(1:4)); end;
+	else,       axis(axlim(1:4)); end;
 	
 	% Normal blue arrow
 	start = [axlim(1) axlim(4) axlim(6)+2];
@@ -1386,3 +1525,39 @@ else,
 	out = isnan(x);
 	out(~out) = x(~out);
 end;
+
+
+
+
+function areSame = equalWithinOneBitRoundoff(x,y,bits)
+% EQUALWITHINONEBITROUNDOFF  Check if numbers are equal within 1 bit roundoff
+%
+%   EQUALWITHINONEBITROUNDOFF(X,Y) is the same as X==Y but allows for a
+%   one-bit round-off difference between X and Y.
+%   
+%   EQUALWITHINONEBITROUNDOFF(X,Y,BITS) does the same but ignores the last
+%   BITS bits (i.e., if not provided, BITS defaults to 1).
+%
+% See also ==, EQ.
+
+% Copyright (c)2021, Prof. Erik A. Johnson <JohnsonE@usc.edu>, 06/26/21
+
+% inputs
+narginchk(2,3)
+if nargin<3, bits=1; end;
+
+% easy part if they are identically equal
+areSame = x == y;
+if all(areSame(:)), return; end; % shortcut out
+
+% make sure they are the same size
+s = size(areSame);
+sx = [size(x) ones(1,max(0,length(s)-ndims(x)))];
+sy = [size(y) ones(1,max(0,length(s)-ndims(y)))];
+rx=ones(size(sx)); s~=sx & sx~=0; rx(ans)=s(ans)./sx(ans); x=repmat(x,rx);
+ry=ones(size(sy)); s~=sy & sy~=0; ry(ans)=s(ans)./sy(ans); y=repmat(y,ry);
+
+% check any that are nearly equal
+nbits = length(num2hex(x(1)));
+hex = @(z) abs(num2hex(z)) * eye(nbits,nbits-bits);
+areSame(~areSame(:)) = all( hex(x(~areSame(:))) == hex(y(~areSame(:))), 2);

@@ -30,7 +30,7 @@ end
 if contains(simDisplayName,'100') || contains(simDisplayName,'300')
     massThresh=10^9; % threshold for *stellar* mass
 elseif contains(simDisplayName,'50')
-    massThresh=10^7; % threshold for *stellar* mass
+    massThresh=10^(8.3); % threshold for *stellar* mass
 else
     error('mass threshold not set  - could not identify simulation: %s \n',simDisplayName);
 end

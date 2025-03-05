@@ -36,11 +36,11 @@ cmapEnt=brewermap(256,'PuRd');
 cmapTc=brewermap(256,'YlOrRd');
 cmapPress=brewermap(256,'YlOrBr');
 
-caxTemp=[4.5 6.5];
-caxEnt=[-0.5 2.5];
-caxDens=[-5.5 -2];
-caxTc=[-1 1.5];
-caxPress=[-6 -3];
+caxTemp=10.^[4.5 6.5];
+caxEnt=10.^[-0.5 2.5];
+caxDens=10.^[-5.5 -2];
+caxTc=10.^[-1 1.5];
+caxPress=10.^[-6 -3];
 
 % 511214 460526 455730 488174
 idList=[ 488841 490053 497088 499161 534514 ...

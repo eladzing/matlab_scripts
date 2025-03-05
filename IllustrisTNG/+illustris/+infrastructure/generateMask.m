@@ -10,6 +10,7 @@ centralFlag=false;
 satFlag=false;
 snap=99;
 massThresh=10^9;
+massThreshTop=Inf;
 % haloMassThresh=10^11;
 
 gasFlag=false;
@@ -36,9 +37,12 @@ while(i<=length(varargin))
             gasFlag=true;
                     case{'dm','hasdm'}
             dmFlag=true;
-        case{'mass','masshresh','thresh','threshold'}
+        case{'mass','massthresh','thresh','threshold','massthreshbottom','bottommass','massbottom'}
             i=i+1;
             massThresh=varargin{i};
+        case{'masstop','topmassthresh','topthresh','topmass','threshtop'}
+            i=i+1;
+            massThreshTop=varargin{i};
 %         case{'halo','halomass'}
 %             i=i+1;
 %             haloMassThresh=varargin{i};
@@ -86,7 +90,7 @@ end
 % end
 
 galMass= illustris.utils.get_stellar_mass(subs);
-massMask=galMass>massThresh;
+massMask=galMass>=massThresh & galMass<=massThreshTop;
 
 res=baseMask & massMask;
 

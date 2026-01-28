@@ -1,5 +1,5 @@
 %% batch plot properties
-printFlag=true;
+printFlag=false;
 if setupFlag
     units;
     sims={'TNG50','TNG100'};

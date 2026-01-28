@@ -17,8 +17,8 @@ plot(log10(galProps.hostM200c(~msk)),galProps.rpos(~msk)./galProps.hostR200c(~ms
 hold on
 plot(log10(galProps.hostM200c(msk)),galProps.rpos(msk)./galProps.hostR200c(msk),'or')
 ylim([0 1])
-xlabelmine('log Halo Mass $[\mathrm{M_\odot}]$')
-ylabelmine('$R/\mathrm{R_{200,c}}$')
+xlabelmine('log Halo Mass $[\mathrm{M_\odot}]$');
+ylabelmine('$R/\mathrm{R_{200,c}}$');
 grid
 myAxis;
 xlim([10.8 15])
@@ -37,8 +37,8 @@ ax=myAxis;
 set(ax,'yscale','log')
 legend({'Non-JF','JF'},'Interpreter','latex')
 xlabelmine('$R/\mathrm{R_{200,c}}$');
-ylabelmine('Number of objects')
-titlemine('Radial position in Clusters $M_\mathrm{host}\ge10^{13.5}\mathrm{M_\odot}$')
+ylabelmine('Number of objects');
+titlemine('Radial position in Clusters $M_\mathrm{host}\ge10^{13.5}\mathrm{M_\odot}$');
 
 hjf=histogram(rr(hmask & msk));
 hjf.BinEdges
@@ -55,7 +55,7 @@ semilogy(hjf.BinEdges(2:end),rojf)
 legend({'Non-JF','JF'},'Interpreter','latex')
 myAxis;
 xlabelmine('$R/\mathrm{R_{200,c}}$');
-ylabelmine('Number Density $[R_\mathrm{200,c}^{-3}]$')
+ylabelmine('Number Density $[R_\mathrm{200,c}^{-3}]$');
 
 myFigure;
 histogram(rr(hmask & ~msk))
@@ -66,5 +66,5 @@ ax=myAxis;
 set(ax,'yscale','log')
 legend({'Non-JF','JF'},'Interpreter','latex')
 xlabelmine('$R/\mathrm{R_{200,c}}$');
-ylabelmine('Number of objects')
-titlemine('Radial position in Clusters $M_\mathrm{host}\ge10^{13.5}\mathrm{M_\odot}$')
+ylabelmine('Number of objects');
+titlemine('Radial position in Clusters $M_\mathrm{host}\ge10^{13.5}\mathrm{M_\odot}$');

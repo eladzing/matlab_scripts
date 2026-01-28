@@ -1,5 +1,5 @@
 function res=read_catalog(catalogName,varargin )
-%WRITE_CATALOG write data catalog to hdf files in the same structure as the
+%READ_CATALOG read data catalog to hdf files in the same structure as the
 %other TNG values
 %   Detailed explanation goes here
 
@@ -101,7 +101,7 @@ if len==1
 elseif len>1
     res=outputStruct;
 else
-    error('read_catalog - strange value ofr mo. of datasets in file: %d',len)
+    error('%s - strange value ofr mo. of datasets in file: %d',current_function().upper,len)
        
 end
 

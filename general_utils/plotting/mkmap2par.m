@@ -1,4 +1,4 @@
-function res = mkmap2par(mainPar,secPar,colMap,mainParLim,secParLim)
+function res = mkmap2par(mainPar,secPar,colMap,mainParLim,secParLim,secReverseFlag)
 %MKMAP2PAR plot colormap where 2 parameters set the color & brigtness
 %   prepare a map in which the color(hue& saturation are set by a main
 %   parameter and the brightness is set by a secondary parameter. This is
@@ -8,8 +8,8 @@ function res = mkmap2par(mainPar,secPar,colMap,mainParLim,secParLim)
 %   the HSV map. The result is converted back to an RGB image which can be
 %   displayed. A 'colobar' map is also produced. 
 %   Arguments: 
-%     mainPar - an MxN map of the main parameter
-%     secPar  -  an MxN map of the main parameter
+%     mainPar - an MxN map of the main parameter - color
+%     secPar  -  an MxN map of the secondaty parameter - brightness
 %     colMap  - color map NC X 3 color map to be used for plotting
 %     mainParLim,secParLim - limits for Main and Secondary Parameters
 %                            respectevely(OPTIONAL)
@@ -20,6 +20,9 @@ function res = mkmap2par(mainPar,secPar,colMap,mainParLim,secParLim)
 %      mainParLim,secParLimK  - limits for Main and Secondary Parameters
 %                            respectevely
 
+if ~exist('secReverseFlag','var')
+    secReverseFlag=false;
+end
 
 %% set up limits if not given explicitly 
 if ~exist('mainParLim','var')
@@ -46,8 +49,13 @@ hsv=rgb2hsv(rgbCB);
 %  clear rgbSec
 
 %% scale secondary parameter to values between 0 and 1 
+
 secParScaled=(secPar-secParLim(1))./diff(secParLim);
 
+% reverse the scaling if required 
+if secReverseFlag 
+    secParScaled=-1.*secParScaled+1.0;
+end
 
 %% scale brightness by secondary parameter 
 %hsv=hsv0;
@@ -67,6 +75,12 @@ yy=linspace(secParLim(1),secParLim(2),nn);
 rgbCB=real2rgb(X,colMap,mainParLim);
 hsvCB=rgb2hsv(rgbCB);
 Yscaled=(Y-secParLim(1))./diff(secParLim);
+
+% reverse the scaling if required 
+if secReverseFlag 
+    Yscaled=-1.*Yscaled+1.0;
+end
+
 
 %hsv=hsv0;
 hsvCB(:,:,3)=hsvCB(:,:,3).*(Yscaled);

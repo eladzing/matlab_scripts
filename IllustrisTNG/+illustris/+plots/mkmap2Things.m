@@ -31,7 +31,7 @@ markColor='k';
 stlw=1;
 slTypeDef{1}='avg'; % is slice an average of slices or sum of them
 slTypeDef{2}='avg'; % is slice an average of slices or sum of them
-
+secReverseFlag(1:2)=false;
 %hf=0;
 axesHandle=0;
 boxSize=0;
@@ -179,7 +179,7 @@ while i<=length(varargin)
             i=i+1;
             vcm=varargin{i};
             if length(vcm)~=3
-                error('MKMAPGAS - vcm must be a 3-component array')
+                error('%s - vcm must be a 3-component array',current_function().upper)
             end
             
             % basic arguments for plotting
@@ -226,7 +226,8 @@ while i<=length(varargin)
             if diff(limSec)==0
                 parLim_Flag(2)=false;
             end
-            
+        case {'reversesec','secrev','secreverse'}
+            secReverseFlag=true;
             
         case {'normalizemain','normmain','factormain','normfactormain', 'mainnorm','norm1','mainfactor','factor1','mainnormfactor'}
             i=i+1;
@@ -240,7 +241,7 @@ while i<=length(varargin)
             i=i+1;
             circStruct=varargin{i};
             if ~isstruct(circStruct)
-                error('MKMAP - draw circle input must be a structure')
+                error('%s - draw circle input must be a structure',current_function().upper)
             end
             
         case {'grid'}
@@ -251,13 +252,13 @@ while i<=length(varargin)
             i=i+1;
             linStruct=varargin{i};
             if ~isstruct(linStruct)
-                error('MKMAP - draw line input must be a structure')
+                error('%s - draw line input must be a structure',current_function().upper)
             end
         case 'arrow'
             i=i+1;
             arrowStruct=varargin{i};
             if ~isstruct(arrowStruct)
-                error('MKMAP - arrow input must be a structure')
+                error('%s - arrow input must be a structure',current_function().upper)
             end
         case {'brewer','brewermap'}
             i=i+1;
@@ -268,7 +269,7 @@ while i<=length(varargin)
             cmap=varargin{i};
             brewerFlag=false;
             if size(cmap,2)~=3
-                error('mkmapGas: Illegal colormap')
+                error('%s -  Illegal colormap',current_function().upper)
             end
             
             
@@ -276,6 +277,8 @@ while i<=length(varargin)
                 colorboxFlag=false;
         case {'nobackground'}
             backgroundFlag=false;
+        case {'whitebackground'}
+            backgroundFlag=true;
 %         case 'xticks'
 %             i=i+1;
 %             xticks=varargin{i};
@@ -286,7 +289,7 @@ while i<=length(varargin)
 %             i=i+1;
 %             tickStruct=varargin{i};
 %             if ~isstruct(tickStruct)
-%                 error('MKMAP - fullTick input must be a structure')
+%                 error('%s - fullTick input must be a structure',current_function().upper)
 %             end
         case {'labels'}
             i=i+1;
@@ -303,7 +306,7 @@ while i<=length(varargin)
             i=i+1;
             bartagOveride=varargin{i};
             if length(bartagOveride)~=2
-                error('MKMAP2THinggs - there shoulwd be only 2 colorbar tags')
+                error('%s - there shoulwd be only 2 colorbar tags',current_function().upper)
             end
             %          case {'mvirbox'} % place a text of Mvir on the map
             %             mvirboxFlag=true;
@@ -339,10 +342,15 @@ while i<=length(varargin)
             printtag=varargin{i};
             saveFigFlag=true;
         otherwise
-            error('mkmapGas: illegal argument %s',varargin{i})
+            error('%s -  illegal argument %s',varargin{i})
     end
     i=i+1;
 end
+
+if string(typeSec).startsWith('-') || string(typeSec).startsWith('*')
+    secReverseFlag=true;
+end
+ 
 
 
 if ~any(plotproj)
@@ -350,15 +358,15 @@ if ~any(plotproj)
 end
 
 % if ~cubeFlag && ~(gasStructFlag && typeFlag)
-%     error('mkmapGas: must enter both gas struct and data type to plot');
+%     error('%s -  must enter both gas struct and data type to plot',current_function().upper);
 % end
 
 
 % if ~(cubeFlag || typeFlag)
-%     error('mkmapGas: must enter data or datatype')
+%     error('%s -  must enter data or datatype',current_function().upper
 % end
 % if (cubeFlag && typeFlag)
-%     error('mkmapGas: too many data arguments')
+%     error('%s -  too many data arguments',current_function().upper)
 % end
 
 
@@ -375,7 +383,7 @@ end
 if (gasStructFlag)
     
     if ~isfield(gasStruct,'newCoord')
-        error('MKMAPGAS - object has not been centered !!')
+        error('%s - object has not been centered !!',current_function().upper)
     end
 end
 
@@ -541,13 +549,20 @@ if typeFlag(1)
             
             
         otherwise
-            error('mkmapGas - unknown main data type: %s',typeMain)
+            error('%s - unknown main data type: %s',current_function().upper,typeMain)
     end
 end
 cubeMain=cubeMain.*normfactor(1);
 
 
 %% build Secondary  parameter data cube
+
+if string(typeSec).startsWith('-') || string(typeSec).startsWith('*')
+    secReverseFlag=true;
+    typeSec=typeSec(2:end);
+end
+
+
 if typeFlag(2)
     switch lower(typeSec)
         case {'flux','massflux','f'}
@@ -708,7 +723,7 @@ if typeFlag(2)
             
             
         otherwise
-            error('mkmapGas - unknown secondary data type: %s',typeSec)
+            error('%s - unknown secondary data type: %s',current_function().upper,typeSec)
     end
 end
 cubeSec=cubeSec.*normfactor(2);
@@ -808,14 +823,14 @@ for projection = 1:3
         
         if newFigFlag
             if ~exist('hf')
-                hf=figure;
+                hf=myFigure;
             else
-                hf(end+1)=figure;
+                hf(end+1)=myFigure;
             end
         elseif exist('hf')
             figure(hf)
         else
-            error('MKMAPGAS: No valid Figure handle given');
+            error('%s -  No valid Figure handle given',current_function().upper);
         end
         
         if axesHandle~=0
@@ -837,13 +852,14 @@ for projection = 1:3
         
         
         %% prepare 2-Par map
-        res=mkmap2par(sliceMain(:,:,projection),sliceSec(:,:,projection),cmap,limMain,limSec);
+        res=mkmap2par(sliceMain(:,:,projection),sliceSec(:,:,projection),cmap,limMain,limSec,secReverseFlag);
         
         
         %% start plotting
         axes1 = axes('Parent',hf(end));
         imagesc(side,side,res.rgbOut); %axis equal tight;
-        set(gca,'Ydir','Normal','Fontsize',12,'XLim',side,'YLim',side); 
+        set(gca,'Ydir','Normal','Fontsize',12,'XLim',side,'YLim',side,...
+            'TickLabelInterpreter','latex'); 
            % 'DataAspectRatio',[1 1 1], 'PlotBoxAspectRatio',[1 1 1],...
                %'XTickLabel',xtickLabels,'YTickLabel',ytickLabels
         % 'XTick',xticks ,'YTick',yticks,... %'TickLength',[-0.015 -0.015],...)
@@ -912,7 +928,7 @@ for projection = 1:3
                     linStruct(indL).type='-';
                 end
                 linVal=linStruct(indL).value;
-                if length(linVal)==1
+                if isscalar(linVal)
                     linVal=linVal.*[1 1];
                 end
                 %draw line
@@ -926,7 +942,7 @@ for projection = 1:3
                         xl=linVal;
                         
                     otherwise
-                        error('MKMAP - Illegal direction in draw line: %s',linStruct.dir)
+                        error('%s - Illegal direction in draw line: %s',current_function().upper,linStruct.dir)
                 end
                 hold on
                 plot(xl,yl,linStruct(indL).type,'color',linStruct(indL).color,'linewidth',linStruct(indL).width);
@@ -940,10 +956,10 @@ for projection = 1:3
         if exist('arrowStruct','var')
             for indA=1:length(arrowStruct) % go over all lines
                 if ~isfield(arrowStruct(indA),'start')  % set line type  if none is given
-                    error('MKMAP: Arrow structure must have a START field')
+                    error('%s - Arrow structure must have a START field',current_function().upper)
                 end
                 if ~isfield(arrowStruct(indA),'stop') % set line type  if none is given
-                    error('MKMAP: Arrow structure must have a STOP field')
+                    error('%s - Arrow structure must have a STOP field',current_function().upper)
                 end
                 if ~isfield(arrowStruct(indA),'color') || isempty(arrowStruct(indA).color) % set color  if none is given
                     arrowStruct(indA).color='k';
@@ -1022,20 +1038,20 @@ for projection = 1:3
         %% address Zoom
         if zoomFlag
             zb=[-1 1;-1 1];
-            if length(zoomBox)==1
+            if isscalar(zoomBox)
                 zb=zb.*zoomBox;
             elseif length(zoomBox)==3
                 zb(1,:)= zoomBox(1).*[1 1]+zoomBox(3).*[0 1];
                 zb(2,:)= zoomBox(2).*[1 1]+zoomBox(3).*[0 1];
             else
-                error('MKMAP - Illegal zoom box')
+                error('%s - Illegal zoom box',current_function().upper)
             end
             set(gca,'XLim',zb(1,:),'YLim',zb(2,:))
             
             
         end
         
-        
+       
         
         %% add grid
         if gridFlag
@@ -1044,16 +1060,23 @@ for projection = 1:3
         
           %% add colorbar inset
         if(colorboxFlag)
-            axes2 = axes('Parent',hf(end),'Position',[0.12 0.12 0.2 0.2]);
+            axes2 = axes('Parent',hf(end),'Position',[0.15 0.12 0.2 0.2]);
             hold(axes2,'on');
             
             imagesc(res.mainParLim,res.secParLim,res.rgbColorPlane);
-            set(gca,'Ydir','Normal','XLim',res.mainParLim,'YLim',res.secParLim)
-            xlabel(bartag{1},'Interpreter','latex','Color',[1 1 1],'FontSize',12);
-            ylabel(bartag{2},'Interpreter','latex','Color',[1 1 1],'FontSize',12);
-            set(axes2,'Layer','top','XAxisLocation','top','XColor',[1 1 1],...
-                'YAxisLocation','right','YColor',[1 1 1],'ZColor',[1 1 1]);
+            set(gca,'Ydir','Normal','XLim',res.mainParLim,'YLim',res.secParLim,...
+                'TickLabelInterpreter','latex')
+            labColor=[1 1 1];
+            if secReverseFlag
+                labColor=[0 0 0];
+            end
+            
+            xlabel(bartag{1},'Interpreter','latex','Color',labColor,'FontSize',12);
+            ylabel(bartag{2},'Interpreter','latex','Color',labColor,'FontSize',12);
+            set(axes2,'Layer','top','XAxisLocation','top','XColor',labColor,...
+                'YAxisLocation','right','YColor',labColor,'ZColor',labColor);
             box('on')
+            
         end
         
         

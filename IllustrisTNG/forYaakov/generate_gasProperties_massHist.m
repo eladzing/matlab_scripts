@@ -97,7 +97,7 @@ for fld=compNames  % different components of the SubHalo
     PropStruct.(fld).mask=int8(galMask);
     for param=paramNames % physical parameters we look at
         for prop=propNames % type of metric produced
-            pname=strcat(fld,param,prop);
+            pname=fld + param + prop;
             switch prop
                 case 'MassQuantiles'
                     PropStruct.(fld).(pname)=zeros(4,len);
@@ -107,9 +107,9 @@ for fld=compNames  % different components of the SubHalo
         end
     end
 
-    PropStruct.(fld).(strcat(fld,'GasMass'))=zeros(1,len);
-    PropStruct.(fld).(strcat(fld,'SfrMass'))=zeros(1,len);
-    PropStruct.(fld).(strcat(fld,'AvgDens'))=zeros(1,len);
+    PropStruct.(fld).(fld+"GasMass")=zeros(1,len);
+    PropStruct.(fld).(fld+"SfrMass")=zeros(1,len);
+    PropStruct.(fld).(fld+"AvgDens")=zeros(1,len);
 end
 
 
@@ -235,14 +235,14 @@ structName="SubHalo_"+ num2str(id)
                     %massDist(end)=massDist(end)+sum(mm(~tcMask));
                     %[~,mxInd]=max(massDist);
                     param="Tcool";
-                    massHistStruct.(structName).(fld).
-                    PropStruct.(fld).(strcat(fld,param,'MeanMW'))(id+1)=sum(mm(tcMask).*tc(tcMask))/sum(mm(tcMask));
-                    PropStruct.(fld).(strcat(fld,param,'StdDevMW'))(id+1)=calc_standardDev(tc(tcMask),mm(tcMask));
-                    PropStruct.(fld).(strcat(fld,param,'MassMedian'))(id+1)=10.^mus(3);
-                    PropStruct.(fld).(strcat(fld,param,'MassQuantiles'))(:,id+1)=10.^mus([1 2 4 5]);
+                    %massHistStruct.(structName).(fld).
+                    PropStruct.(fld).(fld+param+"MeanMW")(id+1)=sum(mm(tcMask).*tc(tcMask))/sum(mm(tcMask));
+                    PropStruct.(fld).(fld+param+"StdDevMW")(id+1)=calc_standardDev(tc(tcMask),mm(tcMask));
+                    PropStruct.(fld).(fld+param+"MassMedian")(id+1)=10.^mus(3);
+                    PropStruct.(fld).(fld+param+"MassQuantiles")(:,id+1)=10.^mus([1 2 4 5]);
             
-                    massHistStruct.(structName).(fld).(strcat(param,'MassHist')).hist=mhist;
-                    massHistStruct.(structName).(fld).(strcat(param,'MassHist')).xAxis=mx;
+                    massHistStruct.(structName).(fld).(param+"MassHist").hist=mhist;
+                    massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
 
                     [bird, binsize, xxlim,yylim]= histogram2d(log10(gas.Density),log10(gas.Temperature),...
                         gas.Masses);
@@ -266,10 +266,10 @@ structName="SubHalo_"+ num2str(id)
                 [mx, mhist, mus]=mk_mass_histogram(log10(tmp),mm,qus,distLen);
                 %[~,mxInd]=max(massDist);
                 param='Temp';
-                PropStruct.(fld).(strcat(fld,param,'MeanMW'))(id+1)=sum(mm.*tmp)/sum(mm);
-                PropStruct.(fld).(strcat(fld,param,'StdDevMW'))(id+1)=calc_standardDev(tmp,mm);
-                PropStruct.(fld).(strcat(fld,param,'MassMedian'))(id+1)=10.^mus(3);
-                PropStruct.(fld).(strcat(fld,param,'MassQuantiles'))(:,id+1)=10.^mus([1 2 4 5]);
+                PropStruct.(fld).(fld+param+"MeanMW")(id+1)=sum(mm.*tmp)/sum(mm);
+                PropStruct.(fld).(fld+param+"StdDevMW")(id+1)=calc_standardDev(tmp,mm);
+                PropStruct.(fld).(fld+param+"MassMedian")(id+1)=10.^mus(3);
+                PropStruct.(fld).(fld+param+"MassQuantiles")(:,id+1)=10.^mus([1 2 4 5]);
                 %PropStruct.(fld).modeTemp(id+1)=xx(mxInd);
                 %
                 %                 ll=length(tempBin)+1;
@@ -289,10 +289,10 @@ structName="SubHalo_"+ num2str(id)
                 [~, ~, mus]=mk_mass_histogram(log10(ent),mm,qus,distLen);
                 %[~,mxInd]=max(massDist);
                 param='Entropy';
-                PropStruct.(fld).(strcat(fld,param,'MeanMW'))(id+1)=sum(mm.*ent)/sum(mm);
-                PropStruct.(fld).(strcat(fld,param,'StdDevMW'))(id+1)=calc_standardDev(ent,mm);
-                PropStruct.(fld).(strcat(fld,param,'MassMedian'))(id+1)=10.^mus(3);
-                PropStruct.(fld).(strcat(fld,param,'MassQuantiles'))(:,id+1)=10.^mus([1 2 4 5]);
+                PropStruct.(fld).(fld+param+"MeanMW")(id+1)=sum(mm.*ent)/sum(mm);
+                PropStruct.(fld).(fld+param+"StdDevMW")(id+1)=calc_standardDev(ent,mm);
+                PropStruct.(fld).(fld+param+"MassMedian")(id+1)=10.^mus(3);
+                PropStruct.(fld).(fld+param+"MassQuantiles")(:,id+1)=10.^mus([1 2 4 5]);
                 %PropStruct.(fld).modeEnt(id+1)=xx(mxInd);
 
                 %                 ll=length(entBin)+1;
@@ -312,10 +312,10 @@ structName="SubHalo_"+ num2str(id)
                 [~, ~, mus]=mk_mass_histogram(log10(nDens),mm,qus,distLen);
                 %[~,mxInd]=max(massDist);
                 param='Density';
-                PropStruct.(fld).(strcat(fld,param,'MeanMW'))(id+1)=mean(nDens);
-                PropStruct.(fld).(strcat(fld,param,'StdDevMW'))(id+1)=std(nDens);
-                PropStruct.(fld).(strcat(fld,param,'MassMedian'))(id+1)=10.^mus(3);
-                PropStruct.(fld).(strcat(fld,param,'MassQuantiles'))(:,id+1)=10.^mus([1 2 4 5]);
+                PropStruct.(fld).(fld+param+"MeanMW")(id+1)=mean(nDens);
+                PropStruct.(fld).(fld+param+"StdDevMW")(id+1)=std(nDens);
+                PropStruct.(fld).(fld+param+"MassMedian")(id+1)=10.^mus(3);
+                PropStruct.(fld).(fld+param+"MassQuantiles")(:,id+1)=10.^mus([1 2 4 5]);
                 %PropStruct.(fld).modeDensN(id+1)=xx(mxInd);
 
                 %                 ll=length(densBin)+1;
@@ -332,9 +332,9 @@ structName="SubHalo_"+ num2str(id)
                 %                 end
                 %
 
-                PropStruct.(fld).(strcat(fld, 'GasMass'))(id+1)=sum(mm); % only non-sf gas
-                PropStruct.(fld).(strcat(fld, 'SfrMass'))(id+1)=sum(mass(distMask & sfMask));
-                PropStruct.(fld).(strcat(fld, 'AvgDens'))(id+1)=sum(mm)/sum(mm./nDens); % in cm^-3
+                PropStruct.(fld).(fld+"GasMass")(id+1)=sum(mm); % only non-sf gas
+                PropStruct.(fld).(fld+"SfrMass")(id+1)=sum(mass(distMask & sfMask));
+                PropStruct.(fld).(fld+"AvgDens")(id+1)=sum(mm)/sum(mm./nDens); % in cm^-3
                 %PropStruct.(fld).([fld 'Sfr'])(id+1)=sum(gas.StarFormationRate(distMask & sfMask));
                 %
                 %                 PropStruct.(fld).cellNum(id+1)=sum(mask);

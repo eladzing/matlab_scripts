@@ -1,10 +1,10 @@
 function  hf=mkmapGas(varargin )
-%MKMAP plotting the TNG objects
+%MKMAPGAS plotting the gas component of TNG objects
 %   Plotting the gas cells from the TNG by mapping to a uniform grid
 %
 
 
-warning('%s - This function does not fix the length units - make sure your coordinates are scales accordingly!',...
+warning('%s - This function does not fix the length units - make sure your coordinates are scaled accordingly!',...
     current_function().upper);
 
 %% defuals and globals
@@ -903,7 +903,7 @@ end
 if thick>0
     thk=ceil(0.5.*thick./boxSize.*Ngrid);   %% thick is in comoving Mpc/h
 else
-    thk=0.5*abs(thick);   %% defualt value of 6 cells for slice
+    thk=0.5*abs(Ngrid);   %% defualt value box size 
 end
 
 % if contThick>0
@@ -991,7 +991,7 @@ for projection = 1:3
                 hf(end+1)=figure('color',figureColorBk);
             end
         elseif exist('hf')
-            figure(hf)
+            figure(hf);
         else
             error('%s -  No valid Figure handle given',current_function().upper);
         end

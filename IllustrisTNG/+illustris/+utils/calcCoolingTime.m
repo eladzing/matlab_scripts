@@ -1,6 +1,6 @@
 function res = calcCoolingTime(density,energy,coolingRate)
 %CALCCoolingTime function to calculate cooling time from internal energy and
-% electron abundance in the Illustris simulation. Result is in K.
+% electron abundance in the Illustris simulation. Result is in Gyr.
 % Internal Energy is in (km/sec)^2 ( per unit mass)
 
 %units;

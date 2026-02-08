@@ -1318,7 +1318,7 @@ for projection = 1:3
         %% address Zoom
         if zoomFlag
             zb=[-1 1;-1 1];
-            if length(zoomBox)==1
+            if isscalar(zoomBox)
                 zb=zb.*zoomBox;
             elseif length(zoomBox)==3
                 zb(1,:)= zoomBox(1).*[1 1]+zoomBox(3).*[0 1];
@@ -1332,7 +1332,7 @@ for projection = 1:3
         end
         
         %% do bar and colormap stuff
-        caxis(clims);
+        clim(clims);
         
         if brewerFlag
             map = brewermap(256,brewMap);
@@ -1352,13 +1352,13 @@ for projection = 1:3
         if exist('barPropStruct','var')
             setPropertiesStructure(bar,barPropStruct)
         else
-            set(bar,'Fontsize',14,'color',figureColorText)
+            set(bar,'Fontsize',14,'color',figureColorText,'TickLabelInterpreter','latex')
         end
         
         set(gcf,'Colormap',map);
         if strcmpi(logFlag,'log')
             set(gca,'ColorScale','log');
-            caxis(10.^[min(log10(clims)) max(log10(clims))]);
+            clim(10.^[min(log10(clims)) max(log10(clims))]);
         end
         %set(gcf,'Colormap',avijet);
         %title(sprintf('%s %s, Thickness=%s Mpc/h',CLUSTER,type,num2str(thick,3)),'Fontsize',12,'Interpreter','latex');
@@ -1433,6 +1433,8 @@ for projection = 1:3
             grid;
         end
         
+        myAxis;
+
         %% print
         if printFlag
             

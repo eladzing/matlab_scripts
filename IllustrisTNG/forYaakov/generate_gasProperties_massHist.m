@@ -244,13 +244,13 @@ structName="SubHalo_"+ num2str(id)
                     massHistStruct.(structName).(fld).(param+"MassHist").hist=mhist;
                     massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
 
-                    [bird, binsize, xxlim,yylim]= histogram2d(log10(gas.Density),log10(gas.Temperature),...
-                        gas.Masses);
+                    % [bird, binsize, xxlim,yylim]= histogram2d(log10(gas.Density),log10(gas.Temperature),...
+                    %     gas.Masses);
 
 
 
                     % % tc / tff
-                    % [~, ~, mus]=mk_mass_histogram(log10(tcff(tcMask)),mm(tcMask),qus,distLen);
+                    % [mx, mhist, mus]=mk_mass_histogram(log10(tcff(tcMask)),mm(tcMask),qus,distLen);
                     % %massDist(end)=massDist(end)+sum(mm(~tcMask));
                     % %[~,mxInd]=max(massDist);
                     % 
@@ -270,6 +270,9 @@ structName="SubHalo_"+ num2str(id)
                 PropStruct.(fld).(fld+param+"StdDevMW")(id+1)=calc_standardDev(tmp,mm);
                 PropStruct.(fld).(fld+param+"MassMedian")(id+1)=10.^mus(3);
                 PropStruct.(fld).(fld+param+"MassQuantiles")(:,id+1)=10.^mus([1 2 4 5]);
+                massHistStruct.(structName).(fld).(param+"MassHist").hist=mhist;
+                massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
+
                 %PropStruct.(fld).modeTemp(id+1)=xx(mxInd);
                 %
                 %                 ll=length(tempBin)+1;
@@ -286,13 +289,15 @@ structName="SubHalo_"+ num2str(id)
                 %                 end
 
                 %% entropy
-                [~, ~, mus]=mk_mass_histogram(log10(ent),mm,qus,distLen);
+                [mx, mhist, mus]=mk_mass_histogram(log10(ent),mm,qus,distLen);
                 %[~,mxInd]=max(massDist);
                 param='Entropy';
                 PropStruct.(fld).(fld+param+"MeanMW")(id+1)=sum(mm.*ent)/sum(mm);
                 PropStruct.(fld).(fld+param+"StdDevMW")(id+1)=calc_standardDev(ent,mm);
                 PropStruct.(fld).(fld+param+"MassMedian")(id+1)=10.^mus(3);
                 PropStruct.(fld).(fld+param+"MassQuantiles")(:,id+1)=10.^mus([1 2 4 5]);
+                massHistStruct.(structName).(fld).(param+"MassHist").hist=mhist;
+                massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
                 %PropStruct.(fld).modeEnt(id+1)=xx(mxInd);
 
                 %                 ll=length(entBin)+1;
@@ -309,13 +314,15 @@ structName="SubHalo_"+ num2str(id)
                 %                 end
 
                 %% number density
-                [~, ~, mus]=mk_mass_histogram(log10(nDens),mm,qus,distLen);
+                [mx, mhist, mus]=mk_mass_histogram(log10(nDens),mm,qus,distLen);
                 %[~,mxInd]=max(massDist);
                 param='Density';
                 PropStruct.(fld).(fld+param+"MeanMW")(id+1)=mean(nDens);
                 PropStruct.(fld).(fld+param+"StdDevMW")(id+1)=std(nDens);
                 PropStruct.(fld).(fld+param+"MassMedian")(id+1)=10.^mus(3);
                 PropStruct.(fld).(fld+param+"MassQuantiles")(:,id+1)=10.^mus([1 2 4 5]);
+                massHistStruct.(structName).(fld).(param+"MassHist").hist=mhist;
+                massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
                 %PropStruct.(fld).modeDensN(id+1)=xx(mxInd);
 
                 %                 ll=length(densBin)+1;

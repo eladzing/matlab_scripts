@@ -10,7 +10,7 @@ units;
 
 projectiontags={'YZ' 'XZ' 'XY'};
 bartagOveride='';
-printoutdir=DEFAULT_PRINTOUT_DIR;
+%printoutdir=DEFAULT_PRINTOUT_DIR;
 printtag='badtag';
 
 Ngrid=256;
@@ -77,7 +77,7 @@ yLabFlag=true;
 saveFigFlag=false;
 newStarFlag=false;
 
-pdfFlag='pdf';
+%pdfFlag='pdf';
 imageSmoothFlag='none';
 brewerFlag=false;
 
@@ -265,7 +265,7 @@ while i<=length(varargin)
             i=i+1;
             circStruct=varargin{i};
             if ~isstruct(circStruct)
-                error('MKMAP - draw circle input must be a structure')
+                error('%s - draw circle input must be a structure',current_function().upper)
             end
             
         case {'grid'}
@@ -284,21 +284,19 @@ while i<=length(varargin)
             i=i+1;
             linStruct=varargin{i};
             if ~isstruct(linStruct)
-                error('MKMAP - draw line input must be a structure')
+                error('%s - draw line input must be a structure',current_function().upper)
             end
         case 'arrow'
             i=i+1;
             arrowStruct=varargin{i};
             if ~isstruct(arrowStruct)
-                error('MKMAP - arrow input must be a structure')
+                error('% - arrow input must be a structure',current_function().upper)
             end
-            
-            
         case 'text'
             i=i+1;
             textBoxStruct=varargin{i};
             if ~isstruct(textBoxStruct)
-                error('MKMAP - text box input must be a structure')
+                error('%s - text box input must be a structure',current_function().upper)
             end
         case {'brewer','brewermap'}
             i=i+1;
@@ -309,7 +307,7 @@ while i<=length(varargin)
             map=varargin{i};
             brewerFlag=false;
             if size(map,2)~=3
-                error('mkmapStars: Illegal colormap')
+                error('%s - Illegal colormap',current_function().upper)
             end
             
         case 'xticks'
@@ -322,7 +320,7 @@ while i<=length(varargin)
             i=i+1;
             tickStruct=varargin{i};
             if ~isstruct(tickStruct)
-                error('MKMAP - fullTick input must be a structure')
+                error('%s - fullTick input must be a structure',current_function().upper)
             end
         case {'noticks','notick'}
             xticks=' ';
@@ -363,26 +361,34 @@ while i<=length(varargin)
             i=i+1;
             hf=varargin{i};
             newFigFlag=false;
+            backCol=get(hf,'color');
+
+            if ~all(backCol==[0 0 0])
+                warning('%s - Works best with a black background.',current_function().upper)
+            end
+            
+
+
         case{'axes','axeshandle'}
             i=i+1;
             axesHandle=varargin{i};
             newFigFlag=false;
             
-        case {'print'}
-            printFlag=true;
-            i=i+1;
-            printtag=varargin{i};
-        case {'nopdf','png'}
-            pdfFlag='nopdf';
-        case {'outputdir','printout','printoutdir'}
-            i=i+1;
-            printoutdir=varargin{i};
+        % case {'print'}
+        %     printFlag=true;
+        %     i=i+1;
+        %     printtag=varargin{i};
+        % case {'nopdf','png'}
+        %     pdfFlag='nopdf';
+        % case {'outputdir','printout','printoutdir'}
+        %     i=i+1;
+        %     printoutdir=varargin{i};
         case {'savefig'}
             %             i=i+1;
             %             printtag=varargin{i};
             saveFigFlag=true;
         otherwise
-            error('mkmapStars: illegal argument %s',varargin{i})
+            error('%s - illegal argument: %s',current_function().upper,varargin{i})
     end
     i=i+1;
 end
@@ -393,23 +399,23 @@ if ~any(plotproj)
 end
 
 if ~cubeFlag && ~(starStructFlag && typeFlag)
-    error('mkmapStars: must enter both gas struct and data type to plot');
+    error('%s - must enter both gas struct and data type to plot',current_function().upper);
 end
 
 if ~(cubeFlag || typeFlag)
-    error('mkmapStars: must enter data or datatype')
+    error('%s - must enter data or datatype',current_function().upper)
 end
 if (cubeFlag && typeFlag)
-    error('mkmapStars: too many data arguments')
+    error('%s - too many data arguments',current_function().upper)
 end
 
 if contrFlag
     if ( isempty(contrCube) && isempty(contrType))
-        error('mkmapStars: must enter contoure data or type')
+        error('%s - must enter contoure data or type',current_function().upper)
     end
     
     if (~isempty(contrCube) && ~isempty(contrType))
-        error('mkmapStars: too many contour data arguments')
+        error('%s - too many contour data arguments',current_function().upper)
     end
 end
 
@@ -470,7 +476,7 @@ if typeFlag
             
             
         otherwise
-            error('mkmapStars - unknown data type: %s',type)
+            error('%s - unknown data type: %s',current_function().upper,type)
     end
 end
 cube=cube.*normfactor;
@@ -483,7 +489,7 @@ if newStarFlag
         currentAge=redshift2time(illUnits.zred,'cosmo',cosmoStruct);
         currentAge=currentAge.age;
         deltaAge=currentAge-nsBirthTime;
-        if any(deltaAge<-1e-3); error('mkmapStars: something funky with the ages - probably mask is incorrect re wind particles');end
+        if any(deltaAge<-1e-3); error('%s - something funky with the ages - probably mask is incorrect re wind particles',current_function().upper);end
             
         newStarMask=deltaAge<=newStarThresh;
         newStarPos=coord(:,newStarMask);
@@ -631,7 +637,7 @@ for projection = 1:3
         elseif exist('hf')
             figure(hf)
         else
-            error('MKMAPGAS: No valid Figure handle given');
+            error('%s - No valid Figure handle given',current_function().upper);
         end
         
         
@@ -781,7 +787,7 @@ for projection = 1:3
                     linStruct(indL).type='-';
                 end
                 linVal=linStruct(indL).value;
-                if length(linVal)==1
+                if isscalar(linVal)
                     linVal=linVal.*[1 1];
                 end
                 %draw line
@@ -795,7 +801,7 @@ for projection = 1:3
                         xl=linVal;
                         
                     otherwise
-                        error('MKMAP - Illegal direction in draw line: %s',linStruct.dir)
+                        error('%s - Illegal direction in draw line: %s',current_function().upper,linStruct.dir)
                 end
                 hold on
                 plot(xl,yl,linStruct(indL).type,'color',linStruct(indL).color,'linewidth',linStruct(indL).width);
@@ -809,10 +815,10 @@ for projection = 1:3
         if exist('arrowStruct','var')
             for indA=1:length(arrowStruct) % go over all lines
                 if ~isfield(arrowStruct(indA),'start')  % set line type  if none is given
-                    error('MKMAP: Arrow structure must have a START field')
+                    error('%s - Arrow structure must have a START field',current_function().upper)
                 end
                 if ~isfield(arrowStruct(indA),'stop') % set line type  if none is given
-                    error('MKMAP: Arrow structure must have a STOP field')
+                    error('%s - Arrow structure must have a STOP field',current_function().upper)
                 end
                 if ~isfield(arrowStruct(indA),'color') || isempty(arrowStruct(indA).color) % set color  if none is given
                     arrowStruct(indA).color='k';
@@ -980,13 +986,13 @@ for projection = 1:3
         %% address Zoom
         if zoomFlag
             zb=[-1 1;-1 1];
-            if length(zoomBox)==1
+            if isscalar(zoomBox)
                 zb=zb.*zoomBox;
             elseif length(zoomBox)==3
                 zb(1,:)= zoomBox(1).*[1 1]+zoomBox(3).*[0 1];
                 zb(2,:)= zoomBox(2).*[1 1]+zoomBox(3).*[0 1];
             else
-                error('MKMAP - Illegal zoom box')
+                error('%s - Illegal zoom box',current_function().upper)
             end
             set(gca,'XLim',zb(1,:),'YLim',zb(2,:))
             
@@ -994,7 +1000,7 @@ for projection = 1:3
         end
         
         %% do bar and colormap stuff
-        caxis(clims);
+        clim(clims);
         
         if brewerFlag
             map = brewermap(256,brewMap);
@@ -1089,17 +1095,19 @@ for projection = 1:3
             end
         end
         
-        %% print
-        if printFlag
-            
-            name=sprintf('starMap%s_%s_%s_snp%i_%s',prjtag,printTypeTag,printtag,illUnits.snap,simDisplayName);
-            %name=sprintf('%s/%s_map%s_b%d_%s.%s',printoutdir,CLUSTER,prjtag,boxx,printtag,'%s');
-            
-            
-            printout_fig(gcf,name,'dir',printoutdir,'v',pdfFlag)
-            
-            
-        end
+        % %% print
+        % if printFlag
+        % 
+        % 
+        % 
+        %     name=sprintf('starMap%s_%s_%s_snp%i_%s',prjtag,printTypeTag,printtag,illUnits.snap,simDisplayName);
+        %     %name=sprintf('%s/%s_map%s_b%d_%s.%s',printoutdir,CLUSTER,prjtag,boxx,printtag,'%s');
+        % 
+        %     set(gcf, 'InvertHardcopy', 'off')
+        %     printout_fig(gcf,name,'dir',printoutdir,'v',pdfFlag)
+        % 
+        % 
+        % end
         
         
         

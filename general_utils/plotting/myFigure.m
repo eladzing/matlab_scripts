@@ -13,7 +13,7 @@ while i<=length(varargin)
             figPos=varargin{i};
             case{'color','col','background'}
             i=i+1;
-            figPos=varargin{i};
+            col=varargin{i};
         otherwise
             error('%s - Illegal argument: %s',current_function().upper,varargin{i});
     end

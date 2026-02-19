@@ -48,7 +48,7 @@ illustris.plots.mkmapStars('star',stars,'type','mass','yz','mask',starMask,...
     'ng',256,'fig',hf,'axes',gca,'circ',circ,...%'clims',cl,...
     'newStars',newStarThresh,'newStarscolor',newStarColor,'boxsize',bsize);
 set(gcf, 'InvertHardcopy', 'off')
-saveas(gcf,outdir+"sub_"+ nam + "_stars.png")
+exportgraphics(gcf,outdir+"sub_"+ nam + "_stars.png","BackgroundColor","black")
 
 
 

@@ -10,11 +10,12 @@ histFlag=false;
 titletag='Big Bird for President';
 guideFlag=false;
 tmpRoFlag=false;
-clim=[1 1];
+colLim=[1 1];
+labFlag=[ true true];
 %hf=figure('Visible','off');
 axesHandle=0;
 
-plotBird=bird; %% default - show what came in 
+plotBird=bird'; %% default - show what came in 
 
 
 guide(1).tmp=[7 8];
@@ -34,9 +35,12 @@ i=1;
 
 while i<=length(varargin)
     switch(lower(varargin{i}))
-        case {'cmap','colormap','brewermap','brewer'}
+        case {'brewermap','brewer'}
             i=i+1;
             bmap=varargin{i};
+        case {'cmap','colormap'}
+            i=i+1;
+            cmap=varargin{i};
         case {'tag','bartag','bartitle','bar'}
             i=i+1;
             bartag=varargin{i};
@@ -51,7 +55,7 @@ while i<=length(varargin)
             guideFlag=true;
         case {'caxis','clims','clim'}
             i=i+1;
-            clim=varargin{i};
+            colLim=varargin{i};
         case{'tro','t-ro','tn','t-n'}
             tmpRoFlag=true;
         case{'rot','ro-t','nt','n-t'}
@@ -66,8 +70,13 @@ while i<=length(varargin)
             histFlag=true;
         case{'fractional','frac','percent','perc'}
             plotBird=bird./sum(sum(bird)).*100;
-            
-               bartag='$ \%$ Mass';
+            bartag='$ \%$ Mass';
+        case{'nolabs','nolabels','nolab'}
+            labFlag(:)=false;
+        case{'noxlab','noxlabel'}
+            labFlag(1)=false;
+        case{'noylab','noylabel'}
+            labFlag(2)=false;
         otherwise
     end
     i=i+1;
@@ -77,11 +86,12 @@ if logFlag
     plotBird=log10(plotBird);
 end
 
-cmap=brewermap(256,bmap);
+if ~exist('cmap','var')
+    cmap=brewermap(256,bmap);   
+end
 cmap(1,:)=[1 1 1];
-
 if ~exist('hf')
-    hf=figure;
+    hf=myFigure;
     %hf.visibility='on';
 else
     figure(hf);
@@ -105,10 +115,10 @@ end
 
 set(gca,'Ydir','normal','Fontsize',12)
 
-if clim==[1 1]
-    clim(1)=min(min(plotBird));
+if colLim==[1 1]
+    colLim(1)=min(min(plotBird));
     
-    clim(2)=max(max(plotBird));
+    colLim(2)=max(max(plotBird));
 end
 
 
@@ -131,18 +141,19 @@ colormap(cmap);
 hb=colorbar;
 
 barTitle(hb,bartag)
-caxis(clim)
+clim(colLim)
+
 
 if tmpRoFlag
-    xlabelmine('$\log(T)\,[\mathrm{K}]$');
-    ylabelmine('$\log(n)\,[\mathrm{cm^{-3}}]$');
+    if labFlag(1);xlabelmine('$\log(T)\,[\mathrm{K}]$');end
+    if labFlag(2);ylabelmine('$\log(n)\,[\mathrm{cm^{-3}}]$');end
 else
-    ylabelmine('$\log(T)\,[\mathrm{K}]$');
-    xlabelmine('$\log(n)\,[\mathrm{cm^{-3}}]$');
+    if labFlag(2);ylabelmine('$\log(T)\,[\mathrm{K}]$');end
+    if labFlag(1);xlabelmine('$\log(n)\,[\mathrm{cm^{-3}}]$');end
 end
 
 titlemine(titletag)
-
+myAxis;
 
 hf1=hf;
 %% add single value histogram on the side 

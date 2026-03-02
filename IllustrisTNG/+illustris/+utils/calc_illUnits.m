@@ -5,9 +5,9 @@ function  res=calc_illUnits(snap)
 %values. 
 
 % % if no snap given, use z=0;
-% if ~exist('snap','var')
-%     snap=99;
-% end
+ if ~exist('snap','var')
+     error('%s - no snapshot number given! \n',current_function().upper);
+ end
 
 zFac=illustris.utils.set_redshiftFactor(snap);
 

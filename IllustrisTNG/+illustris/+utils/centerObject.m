@@ -11,6 +11,14 @@ if ~exist('boxSize','var')
     boxSize=LBox;
 end
 
+% partial test to see that no coordinate is beyond the box - can be a
+% problem of using the right units. 
+if any(any(coord>LBox))
+    error('%s - Coordinates found beyond box length. Coordinates should be in simulation units!',current_function().upper);
+end
+
+
+
 newCoord=coord;
 
 
@@ -30,8 +38,4 @@ for i=1:length(center)
 end
 
 end
-
-
-
-
 

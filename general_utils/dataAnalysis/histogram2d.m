@@ -21,8 +21,13 @@ function [bird, binsize, xxlim,yylim]= histogram2d(xx,yy,vv,varargin)
 
 len=[200 200]; % default dimensions of histogram
 wt=ones(size(vv)); %default weight array
-xxlim=[min(xx) max(xx)];
-yylim=[min(yy) max(yy)];
+
+xxlim=[min(xx(~isinf(xx))) max(xx(~isinf(xx)))];
+yylim=[min(yy(~isinf(yy))) max(yy(~isinf(yy)))];
+
+
+
+
 
 i=1;
 while i<=length(varargin)
@@ -30,7 +35,7 @@ while i<=length(varargin)
         case {'len','bins'}
             i=i+1;
             len=varargin{i};
-            if length(len)==1
+            if isscalar(len)
                 len(2)=len;
             elseif (length(len)>2 || length(len)<1)
                 error('histogram2d: size of len cna only be 1 or 2');

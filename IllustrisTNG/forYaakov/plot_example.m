@@ -180,3 +180,110 @@ if k==2; fname=fname+ "_log"; end
 saveas(gcf,fname + ".png")
 
 end
+
+%%
+
+% xl=massHistStruct.SubHalo_605482.phaseDiagram.xlim;
+% yl=massHistStruct.SubHalo_605482.phaseDiagram.ylim;
+
+hf=myFigure('pos',[ 89         112        1669         982]);
+
+tt=tiledlayout(2,3,'Padding','tight','TileSpacing','tight');
+
+for k=1:length(compNames)
+
+    nexttile; 
+
+
+    xl=massHistStruct.SubHalo_605482.(compNames(k)).phaseDiagram.xlim;
+    yl=massHistStruct.SubHalo_605482.(compNames(k)).phaseDiagram.ylim;
+
+
+    str=massHistStruct.SubHalo_605482.(compNames(k)).phaseDiagram;
+
+    illustris.plots.plot_phaseDiagram(yl,xl,str.bird(:,:,1),...
+        'fig',hf,'axes',gca,'nolabs');
+
+    titlemine(compNames(k));
+end
+
+tt.XLabel.String='$\log(T)\,[\mathrm{K}]$';
+tt.XLabel.FontSize=22;
+tt.XLabel.Interpreter='latex';
+
+tt.YLabel.String='$\log(n)\,[\mathrm{cm^{-3}}]$';
+tt.YLabel.FontSize=22;
+tt.YLabel.Interpreter='latex';
+
+fname=outdir+"sub_"+ nam + "_birds";
+saveas(gcf,fname+".png");
+%%
+
+
+hf=myFigure('pos',[317          64        1173        1032]);
+
+tt=tiledlayout(2,2,'Padding','compact','TileSpacing','compact');
+pars=["radTemp" "radDensity" "radEntropy" "radTcool"];
+
+
+rgal=massHistStruct.SubHalo_605482.rgal;
+rgas=massHistStruct.SubHalo_605482.rgas;
+r200=massHistStruct.SubHalo_605482.r200c;
+for k=1:length(pars)
+
+    nexttile; 
+    
+    str=massHistStruct.SubHalo_605482.(pars(k));
+
+    xl=str.xlim;
+    yl=str.ylim;
+
+    switch pars(k)
+        case "radTemp" 
+            tag="log temperature [K]";
+        case "radDensity"
+            tag="log number density $[\mathrm{cm^{-3}}]$";
+        case "radEntropy"
+            tag="log Entropy $[\mathrm{keV\, cm^2}]$";
+        case"radTcool"
+            tag="$\log t_\mathrm{cool}\, [\mathrm{Gyr}]$";
+    end
+    
+
+    illustris.plots.plot_param_vs_radius_2Dhistogram(xl,yl,str.bird(:,:,1),...
+        'fig',hf,'axes',gca,...
+        'xlab','none', ...
+        'ylab',tag);
+   hold on 
+
+    plot(log10(rgal./r200).*[1 1],yl,':k');
+    plot(log10(rgas./r200).*[1 1],yl,'--k');
+
+if k==1
+    legend({'$r_\mathrm{gal}$','$r_\mathrm{gas}$'},...
+    'Interpreter','latex','FontSize',16)
+end
+
+
+
+    %titlemine(compNames(k));
+end
+
+tt.XLabel.String='$\log\, r/\mathrm{R_{200,c}}$';
+tt.XLabel.FontSize=22;
+tt.XLabel.Interpreter='latex';
+
+% tt.YLabel.String='$\log(n)\,[\mathrm{cm^{-3}}]$';
+% tt.YLabel.FontSize=22;
+% tt.YLabel.Interpreter='latex';
+% 
+fname=outdir+"sub_"+ nam + "_radBirds";
+saveas(gcf,fname+".png");
+
+
+%%
+
+
+
+
+

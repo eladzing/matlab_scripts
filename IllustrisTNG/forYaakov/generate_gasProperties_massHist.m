@@ -46,15 +46,27 @@ fprintf('Setting stellar mass threshold to: %0.1e solar mass \n',massThresh);
 
 massAllGals=illustris.utils.get_stellar_mass(subs,'gal');
 % this mask selects all galaxies with dm component & stars, above *stellar* mass limit whose host has virials parameters
-galMask=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'massTop',massThreshTop,'snap',snap,'gas');
+galMaskBase=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'massTop',massThreshTop,'snap',snap,'gas','centrals');
+galMask2=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'gas','centrals');
+
+indxBase=find(galMaskBase);
+indx2=find(galMask2);
+
+
+nneib=illustris.utils.find_k_nearest_neighbor(subs.SubhaloPos(:,galMask2),1,'qp',subs.SubhaloPos(:,galMaskBase));
+indx3=indx2(nneib.indx);
+rnorm=max(r200c(indxBase),r200c(indx3));
+
+
 massHistStruct.mask=galMask;
 ids=find(galMask)-1;
+ids=ids(2);
 massHistStruct.ids=ids;
 
 %PropStruct.galMass=massAllGals;
 %PropStruct.galMask=galMask;
 
-r200c=fofs.Group_R_Crit200(subsInfo.hostFof+1);
+r200c=fofs.Group_R_Crit200(subsInfo.hostFof+1);  %.*illUnits.lengthUnit;
 
 %% generate values
 %fprintf(' *** Running over %s Galaxies *** \n',num2str(sum(galMask)));
@@ -63,7 +75,7 @@ step=5;
 stepNext=5;
 len=double(subs.count);
 
-len2=sum(galMask);
+len2=length(ids);%sum(galMask);
 
 % size of mass histogram
 distLen=256;
@@ -100,16 +112,16 @@ for fld=compNames  % different components of the SubHalo
             pname=fld + param + prop;
             switch prop
                 case 'MassQuantiles'
-                    PropStruct.(fld).(pname)=zeros(4,len);
+                    PropStruct.(fld).(pname)=zeros(4,len2);
                 otherwise
-                    PropStruct.(fld).(pname)=zeros(1,len);
+                    PropStruct.(fld).(pname)=zeros(1,len2);
             end
         end
     end
 
-    PropStruct.(fld).(fld+"GasMass")=zeros(1,len);
-    PropStruct.(fld).(fld+"SfrMass")=zeros(1,len);
-    PropStruct.(fld).(fld+"AvgDens")=zeros(1,len);
+    PropStruct.(fld).(fld+"GasMass")=zeros(1,len2);
+    PropStruct.(fld).(fld+"SfrMass")=zeros(1,len2);
+    PropStruct.(fld).(fld+"AvgDens")=zeros(1,len2);
 end
 
 
@@ -139,7 +151,11 @@ structName="SubHalo_"+ num2str(id)
         cnt=cnt+1;
 
         % load gas from in sub halo
-        gas=illustris.snapshot.loadSubhalo(bp, snap, id, 'gas');
+        %gas=illustris.snapshot.loadSubhalo(bp, snap, id, 'gas');
+
+        indx=id+1;
+        % remove this - for testing purposes only!!
+        indx=1;
 
         if gas.count==0
             continue
@@ -150,7 +166,6 @@ structName="SubHalo_"+ num2str(id)
 
         % get density and temperature
         nDensity=double(gas.Density.*illUnits.numberDensityFactor); %in cm^-3
-
         gas=illustris.utils.addTemperature(gas);
         gas.Temperature(sfMask)=1000;
         %temp=illustris.utils.calcTemperature(gas.InternalEnergy,gas.ElectronAbundance); %in K
@@ -171,7 +186,7 @@ structName="SubHalo_"+ num2str(id)
 
         % find distance from galaxy center
         gas.newCoord = illustris.utils.centerObject(gas.Coordinates,subs.SubhaloPos(:,id+1));
-        gasDist=sqrt( sum(double(gas.newCoord).^2,1));
+        gasDist=sqrt( sum(double(gas.newCoord).^2,1)).*illUnits.lengthUnit;
 
         % find free-fall time
         % tff=recreate_TFF(gasDist,double(r200c(id+1)),...
@@ -182,10 +197,12 @@ structName="SubHalo_"+ num2str(id)
 
         % find important radii
         rmax=max(gasDist);
-        rhalfStar=double(subs.SubhaloHalfmassRadType(illustris.partTypeNum('stars')+1,id+1)); % stellar half mass radius
-        rhalfGas=double(subs.SubhaloHalfmassRadType(illustris.partTypeNum('gas')+1,id+1)); % gas half mass radius
-
-
+        rhalfStar=double(subs.SubhaloHalfmassRadType(illustris.partTypeNum('stars')+1,id+1)).*illUnits.lengthUnit; % stellar half mass radius
+        rhalfGas=double(subs.SubhaloHalfmassRadType(illustris.partTypeNum('gas')+1,id+1)).*illUnits.lengthUnit; % gas half mass radius
+        
+        %PropStruct.rhalfStar=double(subs.SubhaloHalfmassRadType(illustris.partTypeNum('stars')+1,id+1)); % stellar half mass radius
+        tmpLim=log10([min(gas.Temperature(~sfMask)) max(gas.Temperature(~sfMask))]);
+        dnsLim=log10([min(nDensity(~sfMask)) max(nDensity(~sfMask))]);
         %% go over components
         for fld=compNames
 
@@ -213,7 +230,7 @@ structName="SubHalo_"+ num2str(id)
             end
 
             % build mask - non-sfr and within the ditance limitations
-            mask=distMask; % & ~sfMask;
+            mask=distMask & ~sfMask;
 
             if any(mask)
                 % apply mask
@@ -236,16 +253,16 @@ structName="SubHalo_"+ num2str(id)
                     %[~,mxInd]=max(massDist);
                     param="Tcool";
                     %massHistStruct.(structName).(fld).
-                    PropStruct.(fld).(fld+param+"MeanMW")(id+1)=sum(mm(tcMask).*tc(tcMask))/sum(mm(tcMask));
-                    PropStruct.(fld).(fld+param+"StdDevMW")(id+1)=calc_standardDev(tc(tcMask),mm(tcMask));
-                    PropStruct.(fld).(fld+param+"MassMedian")(id+1)=10.^mus(3);
-                    PropStruct.(fld).(fld+param+"MassQuantiles")(:,id+1)=10.^mus([1 2 4 5]);
+                    PropStruct.(fld).(fld+param+"MeanMW")(indx)=sum(mm(tcMask).*tc(tcMask))/sum(mm(tcMask));
+                    PropStruct.(fld).(fld+param+"StdDevMW")(indx)=calc_standardDev(tc(tcMask),mm(tcMask));
+                    PropStruct.(fld).(fld+param+"MassMedian")(indx)=10.^mus(3);
+                    PropStruct.(fld).(fld+param+"MassQuantiles")(:,indx)=10.^mus([1 2 4 5]);
             
                     massHistStruct.(structName).(fld).(param+"MassHist").hist=mhist;
                     massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
 
-                    % [bird, binsize, xxlim,yylim]= histogram2d(log10(gas.Density),log10(gas.Temperature),...
-                    %     gas.Masses);
+                     % [bird, binsize, xxlim,yylim]= histogram2d(log10(gas.Density),log10(gas.Temperature),...
+                     %     gas.Masses);
 
 
 
@@ -255,10 +272,10 @@ structName="SubHalo_"+ num2str(id)
                     % %[~,mxInd]=max(massDist);
                     % 
                     % param='TcTff';
-                    % PropStruct.(fld).(strcat(fld,param,'MeanMW'))(id+1)=sum(mm(tcMask).*tcff(tcMask))/sum(mm(tcMask));
-                    % PropStruct.(fld).(strcat(fld,param,'StdDevMW'))(id+1)=calc_standardDev(tcff(tcMask),mm(tcMask));
-                    % PropStruct.(fld).(strcat(fld,param,'MassMedian'))(id+1)=10.^mus(3);
-                    % PropStruct.(fld).(strcat(fld,param,'MassQuantiles'))(:,id+1)=10.^mus([1 2 4 5]);
+                    % PropStruct.(fld).(strcat(fld,param,'MeanMW'))(indx)=sum(mm(tcMask).*tcff(tcMask))/sum(mm(tcMask));
+                    % PropStruct.(fld).(strcat(fld,param,'StdDevMW'))(indx)=calc_standardDev(tcff(tcMask),mm(tcMask));
+                    % PropStruct.(fld).(strcat(fld,param,'MassMedian'))(indx)=10.^mus(3);
+                    % PropStruct.(fld).(strcat(fld,param,'MassQuantiles'))(:,indx)=10.^mus([1 2 4 5]);
                     % 
                 end
 
@@ -266,14 +283,14 @@ structName="SubHalo_"+ num2str(id)
                 [mx, mhist, mus]=mk_mass_histogram(log10(tmp),mm,qus,distLen);
                 %[~,mxInd]=max(massDist);
                 param='Temp';
-                PropStruct.(fld).(fld+param+"MeanMW")(id+1)=sum(mm.*tmp)/sum(mm);
-                PropStruct.(fld).(fld+param+"StdDevMW")(id+1)=calc_standardDev(tmp,mm);
-                PropStruct.(fld).(fld+param+"MassMedian")(id+1)=10.^mus(3);
-                PropStruct.(fld).(fld+param+"MassQuantiles")(:,id+1)=10.^mus([1 2 4 5]);
+                PropStruct.(fld).(fld+param+"MeanMW")(indx)=sum(mm.*tmp)/sum(mm);
+                PropStruct.(fld).(fld+param+"StdDevMW")(indx)=calc_standardDev(tmp,mm);
+                PropStruct.(fld).(fld+param+"MassMedian")(indx)=10.^mus(3);
+                PropStruct.(fld).(fld+param+"MassQuantiles")(:,indx)=10.^mus([1 2 4 5]);
                 massHistStruct.(structName).(fld).(param+"MassHist").hist=mhist;
                 massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
 
-                %PropStruct.(fld).modeTemp(id+1)=xx(mxInd);
+                %PropStruct.(fld).modeTemp(indx)=xx(mxInd);
                 %
                 %                 ll=length(tempBin)+1;
                 %                 for i=1:ll
@@ -285,20 +302,20 @@ structName="SubHalo_"+ num2str(id)
                 %                         msk=xx>tempBin(i-1) & xx<=tempBin(i);
                 %                     end
                 %
-                %                     PropStruct.(fld).massBinTemp(i,id+1)=sum(massDist(msk));
+                %                     PropStruct.(fld).massBinTemp(i,indx)=sum(massDist(msk));
                 %                 end
 
                 %% entropy
                 [mx, mhist, mus]=mk_mass_histogram(log10(ent),mm,qus,distLen);
                 %[~,mxInd]=max(massDist);
                 param='Entropy';
-                PropStruct.(fld).(fld+param+"MeanMW")(id+1)=sum(mm.*ent)/sum(mm);
-                PropStruct.(fld).(fld+param+"StdDevMW")(id+1)=calc_standardDev(ent,mm);
-                PropStruct.(fld).(fld+param+"MassMedian")(id+1)=10.^mus(3);
-                PropStruct.(fld).(fld+param+"MassQuantiles")(:,id+1)=10.^mus([1 2 4 5]);
+                PropStruct.(fld).(fld+param+"MeanMW")(indx)=sum(mm.*ent)/sum(mm);
+                PropStruct.(fld).(fld+param+"StdDevMW")(indx)=calc_standardDev(ent,mm);
+                PropStruct.(fld).(fld+param+"MassMedian")(indx)=10.^mus(3);
+                PropStruct.(fld).(fld+param+"MassQuantiles")(:,indx)=10.^mus([1 2 4 5]);
                 massHistStruct.(structName).(fld).(param+"MassHist").hist=mhist;
                 massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
-                %PropStruct.(fld).modeEnt(id+1)=xx(mxInd);
+                %PropStruct.(fld).modeEnt(indx)=xx(mxInd);
 
                 %                 ll=length(entBin)+1;
                 %                 for i=1:ll
@@ -310,17 +327,17 @@ structName="SubHalo_"+ num2str(id)
                 %                         msk=xx>entBin(i-1) & xx<=entBin(i);
                 %                     end
                 %
-                %                     PropStruct.(fld).massBinEnt(i,id+1)=sum(massDist(msk));
+                %                     PropStruct.(fld).massBinEnt(i,indx)=sum(massDist(msk));
                 %                 end
 
                 %% number density
                 [mx, mhist, mus]=mk_mass_histogram(log10(nDens),mm,qus,distLen);
                 %[~,mxInd]=max(massDist);
                 param='Density';
-                PropStruct.(fld).(fld+param+"MeanMW")(id+1)=mean(nDens);
-                PropStruct.(fld).(fld+param+"StdDevMW")(id+1)=std(nDens);
-                PropStruct.(fld).(fld+param+"MassMedian")(id+1)=10.^mus(3);
-                PropStruct.(fld).(fld+param+"MassQuantiles")(:,id+1)=10.^mus([1 2 4 5]);
+                PropStruct.(fld).(fld+param+"MeanMW")(indx)=mean(nDens);
+                PropStruct.(fld).(fld+param+"StdDevMW")(indx)=std(nDens);
+                PropStruct.(fld).(fld+param+"MassMedian")(indx)=10.^mus(3);
+                PropStruct.(fld).(fld+param+"MassQuantiles")(:,indx)=10.^mus([1 2 4 5]);
                 massHistStruct.(structName).(fld).(param+"MassHist").hist=mhist;
                 massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
                 %PropStruct.(fld).modeDensN(id+1)=xx(mxInd);
@@ -339,16 +356,58 @@ structName="SubHalo_"+ num2str(id)
                 %                 end
                 %
 
-                PropStruct.(fld).(fld+"GasMass")(id+1)=sum(mm); % only non-sf gas
-                PropStruct.(fld).(fld+"SfrMass")(id+1)=sum(mass(distMask & sfMask));
-                PropStruct.(fld).(fld+"AvgDens")(id+1)=sum(mm)/sum(mm./nDens); % in cm^-3
-                %PropStruct.(fld).([fld 'Sfr'])(id+1)=sum(gas.StarFormationRate(distMask & sfMask));
+
+                 [bird, binsize, xxlim,yylim]= histogram2d(log10(nDens),log10(tmp),...
+                             mm,'xlim',dnsLim,'ylim',tmpLim);
+                 massHistStruct.(structName).(fld).phaseDiagram.bird=bird;
+                 massHistStruct.(structName).(fld).phaseDiagram.binsize=binsize;
+                 massHistStruct.(structName).(fld).phaseDiagram.xlim=xxlim;
+                 massHistStruct.(structName).(fld).phaseDiagram.ylim=yylim;
+
+
+                PropStruct.(fld).(fld+"GasMass")(indx)=sum(mm); % only non-sf gas
+                PropStruct.(fld).(fld+"SfrMass")(indx)=sum(mass(distMask & sfMask));
+                PropStruct.(fld).(fld+"AvgDens")(indx)=sum(mm)/sum(mm./nDens); % in cm^-3
+                %PropStruct.(fld).([fld 'Sfr'])(indx)=sum(gas.StarFormationRate(distMask & sfMask));
                 %
-                %                 PropStruct.(fld).cellNum(id+1)=sum(mask);
+                %                 PropStruct.(fld).cellNum(indx)=sum(mask);
                 %
             end
 
         end
+
+        %% build radial-parameter 2Dhistogrma
+        % [bird, binsize, xxlim,yylim]= histogram2d(log10(nDensity(~sfMask)),log10(gas.Temperature(~sfMask)),...
+        %     mass(~sfMask));
+        % massHistStruct.(structName).phaseDiagram.bird=bird;
+        % massHistStruct.(structName).phaseDiagram.binsize=binsize;
+        % massHistStruct.(structName).phaseDiagram.xlim=xxlim;
+        % massHistStruct.(structName).phaseDiagram.ylim=yylim;
+
+        rv=r200c(id+1);
+        for p=paramNames
+            switch p
+                case "Tcool"
+                    par=tcool(~sfMask);
+                case "Temp"
+                    par=gas.Temperature(~sfMask);
+                case "Entropy"
+                    par=gas.Entropy(~sfMask);
+                case "Density"
+                    par=nDensity(~sfMask);
+            end
+
+            [bird, binsize, xxlim,yylim]= histogram2d(log10(gasDist(~sfMask)./rv),log10(par),...
+                mass(~sfMask));
+            massHistStruct.(structName).("rad" + p).bird=bird;
+            massHistStruct.(structName).("rad" + p).binsize=binsize;
+            massHistStruct.(structName).("rad" + p).xlim=xxlim;
+            massHistStruct.(structName).("rad" + p).ylim=yylim;
+        end
+        massHistStruct.(structName).rgal=2.0*rhalfStar;
+        massHistStruct.(structName).rgas=rhalfGas;
+        massHistStruct.(structName).r200c=rv;
+        massHistStruct.(structName).rmax=rmax;
 
     end
 

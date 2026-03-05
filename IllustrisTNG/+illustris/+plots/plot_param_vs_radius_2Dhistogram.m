@@ -18,7 +18,7 @@ colLim=[1 1];
 %hf=figure('Visible','off');
 axesHandle=0;
 
-plotBird=bird'; %% default - show what came in 
+plotBird=bird; %% default - show what came in 
 
 
 % guide(1).tmp=[7 8];

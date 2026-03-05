@@ -31,6 +31,8 @@ end
 id = ;
 fields={};
 gas=illustris.snapshot.loadSubhalo(bp,snap,id,'gas',fields);
+gas=illustris.snapshot.loadHalo(bp,snap,id,'gas',fields);
+
 
 % get the relevant particle indices
 subset = illustris.snapshot.getSnapOffsets(bp,snap,id,'Subhalo');

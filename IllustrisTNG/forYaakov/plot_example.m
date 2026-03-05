@@ -1,3 +1,4 @@
+
 %% make a series of plots for an example subhalo 
 
 
@@ -66,7 +67,7 @@ illustris.plots.mkmapGas('gas',gas,'type','n','xy','ng',500,'fig',hf,'axes',gca,
 nexttile(4)   
 illustris.plots.mkmapGas('gas',gas,'type','n','yz','ng',500,'fig',hf,'axes',gca,'circ',circ,'clims',cl);
 
-saveas(gcf,outdir+"sub_"+ nam + "_map1.png")
+exportgraphics(gcf,outdir+"sub_"+ nam + "_map1.png")
 %% plot density maps 
 hf=myFigure('pos',[388  69 1510   1214]);
 tt=tiledlayout(2,2,'TileSpacing','tight','Padding','tight');
@@ -82,7 +83,7 @@ illustris.plots.mkmapGas('gas',gas,'type','n','xy','ng',500,'fig',hf,'axes',gca,
 nexttile(4)   
 illustris.plots.mkmapGas('gas',gas,'type','n','yz','ng',500,'fig',hf,'axes',gca,'circ',circ,'boxsize',bsize,'clims',cl);
 
-saveas(gcf,outdir+"sub_"+ nam + "_map2.png")
+exportgraphics(gcf,outdir+"sub_"+ nam + "_map2.png")
 
 %% only plot sf gas
 
@@ -98,7 +99,7 @@ illustris.plots.mkmapGas('gas',gas,'type','n','xy','ng',500,'fig',hf,'axes',gca,
 nexttile(4)   
 illustris.plots.mkmapGas('gas',gas,'type','n','yz','ng',500,'fig',hf,'axes',gca,'mask',sfMask,'circ',circ(1));
 
-saveas(gcf,outdir+"sub_"+ nam + "_map3.png")
+exportgraphics(gcf,outdir+"sub_"+ nam + "_map3.png")
 %%
 colors=brewermap(9,'Set1');
 %%
@@ -177,7 +178,7 @@ myAxis;
 
 fname=outdir+"sub_"+ nam + "_hist";
 if k==2; fname=fname+ "_log"; end
-saveas(gcf,fname + ".png")
+exportgraphics(gcf,fname + ".png")
 
 end
 
@@ -216,7 +217,7 @@ tt.YLabel.FontSize=22;
 tt.YLabel.Interpreter='latex';
 
 fname=outdir+"sub_"+ nam + "_birds";
-saveas(gcf,fname+".png");
+exportgraphics(gcf,fname+".png");
 %%
 
 
@@ -237,16 +238,21 @@ for k=1:length(pars)
 
     xl=str.xlim;
     yl=str.ylim;
+    
+    yl1=yl(1);
+    yl2=yl(2);
 
     switch pars(k)
         case "radTemp" 
             tag="log temperature [K]";
         case "radDensity"
             tag="log number density $[\mathrm{cm^{-3}}]$";
+            yl2=-0.5;
         case "radEntropy"
             tag="log Entropy $[\mathrm{keV\, cm^2}]$";
         case"radTcool"
             tag="$\log t_\mathrm{cool}\, [\mathrm{Gyr}]$";
+            yl1=-4.5;yl2=3.5;
     end
     
 
@@ -256,9 +262,11 @@ for k=1:length(pars)
         'ylab',tag);
    hold on 
 
-    plot(log10(rgal./r200).*[1 1],yl,':k');
-    plot(log10(rgas./r200).*[1 1],yl,'--k');
-
+    plot(log10(rgal./rv).*[1 1],yl,'-.k','LineWidth',1.5);
+    plot(log10(rgas./rv).*[1 1],yl,'--k','LineWidth',1.5);
+    plot(log10(rv./rv).*[1 1],yl,':k','LineWidth',1.5);
+    xlim([-2 xl(2)])
+    ylim([yl1 yl2])
 if k==1
     legend({'$r_\mathrm{gal}$','$r_\mathrm{gas}$'},...
     'Interpreter','latex','FontSize',16)
@@ -278,7 +286,7 @@ tt.XLabel.Interpreter='latex';
 % tt.YLabel.Interpreter='latex';
 % 
 fname=outdir+"sub_"+ nam + "_radBirds";
-saveas(gcf,fname+".png");
+%exportgraphics(gcf,fname+".png");
 
 
 %%

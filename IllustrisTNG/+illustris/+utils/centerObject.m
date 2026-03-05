@@ -13,7 +13,7 @@ end
 
 % partial test to see that no coordinate is beyond the box - can be a
 % problem of using the right units. 
-if any(any(coord>LBox))
+if any(any(coord>boxSize))
     error('%s - Coordinates found beyond box length. Coordinates should be in simulation units!',current_function().upper);
 end
 

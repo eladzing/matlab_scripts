@@ -16,6 +16,8 @@ function res = find_k_nearest_neighbor(objectPositions,kk,varargin)
 
 warning('%s - positions should be in simulation units. Otherwise, a boxsize must be given',current_function().upper);
 
+
+
 %% set defaults and parse arguments 
 
 queryPoints=objectPositions;
@@ -28,7 +30,7 @@ i=1;
 while i<=length(varargin)
     switch(lower(varargin{i}))
 
-        case {'querypoints','points'}
+        case {'querypoints','points','qp'}
             i=i+1;
             queryPoints=varargin{i};
         case {'boxsize','box','boxlength'}
@@ -40,11 +42,22 @@ while i<=length(varargin)
     i=i+1;
 end
 
+%% test to see that input arrays are legit 3D 
 
+sz1=size(objectPositions);
+sz2=size(queryPoints);
+
+if sz1(1)~=3
+    error('%s - object positions must be 3D, of size 3 x N',...
+        current_function().upper)
+elseif sz2(1)~=3
+    error('%s - query points must be 3D, of size 3 x M',...
+        current_function().upper)
+end
 
 %% run over queryPoints and find k-th nearest neigbor 
 
-for i=1:length(queryPoints)
+for i=1:length(queryPoints(1,:))
     
     %tic
     newPos=double(illustris.utils.centerObject(objectPositions,queryPoints(:,i),boxSize));
@@ -53,7 +66,7 @@ for i=1:length(queryPoints)
     kkk=kk+double(mn(1)==0);
     res.distance(i)=mn(kkk);%.*illUnits.lengthUnit;
     %nearNeib.distanceNorm(i)=mn(2)./double(fofs.Group_R_Crit200(i));
-    res.ID(i)=ix(kkk)-1;
+    res.indx(i)=ix(kkk);
     %nearNeib.m200c(i)=m200c(ix(2));
     %toc
 end

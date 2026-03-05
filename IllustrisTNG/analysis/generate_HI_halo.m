@@ -28,14 +28,14 @@ if readFlag
 end
 
 % load a given halo 
-id = ;
+id = 40;
 fields={};
-gas=illustris.snapshot.loadSubhalo(bp,snap,id,'gas',fields);
+%gas=illustris.snapshot.loadSubhalo(bp,snap,id,'gas',fields);
 gas=illustris.snapshot.loadHalo(bp,snap,id,'gas',fields);
 
 
 % get the relevant particle indices
-subset = illustris.snapshot.getSnapOffsets(bp,snap,id,'Subhalo');
+subset = illustris.snapshot.getSnapOffsets(bp,snap,id,'Group');
 
 %particle offests are: 
 firstInd=subset.offsetType(1)+1;

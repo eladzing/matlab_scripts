@@ -28,11 +28,11 @@ if readFlag
 end
 
 % load a given halo 
-id = 40;
+id = 39;
 fields={};
 %gas=illustris.snapshot.loadSubhalo(bp,snap,id,'gas',fields);
 gas=illustris.snapshot.loadHalo(bp,snap,id,'gas',fields);
-
+stars=illustris.snapshot.loadHalo(bp,snap,id,'stars',fields);
 
 % get the relevant particle indices
 subset = illustris.snapshot.getSnapOffsets(bp,snap,id,'Group');
@@ -51,7 +51,6 @@ gas.mH2(3,:)=HydroCat.MH2KMT(firstInd:lastInd)';
 gas.mHi(1,:)=gas.mh-HydroCat.MH2BR(firstInd:lastInd)';
 gas.mHi(2,:)=gas.mh-HydroCat.MH2GK(firstInd:lastInd)';
 gas.mHi(3,:)=gas.mh-HydroCat.MH2KMT(firstInd:lastInd)';
-
-
-
+fname=[simDisplayName '_fof' num2str(id) '_testHIH2']
+save([DEFAULT_MATFILE_DIR '/' fname],'gas','stars','-v7.3');
 

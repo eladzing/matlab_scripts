@@ -39,7 +39,7 @@ centeredFlag=true;
 boxSide=0;
 buffer=10; % once boxside is set by  min/max of part
 
-if length(cellSize)==1
+if isscalar(cellSize)
     cellSize=cellSize.*ones(size(vals));
 end
 
@@ -332,6 +332,7 @@ res.cube=cube;
 res.Ngrid=Ngrid;
 res.boxSide=boxSide;
 res.cellVol=(boxSide/Ngrid)^3;
+res.cellArea=(boxSide/Ngrid)^2;
 res.weights=wts;
 res.mapping=mappingType;
 

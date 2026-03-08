@@ -1,4 +1,4 @@
-function  hf=mkmapGas(varargin )
+function  res=mkmapGas(varargin)
 %MKMAPGAS plotting the gas component of TNG objects
 %   Plotting the gas cells from the TNG by mapping to a uniform grid
 %
@@ -58,8 +58,11 @@ guassSigma=0.5;
 xticks='';
 yticks='';
 
+HImodelIndx=1;% default model is BR;
+
 %Flags
 cubeFlag=false;
+cubeStructFlag=false;
 typeFlag=false;
 contrFlag=false;
 wtFlag=false;
@@ -82,6 +85,7 @@ brewerFlag=false;
 gasStructFlag=false;
 newFigFlag=true;
 backgroundFlag=false; %true;
+outputFlag=false;
 
 map = brewermap(256,'*Spectral');
 saveFigFlag=false;
@@ -97,7 +101,7 @@ pdfFlag='pdf';
 i=1;
 while i<=length(varargin)
     switch lower(varargin{i})
-        
+
         % arguments for calculating cube based on gas Structure
         case{'gas','gasstruct'}
             gasStructFlag=true;
@@ -130,17 +134,25 @@ while i<=length(varargin)
             i=i+1;
             boxSize=varargin{i};
             % arguments for plotting a given cube
-        case{'data','datacube','cubestructure','cube'} %plot a given cube;
+        case{'data','datacube','cube'} %plot a given cube;
             i=i+1;
             cubeFlag=true;
             cubeStr=varargin{i};
-            cube=cubeStr.cube;
+            if isstruct(cubeStr)
+                cube=cubeStr.cube;
+                boxSize=cubeStr.boxSide;
+            else
+                cube=cubeStr;
+            end
             printTypeTag='data';
         case{'weightcube','wtcube','wtdatacube','wt'} % weight for cube
             i=i+1;
             wtFlag=true;
             weight=varargin{i};
-            
+        case{'cubestructure','fullcube'}
+            i=i+1;
+            cubeStructFlag=true;
+            cubeStr=varargin{i};
             % set whether to average or sum up slice
         case{'avg','average'}
             slType='avg';
@@ -150,11 +162,21 @@ while i<=length(varargin)
             imageSmoothFlag='filter';
             i=i+1;
             imageFilter=varargin{i};
-            
-         case{'gausssmooth','gauss'}
+
+        case{'gausssmooth','gauss'}
             imageSmoothFlag='gauss';
             i=i+1;
-            gaussSigma=varargin{i};   
+            gaussSigma=varargin{i};
+        case{'himodel','hi_model'}
+            i=i+1;
+            HImodel=string(varargin{i});
+        case 'br'
+            HImodel=string(varargin{i});
+        case 'gk'
+            HImodel=string(varargin{i});
+        case 'kmt'
+            HImodel=string(varargin{i});
+
             % arguments for overlaying contours
         case {'contour','contourtype'}
             i=i+1;
@@ -184,7 +206,7 @@ while i<=length(varargin)
             slTypeCont='avg';
         case 'sumcont'
             slTypeCont='sum';
-            
+
             % velocity field stuff
         case 'streamcolor'
             i=i+1;
@@ -226,7 +248,7 @@ while i<=length(varargin)
             i=i+1;
             vcm=varargin{i};
             if length(vcm)~=3
-               error('%s - vcm must be a 3-component array',current_function().upper)
+                error('%s - vcm must be a 3-component array',current_function().upper)
             end
             warning('%s - Make sure VCM units are compatible with the gas velocities!',current_function().upper);
             % basic arguments for plotting
@@ -261,7 +283,7 @@ while i<=length(varargin)
             if diff(clims)==0
                 clim_Flag=false;
             end
-            
+
             %         case {'alfa','alpha'}
             %             i=i+1;
             %             alfa=varargin{i};
@@ -271,7 +293,7 @@ while i<=length(varargin)
         case {'normalize','norm','factor','normfactor'}
             i=i+1;
             normfactor=varargin{i};
-            
+
             % arguments for overlying other things
         case {'circles','drawcircle','circle','circ'}
             i=i+1;
@@ -279,7 +301,7 @@ while i<=length(varargin)
             if ~isstruct(circStruct)
                 error('%s - draw circle input must be a structure',current_function().upper)
             end
-            
+
         case {'grid'}
             gridFlag=true;
         case {'nogrid'}
@@ -287,7 +309,7 @@ while i<=length(varargin)
         case{'blackfigure','black'}
             figureColorBk=[0 0 0];
             figureColorText=[1 1 1];
-            
+
         case 'drawline'
             i=i+1;
             linStruct=varargin{i};
@@ -319,9 +341,9 @@ while i<=length(varargin)
             end
         case {'nobackground'}
             backgroundFlag=false;
-            case {'background'}
+        case {'background'}
             backgroundFlag=true;
-             case {'backgroundcolor','bkcolor','colorbk'}
+        case {'backgroundcolor','bkcolor','colorbk'}
             i=i+1;
             figureColorBk=varargin{i};
         case 'xticks'
@@ -336,7 +358,6 @@ while i<=length(varargin)
             if ~isstruct(tickStruct)
                 error('%s - fullTick input must be a structure',current_function().upper)
             end
-            
         case {'noticks','notick'}
             xticks=' ';
             yticks=' ';
@@ -365,7 +386,7 @@ while i<=length(varargin)
             comoveFlag=true;
         case {'proper','proper_coord'}
             comoveFlag=false;
-            
+
         case{'handle','fighandle','fig','figure'}
             i=i+1;
             hf=varargin{i};
@@ -374,10 +395,12 @@ while i<=length(varargin)
             i=i+1;
             axesHandle=varargin{i};
             newFigFlag=false;
-            
+
             %case{'invisible','noshow','noplot'}
-            
-            %% printing
+        case{'output'}  % output the main data products of the function
+            outputFlag=true;
+
+            % printing
         case {'print'}
             printFlag=true;
             i=i+1;
@@ -386,11 +409,10 @@ while i<=length(varargin)
             i=i+1;
             printoutdir=varargin{i};
         case {'savefig'}
-            %             i=i+1;
-            %             printtag=varargin{i};
+
             saveFigFlag=true;
-        case {'nopdf','png'}
-            pdfFlag='nopdf';
+            % case {'nopdf','png'}
+            %     pdfFlag='nopdf';
         otherwise
             error('%s - illegal argument: %s',current_function().upper,varargin{i})
     end
@@ -417,7 +439,7 @@ if contrFlag
     if ( isempty(contrCube) && isempty(contrType))
         error('%s - must enter contoure data or type',current_function().upper)
     end
-    
+
     if (~isempty(contrCube) && ~isempty(contrType))
         error('%s - too many contour data arguments',current_function().upper)
     end
@@ -427,11 +449,16 @@ if ~wtFlag
     weight=ones(Ngrid,Ngrid,Ngrid);
 end
 
+
+
+
+
+
 %% add missing fields
 if (gasStructFlag)
-    
+
     if ~isfield(gasStruct,'newCoord')
-       error('%s - object has not been centered !!',current_function().upper)
+        error('%s - object has not been centered !!',current_function().upper)
     end
 end
 
@@ -441,11 +468,11 @@ if isempty(gasMask)
     gasMask=true(1,gasStruct.count);
 end
 if isfield(gasStruct,'StarFormationRate')
-sfrMask=gasStruct.StarFormationRate(gasMask)==0;
+    sfrMask=gasStruct.StarFormationRate(gasMask)==0;
 end
 coord=gasStruct.newCoord(:,gasMask);
 mass=gasStruct.Masses(gasMask);
-cellSize=2.*(3.*mass./(4.*pi.*gasStruct.Density(gasMask))).^(1/3); % "diameter" of a cell 
+cellSize=2.*(3.*mass./(4.*pi.*gasStruct.Density(gasMask))).^(1/3); % "diameter" of a cell
 cellCount=sum(gasMask);
 
 
@@ -456,7 +483,7 @@ if typeFlag
     switch lower(type)
         case {'flux','massflux','f','flux2'}
             %fluxnorm=(0.1117.*(MVIR./1e15).^0.15*(1+zred)^2.25)./(4.*pi); % normalization for flux
-            
+
             % find vr
             vv=zeros(3,cellCount);
             dist=sqrt(sum(coord.^2,1));
@@ -464,22 +491,25 @@ if typeFlag
             for k=1:3
                 vv(k,:)=gasStruct.Velocities(k,gasMask)-vcm(k);
                 vr(k,:)=vv(k,:).*coord(k,:)./dist;
-                
+
             end
             vrr=sum(vr,1);
-            
+
             if ~strcmpi(type,'flux2')
-                cubeStr=cell2grid(coord,vrr.*mass.*dist.^2,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+                if ~cubeStructFlag
+                    cubeStr=cell2grid(coord,vrr.*mass.*dist.^2,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+                end
                 unitFac=illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas').*illUnits.lengthUnit.^2.*...
                     illUnits.physUnits.kpc./illUnits.physUnits.km./illUnits.physUnits.Gyr;
                 bartag='$\frac{\dot{M}_{gas}}{d\Omega}\,[\mathrm{M_\odot/Gyr}]$';
             else
-                
-                cubeStr=cell2grid(coord,vrr.*mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+                if ~cubeStructFlag
+                    cubeStr=cell2grid(coord,vrr.*mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+                end
                 unitFac=illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas');
                 bartag='$\rho v_r\,[\mathrm{M_\odot/kpc^3\,km/sec}]$';
             end
-            
+
             cube=cubeStr.cube./(cubeStr.cellVol).*unitFac; %.*illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas');  % Msun/kpc^3*km/sec
             %logFlag=false;
             %weight=cubeStr.weights; % cube of mass in each uniform grid cell
@@ -487,7 +517,7 @@ if typeFlag
             bartag='$\frac{\dot{M}_{gas}}{d\Omega}\,[\mathrm{M_\odot/Gyr}]$';
             slTypeDef='avg';
             map = brewermap(256,'*RdBu');
-            
+
             %             %find radial velocity component
             %             [meshY, meshX, meshZ] = meshgrid(1:size(vy,1), 1:size(vx,2), 1:size(vz,3));
             %             %convert to center origin coordinates
@@ -522,11 +552,12 @@ if typeFlag
             %             printTypeTag='flux';
             %
             %             clear vr rcube2 meshX meshY meshZ
-            
-            
+
+
         case {'density','gasdensity','rho','gas','rhogas'}
-            cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-            
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+            end
             %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
             cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.densityUnit; % in Msun/kpc^3
             weight=ones(size(cube));
@@ -534,207 +565,279 @@ if typeFlag
             bartag='$ \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
             slTypeDef='avg';
             printTypeTag='dens';
-			
-		
-            
+
+
+
         case {'numberdensity','n','ndensity'}
-            cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-            
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+            end
             %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
-            
+
             %rhoFac=illUnits.densityUnit.*(Units.Ms/Units.kpc^3/Units.mm); %in cm^-3
             cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.numberDensityFactor; % in cm^-3
             weight=ones(size(cube));
             logFlag='log';
             bartag='$ n\,[\mathrm{cm^{-3}}]$';
             slTypeDef='avg';
-            
+
             printTypeTag='nDens';
-            
-%         case {'coldensity','columndensity','rhocol','gascol','rhogascol'}
-%             cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-%             
-%             %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
-%             cube=(cubeStr.cube)./(cubeStr.).*illUnits.densityUnit; % in Msun/kpc^3
-%             weight=ones(size(cube));
-%             logFlag='log';
-%             bartag='$ \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
-%             slTypeDef='sum';
-%             printTypeTag='dens';
-			
-            
-            
+
+            %         case {'coldensity','columndensity','rhocol','gascol','rhogascol'}
+            %             cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+            %
+            %             %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
+            %             cube=(cubeStr.cube)./(cubeStr.).*illUnits.densityUnit; % in Msun/kpc^3
+            %             weight=ones(size(cube));
+            %             logFlag='log';
+            %             bartag='$ \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
+            %             slTypeDef='sum';
+            %             printTypeTag='dens';
+
+
+
         case {'hi','hidensity'}
-            mhi=gas.mHi_BR(gasMask);
-            
-            cubeStr=cell2grid(coord,mhi,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-            
+
+            if exist('HImodel','var')
+                HImodelIndx=find(gasStruct.mH_model==HImodel, 1);
+                if isempty(HImodelIndx)
+                    error('%s - Illegal HI model given: %s , Must be one of these: BR, GK, KMT \n',...
+                        current_function().upper,HImodel);
+                end
+            else
+                error('%s - no HI model given!  Must be one of these: BR, GK, KMT \n',current_function().upper )
+            end
+
+
+            mhi=gasStruct.mHi(HImodelIndx,gasMask);
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord,mhi,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+            end
+
+
             %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
-            
-            
+
+
             cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.densityUnit.*... % this        is in Msun/kpc^3
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^3/illUnits.physUnits.mp); % and this changes to atoms/cm^3
             weight=ones(size(cube));
             logFlag='log';
             bartag='$ n_\mathrm{HI}\,[\mathrm{cm^{-3}}]$';
             slTypeDef='avg';
-            
+
             printTypeTag='hiDens';
         case {'hicol','hicoldensity'}
-            mhi=gasStruct.mHi_BR(gasMask);
-            
-            cubeStr=cell2grid(coord,mhi,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-            
+
+            if exist('HImodel','var')
+                HImodelIndx=find(gasStruct.mH_model==HImodel, 1);
+                if isempty(HImodelIndx)
+                    error('%s - Illegal HI model given: %s , Must be one of these: BR, GK, KMT \n',...
+                        current_function().upper,HImodel);
+                end
+            else
+                error('%s - no HI model given!  Must be one of these: BR, GK, KMT \n',current_function().upper )
+            end
+
+            mhi=gasStruct.mHi(HImodelIndx,gasMask);
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord,mhi,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+            end
+
+
             cube=(cubeStr.cube)./(cubeStr.cellArea).*illUnits.surfaceDensityUnit.*... % this is in Msun/kpc^2
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^2/illUnits.physUnits.mp); % and this changes to atoms/cm^2
             weight=ones(size(cube));
             logFlag='log';
             bartag='$ n_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$';
             slTypeDef='sum';
-            
+
             printTypeTag='hiColDens';
-            
+
         case {'h2','h2density'}
-            mh2=gas.mH2_BR(gasMask);
-            
-            cubeStr=cell2grid(coord,mh2,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-            
+
+            if exist('HImodel','var')
+                HImodelIndx=find(gasStruct.mH_model==HImodel, 1);
+                if isempty(HImodelIndx)
+                    error('%s - Illegal HI model given: %s , Must be one of these: BR, GK, KMT \n',...
+                        current_function().upper,HImodel);
+                end
+            else
+                error('%s - no HI model given!  Must be one of these: BR, GK, KMT \n',current_function().upper )
+            end
+
+
+            mh2=gasStruct.mH2(HImodelIndx,gasMask);
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord,mh2,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+            end
+
+
             %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
-            
-            
+
+
             cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.densityUnit.*... % this        is in Msun/kpc^3
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^3/(2*illUnits.physUnits.mp)); % and this changes to atoms/cm^3
             weight=ones(size(cube));
             logFlag='log';
             bartag='$ n_\mathrm{HI}\,[\mathrm{cm^{-3}}]$';
             slTypeDef='avg';
-            
+
             printTypeTag='hiDens';
         case {'h2col','h2coldensity'}
-            mh2=gasStruct.mH2_BR(gasMask);
-            
-            cubeStr=cell2grid(coord,mh2,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
-            
+
+            if exist('HImodel','var')
+                HImodelIndx=find(gasStruct.mH_model==HImodel, 1);
+                if isempty(HImodelIndx)
+                    error('%s - Illegal HI model given: %s , Must be one of these: BR, GK, KMT \n',...
+                        current_function().upper,HImodel);
+                end
+            else
+                error('%s - no HI model given!  Must be one of these: BR, GK, KMT \n',current_function().upper )
+            end
+
+
+            mh2=gasStruct.mH2(HImodelIndx,gasMask);
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord,mh2,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+            end
+
+
             cube=(cubeStr.cube)./(cubeStr.cellArea).*illUnits.surfaceDensityUnit.*... % this is in Msun/kpc^2
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^2/(2*illUnits.physUnits.mp)); % and this changes to atoms/cm^2
             weight=ones(size(cube));
             logFlag='log';
             bartag='$ n_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$';
             slTypeDef='sum';
-            
+
             printTypeTag='hiColDens';
-            
-            
+
+
         case {'entropy','ent','k','s'}
             if ~isfield(gasStruct,'Entropy')
                 gasStruct=illustris.utils.addEntropy(gasStruct); %in KeV cm^2
             end
-            
+
             ent=gasStruct.Entropy(gasMask);
             msk=sfrMask;
-            
-            cubeStr=cell2grid(coord(:,msk),ent(msk),cellSize(msk),...
-                'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord(:,msk),ent(msk),cellSize(msk),...
+                    'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
+            end
+
             cube=cubeStr.cube; %in K
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
             bartag='$ S\,[\mathrm{KeV\, cm^2}]$';
             slTypeDef='avg';
             printTypeTag='ent';
-            
+
         case {'tcool','coolingtime','tc'}
-            
+
             tcool=illustris.utils.calcCoolingTime(gasStruct.Density,gasStruct.InternalEnergy,gasStruct.GFM_CoolingRate); % cooling time in Gyr^-1
-            
+
             % avoid cells with tc=0;
             tcool=tcool(gasMask);
             msk=(tcool>0 & sfrMask);
-            
-            cubeStr=cell2grid(coord(:,msk),tcool(msk),cellSize(msk),...
-                'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
+
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord(:,msk),tcool(msk),cellSize(msk),...
+                    'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
+            end
+
             cube=cubeStr.cube; %in K
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
             bartag= '$ t_\mathrm{cool}\,[\mathrm{Gyr}]$' ;
             slTypeDef='avg';
             printTypeTag='tcool';
-            
+
         case {'tctff','coolfreefall'}
-            
+
             tcool=illustris.utils.calcCoolingTime(gasStruct.Density,gasStruct.InternalEnergy,gasStruct.GFM_CoolingRate); % cooling time in Gyr^-1
-            
+
             % avoid cells with tc=0;
             tcool=tcool(gasMask);
             msk=(tcool>0 & sfrMask);
-            
-            cubeStr=cell2grid(coord(:,msk),tcool(msk),cellSize(msk),...
-                'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
+
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord(:,msk),tcool(msk),cellSize(msk),...
+                    'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
+            end
+
             cube=cubeStr.cube; %in K
-            
+
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            
+
             load([DEFAULT_MATFILE_DIR '/freeFallTime_profiles_snp' num2str(illUnits.snap) '_' simDisplayName '.mat'])
             if isempty(idObj)
-               error('%s - no ID - needed for tff calcultion',current_function().upper);
+                error('%s - no ID - needed for tff calcultion',current_function().upper);
             end
-            
+
             if isempty(r200c)
-               error('%s - no r200c - needed for tff calcultion',current_function().upper);
+                error('%s - no r200c - needed for tff calcultion',current_function().upper);
             end
-            
+
             rc=generate_radius_cube('ng',cubeStr.Ngrid,'size',double(cubeStr.boxSide));
             aCof=tffProfile.polyfit.a(idObj+1);
             bCof=tffProfile.polyfit.b(idObj+1);
             cCof=tffProfile.polyfit.c(idObj+1);
-            
+
             tffCube=recreate_TFF(rc,double(r200c),aCof,bCof,cCof);
-            
+
             cube=cube./tffCube;
-            
+
             bartag= '$ t_\mathrm{cool}/t_\mathrm{ff}$' ;
             slTypeDef='avg';
             printTypeTag='tctff';
-            
+
             clear tffCube rc
         case {'temperature','temp','t'}
-            
+
             if ~isfield(gasStruct,'Temperature')
                 gasStruct=illustris.utils.addTemperature(gasStruct); %in K
             end
-            
+
             temp=gasStruct.Temperature(gasMask);
             msk=sfrMask;
-            
-            cubeStr=cell2grid(coord(:,msk), temp(msk),cellSize(msk),...
-                'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
+
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord(:,msk), temp(msk),cellSize(msk),...
+                    'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
+            end
+
             cube=cubeStr.cube; %in K
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
             bartag='$ T\,[\mathrm{K}]$';
             slTypeDef='avg';
             printTypeTag='temp';
-            
+
         case {'mach'}
-            
-            cubeStr=cell2grid(coord,gasStruct.Machnumber(gasMask),ones(size(cellSize)),...
-                'ngrid',Ngrid,'intensive','weights',gasStruct.EnergyDissipation(gasMask),'box',boxSize);
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord,gasStruct.Machnumber(gasMask),ones(size(cellSize)),...
+                    'ngrid',Ngrid,'intensive','weights',gasStruct.EnergyDissipation(gasMask),'box',boxSize);
+            end
+
             cube=cubeStr.cube; %in K
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
             bartag='$\mathcal{M}$';
             slTypeDef='avg';
             printTypeTag='mach';
-            
+
             map=brewermap(256,'*YlOrRd');
             map(1,:)=[0 0 0];
             backgroundFlag=false;
-            
+
         case {'shock','shockenergy','energydissipation','dissipation'}
-            cubeStr=cell2grid(coord,gasStruct.EnergyDissipation(gasMask),zeros(size(cellSize)),...
-                'ngrid',Ngrid,'max','box',boxSize);
-            %cubeStr=cell2grid(coord,gasStruct.EnergyDissipation(gasMask),cellSize,...
-            %    'ngrid',Ngrid,'extensive','weights',mass,'box',boxSize);
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord,gasStruct.EnergyDissipation(gasMask),zeros(size(cellSize)),...
+                    'ngrid',Ngrid,'max','box',boxSize);
+                %cubeStr=cell2grid(coord,gasStruct.EnergyDissipation(gasMask),cellSize,...
+                %    'ngrid',Ngrid,'extensive','weights',mass,'box',boxSize);
+            end
+
             cube=cubeStr.cube.*illUnits.EnergyDissipationUnit; %
             logFlag='log';
             %weight=cubeStr.weights; % cube of mass in each uniform grid cell
@@ -742,16 +845,20 @@ if typeFlag
             bartag='$ E_\mathrm{dis}\,[10^{45}\mathrm{erg/yr}]$';
             slTypeDef='avg';
             printTypeTag='ediss';
-            
+
         case {'pressure','press','p'}
             if ~isfield(gasStruct,'Pressure')
                 gasStruct=illustris.utils.addPressure(gasStruct); %in K
             end
-            
+
             pre=gasStruct.Pressure(gasMask);
             msk=sfrMask;
-            cubeStr=cell2grid(coord(:,msk),pre(msk),cellSize(msk),...
-                'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
+
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord(:,msk),pre(msk),cellSize(msk),...
+                    'ngrid',Ngrid,'intensive','weights',mass(msk),'box',boxSize);
+            end
+
             cube=cubeStr.cube./1e-10; %in 10^-10 erg/cm^3
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
@@ -759,11 +866,15 @@ if typeFlag
             slTypeDef='avg';
             printTypeTag='press';
             cmap=brewermap(256,'PuRd');
-            
+
         case {'xray','lx'}
         case {'metalicity','metals','ztot'}
-            cubeStr=cell2grid(coord,gasStruct.GFM_Metallicity(gasMask),cellSize,...
-                'ngrid',Ngrid,'intensive','weights',mass,'box',boxSize);
+
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord,gasStruct.GFM_Metallicity(gasMask),cellSize,...
+                    'ngrid',Ngrid,'intensive','weights',mass,'box',boxSize);
+            end
+
             cube=cubeStr.cube; %i
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
@@ -778,16 +889,21 @@ if typeFlag
                 vv(k,:)=gasStruct.Velocities(k,gasMask)-vcm(k);
             end
             vv=sqrt(sum(vv.^2,1));
-            cubeStr=cell2grid(coord,vv,cellSize,...
-                'ngrid',Ngrid,'intensive','weights',mass,'box',boxSize);
-            
+
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord,vv,cellSize,...
+                    'ngrid',Ngrid,'intensive','weights',mass,'box',boxSize);
+            end
+
+
+
             cube=cubeStr.cube.*illustris.utils.velocityFactor(illUnits.snap,'gas'); %in km/sec
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
             bartag='$ |v|\,[\mathrm{km/sec}]$';
             slTypeDef='avg';
             printTypeTag='vMag';
-            
+
         case {'vr','radialvel'}
             vv=zeros(3,cellCount);
             dist=sqrt(sum(coord.^2,1));
@@ -795,12 +911,15 @@ if typeFlag
             for k=1:3
                 vv(k,:)=gasStruct.Velocities(k,gasMask)-vcm(k);
                 vr(k,:)=vv(k,:).*coord(k,:)./dist;
-                
+
             end
             vrr=sum(vr,1);
-            
-            cubeStr=cell2grid(coord,vrr,cellSize,...
-                'ngrid',Ngrid,'intensive','weights',mass,'box',boxSize);
+
+            if ~cubeStructFlag
+                cubeStr=cell2grid(coord,vrr,cellSize,...
+                    'ngrid',Ngrid,'intensive','weights',mass,'box',boxSize);
+            end
+
             cube=cubeStr.cube.*illustris.utils.velocityFactor(illUnits.snap,'gas'); %in km/sec
             logFlag=false;
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
@@ -808,25 +927,27 @@ if typeFlag
             slTypeDef='avg';
             printTypeTag='vRad';
             map = brewermap(256,'*RdBu');
-            
+
         otherwise
             error('%s - unknown data type: %s',current_function().upper,type)
     end
 end
 cube=cube.*normfactor;
 
-boxSize=cubeStr.boxSide;
+if boxSize==0
+    boxSize=cubeStr.boxSide;
+end
 
 %% prepare velocity stuff
 if velFlag || strmFlag
-    
+
     for k=1:3
         if ~vcubeFlag(k)
-            
-            
+
+
             vv=gasStruct.Velocities(k,gasMask)-vcm(k);
-            
-            
+
+
             vcubeStr=cell2grid(coord,vv,cellSize,...
                 'ngrid',Ngrid,'intensive','weights',mass,'box',boxSize);
             switch k
@@ -903,7 +1024,7 @@ end
 if thick>0
     thk=ceil(0.5.*thick./boxSize.*Ngrid);   %% thick is in comoving Mpc/h
 else
-    thk=0.5*abs(Ngrid);   %% defualt value box size 
+    thk=0.5*abs(Ngrid);   %% defualt value box size
 end
 
 % if contThick>0
@@ -983,7 +1104,7 @@ if ~clim_Flag
 end
 for projection = 1:3
     if plotproj(projection)
-        
+
         if newFigFlag
             if ~exist('hf')
                 hf=figure('color',figureColorBk);
@@ -995,59 +1116,59 @@ for projection = 1:3
         else
             error('%s -  No valid Figure handle given',current_function().upper);
         end
-        
+
         if axesHandle~=0
             axes(axesHandle);
         end
-        
-        
-        
+
+
+
         % fix to avoid problems with setting the colorbar
         %         if logFlag
         %             clims(isinf(clims))=-30;
         %         end
-        
+
         %% start plotting
-        
-        
+
+
         imj=squeeze(slice(:,:,projection));
-        
-        
-        
+
+
+
         switch(lower(nanVal))
             case 'none'
             case{'min'}
                 msk=isnan(imj);
                 imj(msk)=clims(1)-0.1.*abs(clims(1));
-            
-                case{'max'}
+
+            case{'max'}
                 msk=isnan(imj);
                 imj(msk)=clims(2)+0.1.*abs(clims(2));
             otherwise
-               error('%s - illegal value for nanVal: %s',current_function().upper,nanVal)
+                error('%s - illegal value for nanVal: %s',current_function().upper,nanVal)
         end
-          
+
         switch imageSmoothFlag
             case 'filter'
-            imj=imfilter(imj,imageFilter);
+                imj=imfilter(imj,imageFilter);
             case 'gauss'
                 imj=imgaussfilt(imj,gaussSigma);
         end
-        
+
         %if ~pointPlotFlag
         imagesc(side,side,imj,clims);%axis equal tight;
-        
+
         %         else
         %             cl=diff(side)/Ngrid;
         %             ss=side + 0.5*cl.*[1 -1];
         %             xx=linspace(ss(1),ss(2),Ngrid);
         %
         %             scatter(xx,xx,3,imj)
-        
+
         hold on
-        
-        
-        
+
+
+
         %% add velocity field
         if velFlag || strmFlag
             resampled_v_x = imresize(squeeze(v_x(:,:,projection)), [diluted_len diluted_len], 'bilinear');
@@ -1060,10 +1181,10 @@ for projection = 1:3
                 quiver(xxv,yyv,resampled_v_x,resampled_v_y, 1.3,'color',vfieldColor);
             end
         end
-        
-        
+
+
         %% add contours
-        
+
         %         if contrFlag
         %             scontrSlice=squeeze(contrSlice(:,:,projection));
         %
@@ -1079,11 +1200,11 @@ for projection = 1:3
         %             end
         %             %clabel(C,chh,'fontsize',18,'rotation',0)
         %         end
-        
+
         %% draw circles
         if exist('circStruct','var')
             for indC=1:length(circStruct) % go over all lines
-                
+
                 if ~isfield(circStruct(indC),'color')||isempty(circStruct(indC).color) % set color  if none is given
                     circStruct(indC).color=[0 0 0];
                 end
@@ -1096,22 +1217,22 @@ for projection = 1:3
                 if ~isfield(circStruct(indC),'center')||isempty(circStruct(indC).center) % set line type  if none is given
                     circStruct(indC).center=[0 0];
                 end
-                
-                
+
+
                 drawCircle(hf(end),circStruct(indC).radius,...
                     'center',circStruct(indC).center,...
                     'clr',circStruct(indC).color,...
                     'lw',circStruct(indC).width,...
                     'style',circStruct(indC).type)
             end
-            
+
         end
         hold off
-        
+
         %% draw a line
         if exist('linStruct','var')
             for indL=1:length(linStruct) % go over all lines
-                
+
                 if ~isfield(linStruct(indL),'color')||isempty(linStruct(indL).color) % set color  if none is given
                     linStruct(indL).color=[0 0 0];
                 end
@@ -1130,11 +1251,11 @@ for projection = 1:3
                     case 'horizontal'
                         xl=xlim;
                         yl=linVal;
-                        
+
                     case 'vertical'
                         yl=ylim;
                         xl=linVal;
-                        
+
                     otherwise
                         error('%s - Illegal direction in draw line: %s',current_function().upper,linStruct.dir)
                 end
@@ -1142,10 +1263,10 @@ for projection = 1:3
                 plot(xl,yl,linStruct(indL).type,'color',linStruct(indL).color,'linewidth',linStruct(indL).width);
                 hold off
             end
-            
+
         end
         hold off
-        
+
         %% draw an arrow
         if exist('arrowStruct','var')
             for indA=1:length(arrowStruct) % go over all lines
@@ -1188,23 +1309,23 @@ for projection = 1:3
                     'EdgeColor',arrowStruct(indA).edgeColor,...
                     'Ends',arrowStruct(indA).ends);
             end
-            
+
         end
         hold off
-        
+
         %% put axis labels
-        
+
         prjtag=projectiontags{projection};
-        
-        
+
+
         if(comoveFlag && zred>0)
             lunit=['[\mathrm{' lengthUnit '\, comoving\,}]'];
         else
             lunit=['[\mathrm{' lengthUnit '}]'];
         end
-        
-        
-        
+
+
+
         switch labeltype
             case {'yes','on','full'}
                 switch projection
@@ -1236,21 +1357,21 @@ for projection = 1:3
                             set(ylh,'color',figureColorText);
                         end
                 end
-                
+
             case {'half','units'}
                 if xLabFlag
                     xlh=xlabelmine(sprintf('$ %s $',lunit));
                     set(xlh,'color',figureColorText);
                 end
-                
+
                 if yLabFlag
                     ylh=ylabelmine(sprintf('$ %s $',lunit));
                     set(ylh,'color',figureColorText);
                 end
-                
+
         end
-        
-        
+
+
         %% sort out ticks
         %         if ~exist('tickStruct','var')
         %             tickjump=0.25.*boxx;
@@ -1298,23 +1419,23 @@ for projection = 1:3
         %             %xtickLabels=tickStruct.xtickLabels;
         %             %ytickLabels=tickStruct.ytickLabels;
         %         end
-        
-        
+
+
         set(gca,'Ydir','normal','Fontsize',14,...
             'DataAspectRatio',[1 1 1], 'PlotBoxAspectRatio',[1 1 1],...
             'XLim',side,'YLim',side,'color',figureColorText,...
             'xcolor',figureColorText,'ycolor',figureColorText);    %'XTickLabel',xtickLabels,'YTickLabel',ytickLabels
         % 'XTick',xticks ,'YTick',yticks,... %'TickLength',[-0.015 -0.015],...
-        
+
         if ~isempty(xticks)
             set(gca,'XTickLabel',xticks);
         end
         if ~isempty(yticks)
             set(gca,'YTickLabel',yticks);
         end
-        
+
         box on;
-        
+
         %% address Zoom
         if zoomFlag
             zb=[-1 1;-1 1];
@@ -1327,34 +1448,34 @@ for projection = 1:3
                 error('%s - Illegal zoom box',current_function().upper)
             end
             set(gca,'XLim',zb(1,:),'YLim',zb(2,:))
-            
-            
+
+
         end
-        
+
         %% do bar and colormap stuff
         clim(clims);
-        
+
         if brewerFlag
             map = brewermap(256,brewMap);
         end
-        
+
         if backgroundFlag
             map(1,:)=figureColorBk;
         end
         colormap(map);
-        
+
         bar=colorbar;
         if ~isempty(bartagOveride) || ~exist('bartag','var')
             bartag=bartagOveride;
         end
         barTitle(bar,bartag,'color',figureColorText);
-        
+
         if exist('barPropStruct','var')
             setPropertiesStructure(bar,barPropStruct)
         else
             set(bar,'Fontsize',14,'color',figureColorText,'TickLabelInterpreter','latex')
         end
-        
+
         set(gcf,'Colormap',map);
         if strcmpi(logFlag,'log')
             set(gca,'ColorScale','log');
@@ -1362,7 +1483,7 @@ for projection = 1:3
         end
         %set(gcf,'Colormap',avijet);
         %title(sprintf('%s %s, Thickness=%s Mpc/h',CLUSTER,type,num2str(thick,3)),'Fontsize',12,'Interpreter','latex');
-        
+
         %% set title
         if titleFlag
             ht=titlemine(titletag);
@@ -1378,92 +1499,103 @@ for projection = 1:3
         %                             error('MKMAP: Illegal value for title type (full/custom)')
         %                     end
         %                 end
-        
-        %% add text 
+
+        %% add text
         if exist('textBoxStruct','var')
             for indA=1:length(textBoxStruct)
                 if ~isfield(textBoxStruct(indA),'fontsize') || isempty(textBoxStruct(indA).fontsize)% set linewidth  if none is given
                     textBoxStruct(indA).fontsize=20;
                 end
-                
+
                 if ~isfield(textBoxStruct(indA),'Interpreter') || isempty(textBoxStruct(indA).Interpreter)% set linewidth  if none is given
                     textBoxStruct(indA).Interpreter='latex';
                 end
-                
-                 textHandle=text();
-                 setPropertiesStructure(textHandle,textBoxStruct(indA))
-                
-%                 %             if ~isfield(textBoxStruct(indA),'box') || isempty(textBoxStruct(indA).fontsize)% set linewidth  if none is given
-%                 %                     textBoxStruct(indA).fontsize=20;
-%                 %             end
-%                 
-%                 % calculate position of text (given in data units) to position
-%                 % within the axes and figure, as needed by annotation (0-1 in
-%                 % figure)
-%                 axPos=get(gca,'pos');
-%                 xl=xlim;
-%                 yl=ylim;
-%                 pos=textBoxStruct.pos;
-%                 
-%                 pos(1)=axPos(1)+axPos(3)*(pos(1)-xl(1))./diff(xl);
-%                 pos(2)=axPos(2)+axPos(4)*(pos(2)-yl(1))./diff(yl);
-%                 pos(3)=axPos(3)*pos(3)./diff(xl);
-%                 pos(4)=axPos(4)*pos(4)./diff(yl);
-%                 
-%                 
-%                 
-%                 
-%                 %textBoxStruct.pos=
-%                 annotation(gcf,'textbox',pos,...
-%                     'Color',textBoxStruct.color,...
-%                     'String', textBoxStruct.str,...
-%                     'Interpreter','latex',...
-%                     'Fontsize',textBoxStruct.fontsize,...
-%                     'FitBoxToText','off','linestyle','none');
-                
+
+                textHandle=text();
+                setPropertiesStructure(textHandle,textBoxStruct(indA))
+
+                %                 %             if ~isfield(textBoxStruct(indA),'box') || isempty(textBoxStruct(indA).fontsize)% set linewidth  if none is given
+                %                 %                     textBoxStruct(indA).fontsize=20;
+                %                 %             end
+                %
+                %                 % calculate position of text (given in data units) to position
+                %                 % within the axes and figure, as needed by annotation (0-1 in
+                %                 % figure)
+                %                 axPos=get(gca,'pos');
+                %                 xl=xlim;
+                %                 yl=ylim;
+                %                 pos=textBoxStruct.pos;
+                %
+                %                 pos(1)=axPos(1)+axPos(3)*(pos(1)-xl(1))./diff(xl);
+                %                 pos(2)=axPos(2)+axPos(4)*(pos(2)-yl(1))./diff(yl);
+                %                 pos(3)=axPos(3)*pos(3)./diff(xl);
+                %                 pos(4)=axPos(4)*pos(4)./diff(yl);
+                %
+                %
+                %
+                %
+                %                 %textBoxStruct.pos=
+                %                 annotation(gcf,'textbox',pos,...
+                %                     'Color',textBoxStruct.color,...
+                %                     'String', textBoxStruct.str,...
+                %                     'Interpreter','latex',...
+                %                     'Fontsize',textBoxStruct.fontsize,...
+                %                     'FitBoxToText','off','linestyle','none');
+
             end
         end
-        
-        
-        
-        
-        
+
+
+
+
+
         %% add grid
         if gridFlag
             grid;
         end
-        
+
         myAxis;
 
         %% print
         if printFlag
-            
+
             name=sprintf('gasMap%s_%s_%s_snp%i_%s',prjtag,printTypeTag,printtag,illUnits.snap,simDisplayName);
             %name=sprintf('%s/%s_map%s_b%d_%s.%s',printoutdir,CLUSTER,prjtag,boxx,printtag,'%s');
-            
-            
-            printout_fig(gcf,name,'dir',printoutdir,'v',pdfFlag)
-            
-            
+
+            exportgraphics(gcf,[printoutdir '\' name]);
+            %printout_fig(gcf,name,'dir',printoutdir,'v',pdfFlag)
+
+
         end
-        
-        
-        
-        
+
+
+
+
     end
 end
 
 if saveFigFlag
-    
+
     name=sprintf('%s/figFiles/gasMap_%s_%s_snp%i_%s.fig',DEFAULT_PRINTOUT_DIR,printTypeTag,printtag,illUnits.snap,simDisplayName);
     %name=sprintf('%s/%s_map%s_b%d_%s.%s',printoutdir,CLUSTER,prjtag,boxx,printtag,'%s');
-    
-    savefig(hf,name,'compact')
-    
+
+    savefig(hf,name)
+
 end
 
-%
-%
+if outputFlag
+    res.cubeStruct=cubeStr;
+    res.dataCube=cube;
+    res.slice=slice;
+    res.thickness=thick;
+    res.figHandle=hf;
+    res.axesHandle=gca;
+    res.clims=clims;
+    res.image=imj;
+else
+    res=hf;
+end
+
 
 end
 

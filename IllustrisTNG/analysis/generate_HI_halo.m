@@ -28,7 +28,7 @@ if readFlag
 end
 
 % load a given halo 
-id = 39;
+id = 39
 fields={};
 %gas=illustris.snapshot.loadSubhalo(bp,snap,id,'gas',fields);
 gas=illustris.snapshot.loadHalo(bp,snap,id,'gas',fields);
@@ -42,7 +42,7 @@ firstInd=subset.offsetType(1)+1;
 lastInd=firstInd+int64(subset.lenType(1))-1;
 
 % get the total neutral mass
-gas.mH_type={'BR','GK','KMT'};
+gas.mH_model=["BR","GK","KMT"];
 gas.mh=HydroCat.MH(firstInd:lastInd)';
 
 gas.mH2(1,:)=HydroCat.MH2BR(firstInd:lastInd)';

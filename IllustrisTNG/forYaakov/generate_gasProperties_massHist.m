@@ -43,7 +43,7 @@ fprintf('Setting stellar mass threshold to: %0.1e solar mass \n',massThresh);
 
 
 %% select galaxies
-
+r200c=fofs.Group_R_Crit200(subsInfo.hostFof+1);  %.*illUnits.lengthUnit;
 massAllGals=illustris.utils.get_stellar_mass(subs,'gal');
 % this mask selects all galaxies with dm component & stars, above *stellar* mass limit whose host has virials parameters
 galMaskBase=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'massTop',massThreshTop,'snap',snap,'gas','centrals');
@@ -58,15 +58,15 @@ indx3=indx2(nneib.indx);
 rnorm=max(r200c(indxBase),r200c(indx3));
 
 
-massHistStruct.mask=galMask;
-ids=find(galMask)-1;
+massHistStruct.mask=galMaskBase;
+ids=find(galMaskBase)-1;
 ids=ids(2);
 massHistStruct.ids=ids;
 
 %PropStruct.galMass=massAllGals;
 %PropStruct.galMask=galMask;
 
-r200c=fofs.Group_R_Crit200(subsInfo.hostFof+1);  %.*illUnits.lengthUnit;
+
 
 %% generate values
 %fprintf(' *** Running over %s Galaxies *** \n',num2str(sum(galMask)));
@@ -85,7 +85,7 @@ distLen=256;
 fprintf('Initializing output... \n');
 
 % set component
-compNames=["Gal", "CGMin", "CGMout", "CGMall" "Sub"];
+compNames=["Gal", "CGMin", "CGMout", "CGM", "CGMoutskirt",  "CGMall", "Sub"];
 paramNames=["Tcool",  "Temp", "Entropy", "Density"]; %"TcTff",
 propNames=["MeanMW", "StdDevMW", "MassMedian", "MassQuantiles"];
 
@@ -106,7 +106,7 @@ propNames=["MeanMW", "StdDevMW", "MassMedian", "MassQuantiles"];
 %% initialize output
 
 for fld=compNames  % different components of the SubHalo
-    PropStruct.(fld).mask=int8(galMask);
+    PropStruct.(fld).mask=int8(galMaskBase);
     for param=paramNames % physical parameters we look at
         for prop=propNames % type of metric produced
             pname=fld + param + prop;
@@ -129,7 +129,7 @@ qus=[0.1 0.25 0.5 0.75 0.9];
 PropStruct.qants=qus([1 2 4 5]);
 
 %% run over subind objects
-fprintf(' *** Running over %s Galaxies *** \n',num2str(sum(galMask)));
+fprintf(' *** Running over %s Galaxies *** \n',num2str(sum(galMaskBase)));
 
 cnt=0;
 for id=ids
@@ -145,7 +145,7 @@ structName="SubHalo_"+ num2str(id)
     end
 
     % throw away unneeded objects
-    if galMask(id+1)
+    if galMaskBase(id+1)
 
 
         cnt=cnt+1;
@@ -199,7 +199,7 @@ structName="SubHalo_"+ num2str(id)
         rmax=max(gasDist);
         rhalfStar=double(subs.SubhaloHalfmassRadType(illustris.partTypeNum('stars')+1,id+1)).*illUnits.lengthUnit; % stellar half mass radius
         rhalfGas=double(subs.SubhaloHalfmassRadType(illustris.partTypeNum('gas')+1,id+1)).*illUnits.lengthUnit; % gas half mass radius
-        
+        rv=double(r200c(id+1));
         %PropStruct.rhalfStar=double(subs.SubhaloHalfmassRadType(illustris.partTypeNum('stars')+1,id+1)); % stellar half mass radius
         tmpLim=log10([min(gas.Temperature(~sfMask)) max(gas.Temperature(~sfMask))]);
         dnsLim=log10([min(nDensity(~sfMask)) max(nDensity(~sfMask))]);
@@ -217,8 +217,18 @@ structName="SubHalo_"+ num2str(id)
                         gasDist<=rhalfGas;
 
                 case 'CGMout'
-                    % gas from  half gas mass radius and edge
-                    distMask=gasDist>rhalfGas ;
+                    % gas from  half gas mass radius and rv
+                    distMask=gasDist>rhalfGas  & ...
+                        gasDist<=rv;
+
+                case 'CGMoutskirt'
+                    % gas from rv outwards 
+                    distMask=gasDist>rv ;
+
+                case 'CGM'
+                    % All CGM within R200,c
+                distMask=gasDist>2.0.*rhalfStar & ...
+                        gasDist<=rv;
 
                 case 'CGMall'
                     % gas within 2* half stellar mass radius and edge

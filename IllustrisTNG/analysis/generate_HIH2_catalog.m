@@ -61,7 +61,7 @@ propNames="Mass";%, "avgDens"];
 
 for fld=compNames
     hih2Struct.(fld).mask=int8(galMask);
-    hih2Struct.(fld).Hmodel={'BR','GK','KMT'};
+    hih2Struct.(fld).Hmodel=["BR","GK","KMT"];
     
     for param=paramNames
         for prop=propNames
@@ -134,7 +134,7 @@ for id=0:len-1
         for k=1:3
             gas.mHi(k,:)=gas.mH-gas.mH2(k,:);
         end
-        
+        gas.mH_model=["BR","GK","KMT"];
         
         
         % find distance from galaxy center

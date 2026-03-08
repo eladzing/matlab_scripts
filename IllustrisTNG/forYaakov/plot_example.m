@@ -109,8 +109,7 @@ for k=1:2
 hf=myFigure('pos',[388  69 1510   1214]);
 tt=tiledlayout(2,2,'TileSpacing','tight','Padding','tight');
 
-compNames=["Gal", "CGMin", "CGMout", "CGMall" "Sub"];
-
+compNames=["Gal", "CGMin", "CGMout", "CGM", "CGMoutskirt", "Sub"];
 nexttile
 h=[];
 for j=1:4
@@ -182,7 +181,7 @@ exportgraphics(gcf,fname + ".png")
 
 end
 
-%%
+%% phase diagrams 
 
 % xl=massHistStruct.SubHalo_605482.phaseDiagram.xlim;
 % yl=massHistStruct.SubHalo_605482.phaseDiagram.ylim;
@@ -190,7 +189,10 @@ end
 hf=myFigure('pos',[ 89         112        1669         982]);
 
 tt=tiledlayout(2,3,'Padding','tight','TileSpacing','tight');
-
+tag=["$r<r_\mathrm{gal}$","$r_\mathrm{gal}<r<r_\mathrm{gas}$",...
+    "$r_\mathrm{gas}<r<r_\mathrm{200,c}$",...
+    "$r_\mathrm{gal}<r<r_\mathrm{200,c}$",...
+    "$r>r_\mathrm{200,c}$","Everything!"];
 for k=1:length(compNames)
 
     nexttile; 
@@ -204,7 +206,7 @@ for k=1:length(compNames)
 
     illustris.plots.plot_phaseDiagram(yl,xl,str.bird(:,:,1),...
         'fig',hf,'axes',gca,'nolabs');
-
+    text(-5.1,6.3,tag(k),'Interpreter','latex','FontSize',16);
     titlemine(compNames(k));
 end
 
@@ -218,7 +220,7 @@ tt.YLabel.Interpreter='latex';
 
 fname=outdir+"sub_"+ nam + "_birds";
 exportgraphics(gcf,fname+".png");
-%%
+%% rad birds 
 
 
 hf=myFigure('pos',[317          64        1173        1032]);
@@ -268,7 +270,7 @@ for k=1:length(pars)
     xlim([-2 xl(2)])
     ylim([yl1 yl2])
 if k==1
-    legend({'$r_\mathrm{gal}$','$r_\mathrm{gas}$'},...
+    legend({'$r_\mathrm{gal}$','$r_\mathrm{gas}$','$r_\mathrm{200,c}$'},...
     'Interpreter','latex','FontSize',16)
 end
 

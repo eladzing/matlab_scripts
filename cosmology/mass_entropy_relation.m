@@ -36,7 +36,7 @@ while (i<=length(varargin))
             i=i+1;
             fgas=varargin{i};
         otherwise
-            error('MASS_ENTROPY_RELATION - Illegal argument: %s',varargin{i});
+            error('%s - Illegal argument: %s',current_function().upper,varargin{i});
     end
     i=i+1;
 end
@@ -51,19 +51,19 @@ switch lower(rhoType)
     case 'crit'
         rhoRef=rho_crit(zred,'cosmo',cosmoStruct);
     otherwise
-        error('MASS_ENTROPY_RELATION - Illegal density type: %s',rhoType);
+        error('%s - Illegal density type: %s',current_function().upper,rhoType);
 end
 
 if ischar(delta)
     if strcmpi(delta,'vir') || strcmpi(delta,'virial')
         delt=deltavir(zred,cosmoStruct.Omm,cosmoStruct.Oml);
     else
-        error('MASS_ENTROPY_RELATION - unknown delta type: %s',delta);
+        error('%s - unknown delta type: %s',current_function().upper,delta);
     end
 elseif isnumeric(delta)
     delt=delta;
 else
-    error('MASS_ENTROPY_RELATION - unknown delta type: %s',delta);
+    error('%s - unknown delta type: %s',current_function().upper,delta);
 end
 
 if isempty(fgas)

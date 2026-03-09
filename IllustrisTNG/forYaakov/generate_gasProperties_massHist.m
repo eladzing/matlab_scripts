@@ -398,7 +398,7 @@ for id=ids
             PropStruct.(fld).(fld+"GasMass")(cnt)=sum(mm); % only non-sf gas
             PropStruct.(fld).(fld+"SfrMass")(cnt)=sum(mass(distMask & sfMask));
             PropStruct.(fld).(fld+"AvgDens")(cnt)=sum(mm)/sum(mm./nDens); % in cm^-3
-            PropStruct.(fld).([fld 'Sfr'])(cnt)=sum(gas.StarFormationRate(distMask & sfMask));
+            PropStruct.(fld).(fld+ "Sfr")(cnt)=sum(gas.StarFormationRate(distMask & sfMask));
             %
             %                 PropStruct.(fld).cellNum(indx)=sum(mask);
             %

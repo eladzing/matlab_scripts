@@ -119,7 +119,7 @@ propNames=["MeanMW", "StdDevMW", "MassMedian", "MassQuantiles"];
 %% initialize output
 
 for fld=compNames  % different components of the SubHalo
-    PropStruct.(fld).mask=int8(galMaskBase);
+    %PropStruct.(fld).mask=int8(galMaskBase);
     for param=paramNames % physical parameters we look at
         for prop=propNames % type of metric produced
             pname=fld + param + prop;
@@ -171,6 +171,7 @@ for id=ids
 
     % load gas from in sub halo
     gas=illustris.snapshot.loadSubhalo(bp, snap, id, 'gas');
+    stars=illustris.snapshot.loadSubhalo(bp, snap, id, 'stars');
 
     %indx=id+1;
     
@@ -203,6 +204,7 @@ for id=ids
 
 
     % find distance from galaxy center
+    stars.newCoord = illustris.utils.centerObject(stars.Coordinates,subs.SubhaloPos(:,id+1));
     gas.newCoord = illustris.utils.centerObject(gas.Coordinates,subs.SubhaloPos(:,id+1));
     gasDist=sqrt( sum(double(gas.newCoord).^2,1)).*illUnits.lengthUnit;
 
@@ -442,8 +444,8 @@ for id=ids
     massHistStruct.(structName).M200c=M200c(id+1);
     massHistStruct.(structName).T200c=T200c(id+1);
     massHistStruct.(structName).K200c=K200c(id+1);
-
-
+    massHistStruct.(structName).gas=gas;
+    massHistStruct.(structName).stars=stars;
 
 
     %end

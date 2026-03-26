@@ -501,20 +501,20 @@ if typeFlag
                 end
                 unitFac=illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas').*illUnits.lengthUnit.^2.*...
                     illUnits.physUnits.kpc./illUnits.physUnits.km./illUnits.physUnits.Gyr;
-                bartag='$\frac{\dot{M}_{gas}}{d\Omega}\,[\mathrm{M_\odot/Gyr}]$';
+                bartag="$\frac{\dot{M}_{gas}}{d\Omega}\,[\mathrm{M_\odot/Gyr}]$";
             else
                 if ~cubeStructFlag
                     cubeStr=cell2grid(coord,vrr.*mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
                 end
                 unitFac=illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas');
-                bartag='$\rho v_r\,[\mathrm{M_\odot/kpc^3\,km/sec}]$';
+                bartag="$\rho v_r\,[\mathrm{M_\odot/kpc^3\,km/sec}]$";
             end
 
             cube=cubeStr.cube./(cubeStr.cellVol).*unitFac; %.*illUnits.densityUnit.*illustris.utils.velocityFactor(illUnits.snap,'gas');  % Msun/kpc^3*km/sec
             %logFlag=false;
             %weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            %bartag='$\rho v_r\,[\mathrm{M_\odot/kpc^3\,km/sec}]$';
-            bartag='$\frac{\dot{M}_{gas}}{d\Omega}\,[\mathrm{M_\odot/Gyr}]$';
+            %bartag="$\rho v_r\,[\mathrm{M_\odot/kpc^3\,km/sec}]$";
+            bartag="$\frac{\dot{M}_{gas}}{d\Omega}\,[\mathrm{M_\odot/Gyr}]$";
             slTypeDef='avg';
             map = brewermap(256,'*RdBu');
 
@@ -545,11 +545,11 @@ if typeFlag
             %
             %             cube=rog.*vr.*rcube2./Mg200.*(km/Mpc*Gyr)./fluxnorm ;
             %             weight=ones(size(cube));
-            %             bartag='$\frac{\dot{M}_{gas}}{d\Omega}\,[\frac{\dot{M}_{gas}}{d\Omega}|_\mathrm{vir} ]$';
-            %             %bartag='$\frac{\dot{M}/M_{gas}}{d\Omega} [\frac{\dot M}{M_{gas}}\left|_{\mathrm{virial}}]$';
-            %             %bartag='$\dot{M}_{gas}$';
+            %             bartag="$\frac{\dot{M}_{gas}}{d\Omega}\,[\frac{\dot{M}_{gas}}{d\Omega}|_\mathrm{vir} ]$";
+            %             %bartag="$\frac{\dot{M}/M_{gas}}{d\Omega} [\frac{\dot M}{M_{gas}}\left|_{\mathrm{virial}}]$";
+            %             %bartag="$\dot{M}_{gas}$";
             %
-            %             printTypeTag='flux';
+            %             printTypeTag='flux";
             %
             %             clear vr rcube2 meshX meshY meshZ
 
@@ -562,7 +562,7 @@ if typeFlag
             cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.densityUnit; % in Msun/kpc^3
             weight=ones(size(cube));
             logFlag='log';
-            bartag='$ \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
+            bartag="$ \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$";
             slTypeDef='avg';
             printTypeTag='dens';
 
@@ -578,7 +578,7 @@ if typeFlag
             cube=(cubeStr.cube)./(cubeStr.cellVol).*illUnits.numberDensityFactor; % in cm^-3
             weight=ones(size(cube));
             logFlag='log';
-            bartag='$ n\,[\mathrm{cm^{-3}}]$';
+            bartag="$ n\,[\mathrm{cm^{-3}}]$";
             slTypeDef='avg';
 
             printTypeTag='nDens';
@@ -590,7 +590,7 @@ if typeFlag
             %             cube=(cubeStr.cube)./(cubeStr.).*illUnits.densityUnit; % in Msun/kpc^3
             %             weight=ones(size(cube));
             %             logFlag='log';
-            %             bartag='$ \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
+            %             bartag="$ \rho_{gas}\,[\mathrm{M_\odot/kpc^3}]$';
             %             slTypeDef='sum';
             %             printTypeTag='dens';
 
@@ -622,7 +622,7 @@ if typeFlag
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^3/illUnits.physUnits.mp); % and this changes to atoms/cm^3
             weight=ones(size(cube));
             logFlag='log';
-            bartag='$ n_\mathrm{HI}\,[\mathrm{cm^{-3}}]$';
+            bartag="$ n_\mathrm{HI}\,[\mathrm{cm^{-3}}]$";
             slTypeDef='avg';
 
             printTypeTag='hiDens';
@@ -648,7 +648,7 @@ if typeFlag
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^2/illUnits.physUnits.mp); % and this changes to atoms/cm^2
             weight=ones(size(cube));
             logFlag='log';
-            bartag='$ n_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$';
+            bartag="$ n_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$";
             slTypeDef='sum';
 
             printTypeTag='hiColDens';
@@ -679,7 +679,7 @@ if typeFlag
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^3/(2*illUnits.physUnits.mp)); % and this changes to atoms/cm^3
             weight=ones(size(cube));
             logFlag='log';
-            bartag='$ n_\mathrm{HI}\,[\mathrm{cm^{-3}}]$';
+            bartag="$ n_\mathrm{HI}\,[\mathrm{cm^{-3}}]$";
             slTypeDef='avg';
 
             printTypeTag='hiDens';
@@ -706,7 +706,7 @@ if typeFlag
                 (illUnits.physUnits.Ms/illUnits.physUnits.kpc^2/(2*illUnits.physUnits.mp)); % and this changes to atoms/cm^2
             weight=ones(size(cube));
             logFlag='log';
-            bartag='$ n_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$';
+            bartag="$ n_\mathrm{HI,col}\,[\mathrm{cm^{-2}}]$";
             slTypeDef='sum';
 
             printTypeTag='hiColDens';
@@ -727,7 +727,7 @@ if typeFlag
             cube=cubeStr.cube; %in K
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$ S\,[\mathrm{KeV\, cm^2}]$';
+            bartag="$ S\,[\mathrm{KeV\, cm^2}]$";
             slTypeDef='avg';
             printTypeTag='ent';
 
@@ -747,7 +747,7 @@ if typeFlag
             cube=cubeStr.cube; %in K
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag= '$ t_\mathrm{cool}\,[\mathrm{Gyr}]$' ;
+            bartag="$ t_\mathrm{cool}\,[\mathrm{Gyr}]$";
             slTypeDef='avg';
             printTypeTag='tcool';
 
@@ -787,7 +787,7 @@ if typeFlag
 
             cube=cube./tffCube;
 
-            bartag= '$ t_\mathrm{cool}/t_\mathrm{ff}$' ;
+            bartag="$ t_\mathrm{cool}/t_\mathrm{ff}$";
             slTypeDef='avg';
             printTypeTag='tctff';
 
@@ -809,7 +809,7 @@ if typeFlag
             cube=cubeStr.cube; %in K
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$ T\,[\mathrm{K}]$';
+            bartag="$ T\,[\mathrm{K}]$";
             slTypeDef='avg';
             printTypeTag='temp';
 
@@ -822,7 +822,7 @@ if typeFlag
             cube=cubeStr.cube; %in K
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$\mathcal{M}$';
+            bartag="$\mathcal{M}$";
             slTypeDef='avg';
             printTypeTag='mach';
 
@@ -842,7 +842,7 @@ if typeFlag
             logFlag='log';
             %weight=cubeStr.weights; % cube of mass in each uniform grid cell
             weight=ones(size(cube));
-            bartag='$ E_\mathrm{dis}\,[10^{45}\mathrm{erg/yr}]$';
+            bartag="$ E_\mathrm{dis}\,[10^{45}\mathrm{erg/yr}]$";
             slTypeDef='avg';
             printTypeTag='ediss';
 
@@ -862,7 +862,7 @@ if typeFlag
             cube=cubeStr.cube./1e-10; %in 10^-10 erg/cm^3
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$ P\,[\mathrm{10^{-10}erg/cm^3}]$';
+            bartag="$ P\,[\mathrm{10^{-10}erg/cm^3}]$";
             slTypeDef='avg';
             printTypeTag='press';
             cmap=brewermap(256,'PuRd');
@@ -878,7 +878,7 @@ if typeFlag
             cube=cubeStr.cube; %i
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$ Z\,[\mathrm{Z_\odot}]$';
+            bartag="$ Z\,[\mathrm{Z_\odot}]$";
             slTypeDef='avg';
             cmap=brewermap(256,'BuPu');
         case {'potential','potent'}
@@ -900,7 +900,7 @@ if typeFlag
             cube=cubeStr.cube.*illustris.utils.velocityFactor(illUnits.snap,'gas'); %in km/sec
             logFlag='log';
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$ |v|\,[\mathrm{km/sec}]$';
+            bartag="$ |v|\,[\mathrm{km/sec}]$";
             slTypeDef='avg';
             printTypeTag='vMag';
 
@@ -921,9 +921,9 @@ if typeFlag
             end
 
             cube=cubeStr.cube.*illustris.utils.velocityFactor(illUnits.snap,'gas'); %in km/sec
-            logFlag=false;
+            %logFlag=false;
             weight=cubeStr.weights; % cube of mass in each uniform grid cell
-            bartag='$v_r\,[\mathrm{km/sec}]$';
+            bartag="$v_r\,[\mathrm{km/sec}]$";
             slTypeDef='avg';
             printTypeTag='vRad';
             map = brewermap(256,'*RdBu');
@@ -1061,6 +1061,9 @@ switch lower(logFlag)
         %slice=log10(slice);
     case {'logsign'}
         slice=sign(slice).*log10(abs(slice));
+        aa=bartag.extractBefore('[');
+        bartag=aa.insertAfter('$','\log\,')+bartag.extractAfter(aa);
+        
     otherwise
         error('%s - Illegal log option: %s',current_function().upper,logFlag);
 end

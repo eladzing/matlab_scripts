@@ -1,4 +1,4 @@
-function   mkmapStars(varargin )
+function   res=mkmapStars(varargin )
 %MKMAP plotting the TNG objects
 %   Plotting the gas cells from the TNG by mapping to a uniform grid
 %% defuals and globals
@@ -76,6 +76,9 @@ xLabFlag=true;
 yLabFlag=true;
 saveFigFlag=false;
 newStarFlag=false;
+outputFlag=false;
+cubeStructFlag=false;
+
 
 %pdfFlag='pdf';
 imageSmoothFlag='none';
@@ -112,18 +115,27 @@ while i<=length(varargin)
             i=i+1;
             boxSize=varargin{i};
             % arguments for plotting a given cube
-            
+
         case{'data','datacube','cubestructure','cube'} %plot a given cube;
             i=i+1;
             cubeFlag=true;
             cubeStr=varargin{i};
-            cube=cubeStr.cube;
+            if isstruct(cubeStr)
+                cube=cubeStr.cube;
+                boxSize=cubeStr.boxSide;
+            else
+                cube=cubeStr;
+            end
+
             printTypeTag='data';
         case{'weightcube','wtcube','wtdatacube','wt'} % weight for cube
             i=i+1;
             wtFlag=true;
             weight=varargin{i};
-            
+        case{'cubestructure','fullcube'}
+            i=i+1;
+            cubeStructFlag=true;
+            cubeStr=varargin{i};
             % set whether to average or sum up slice
         case{'avg','average'}
             slType='avg';
@@ -373,13 +385,15 @@ while i<=length(varargin)
             i=i+1;
             axesHandle=varargin{i};
             newFigFlag=false;
-            
-        % case {'print'}
-        %     printFlag=true;
-        %     i=i+1;
-        %     printtag=varargin{i};
-        % case {'nopdf','png'}
-        %     pdfFlag='nopdf';
+        case{'output'}  % output the main data products of the function
+            outputFlag=true;
+           
+            % case {'print'}
+            %     printFlag=true;
+            %     i=i+1;
+            %     printtag=varargin{i};
+            % case {'nopdf','png'}
+            %     pdfFlag='nopdf';
         % case {'outputdir','printout','printoutdir'}
         %     i=i+1;
         %     printoutdir=varargin{i};
@@ -457,7 +471,9 @@ if typeFlag
             
             if sum(starMask)~=0
                 
-                cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+                if ~cubeStructFlag
+                    cubeStr=cell2grid(coord,mass,cellSize,'ngrid',Ngrid,'extensive','box',boxSize);
+                end
                 boxSize=cubeStr.boxSide;
                 
                 %cube=(cubeStr.cube.*massUnit)./(cubeStr.cellVol.*lengthUnit^3);
@@ -1123,9 +1139,19 @@ if saveFigFlag
     
 end
 
+if outputFlag
+    res.cubeStruct=cubeStr;
+    res.dataCube=cube;
+    res.slice=slice;
+    res.thickness=thick;
+    res.figHandle=hf;
+    res.axesHandle=gca;
+    res.clims=clims;
+    res.image=imj;
+else
+    res=hf;
+end
 
-%
-%
 
 end
 

@@ -6,7 +6,7 @@ function [dydx,xNew]=derive1(y,x,varargin)
 
 sx=size(x);sy=size(y);
 
-if length(sx)>2 || length(sy) >>2
+if length(sx)>2 || length(sy) >2
     error('%s - function not equipped to handle arrays larger than 2D \n',current_function().upper)
 end
 
@@ -65,4 +65,4 @@ else
         error('%s - We should not be able to get here...',current_function().upper)
     end
     
-
+end

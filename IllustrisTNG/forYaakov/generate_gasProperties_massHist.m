@@ -99,7 +99,7 @@ fprintf('Initializing output... \n');
 
 % set component
 compNames=["Gal", "CGMin", "CGMout", "CGM", "CGMoutskirt",  "CGMall", "Sub"];
-paramNames=["Tcool",  "Temp", "Entropy", "Density"]; %"TcTff",
+paramNames=["Tcool",  "Temp", "Entropy", "Density", "Zmet"]; %"TcTff",
 propNames=["MeanMW", "StdDevMW", "MassMedian", "MassQuantiles"];
 
 % These values are not needed for the catalogs
@@ -174,7 +174,7 @@ for id=ids
     stars=illustris.snapshot.loadSubhalo(bp, snap, id, 'stars');
 
     %indx=id+1;
-    
+
 
     if gas.count==0
         continue
@@ -272,6 +272,8 @@ for id=ids
             tmp=gas.Temperature(mask);
             ent=gas.Entropy(mask);
             nDens=nDensity(mask);
+            zMet=gas.GFM_Metallicity(mask);
+
 
 
             %% tcool and tc/tff
@@ -322,20 +324,6 @@ for id=ids
             massHistStruct.(structName).(fld).(param+"MassHist").hist=mhist;
             massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
 
-            %PropStruct.(fld).modeTemp(indx)=xx(mxInd);
-            %
-            %                 ll=length(tempBin)+1;
-            %                 for i=1:ll
-            %                     if i==1
-            %                         msk=xx<=tempBin(i);
-            %                     elseif i==ll
-            %                         msk=xx>tempBin(i-1);
-            %                     else
-            %                         msk=xx>tempBin(i-1) & xx<=tempBin(i);
-            %                     end
-            %
-            %                     PropStruct.(fld).massBinTemp(i,indx)=sum(massDist(msk));
-            %                 end
 
             %% entropy
             [mx, mhist, mus]=mk_mass_histogram(log10(ent),mm,qus,distLen);
@@ -349,18 +337,6 @@ for id=ids
             massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
             %PropStruct.(fld).modeEnt(indx)=xx(mxInd);
 
-            %                 ll=length(entBin)+1;
-            %                 for i=1:ll
-            %                     if i==1
-            %                         msk=xx<=entBin(i);
-            %                     elseif i==ll
-            %                         msk=xx>entBin(i-1);
-            %                     else
-            %                         msk=xx>entBin(i-1) & xx<=entBin(i);
-            %                     end
-            %
-            %                     PropStruct.(fld).massBinEnt(i,indx)=sum(massDist(msk));
-            %                 end
 
             %% number density
             [mx, mhist, mus]=mk_mass_histogram(log10(nDens),mm,qus,distLen);
@@ -374,21 +350,25 @@ for id=ids
             massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
             %PropStruct.(fld).modeDensN(id+1)=xx(mxInd);
 
-            %                 ll=length(densBin)+1;
-            %                 for i=1:ll
-            %                     if i==1
-            %                         msk=xx<=densBin(i);
-            %                     elseif i==ll
-            %                         msk=xx>densBin(i-1);
-            %                     else
-            %                         msk=xx>densBin(i-1) & xx<=densBin(i);
-            %                     end
-            %
-            %                     PropStruct.(fld).massBinDensN(i,id+1)=sum(massDist(msk));
-            %                 end
-            %
 
 
+            %% metallicity
+
+            [mx, mhist, mus]=mk_mass_histogram(log10(zMet),mm,qus,distLen);
+            %[~,mxInd]=max(massDist);
+            param='Zmet';
+            PropStruct.(fld).(fld+param+"MeanMW")(cnt)=sum(mm.*zMet)/sum(mm);
+            PropStruct.(fld).(fld+param+"StdDevMW")(cnt)=calc_standardDev(zMet,mm);
+            PropStruct.(fld).(fld+param+"MassMedian")(cnt)=10.^mus(3);
+            PropStruct.(fld).(fld+param+"MassQuantiles")(:,cnt)=10.^mus([1 2 4 5]);
+            massHistStruct.(structName).(fld).(param+"MassHist").hist=mhist;
+            massHistStruct.(structName).(fld).(param+"MassHist").xAxis=mx;
+
+
+
+
+
+            %% birds - phase diagram
             [bird, binsize, xxlim,yylim]= histogram2d(log10(nDens),log10(tmp),...
                 mm,'xlim',dnsLim,'ylim',tmpLim);
             massHistStruct.(structName).(fld).phaseDiagram.bird=bird;
@@ -427,6 +407,8 @@ for id=ids
                 par=gas.Entropy(~sfMask);
             case "Density"
                 par=nDensity(~sfMask);
+            case "Zmet"
+                par=zMet(~sfMask);
         end
 
         [bird, binsize, xxlim,yylim]= histogram2d(log10(gasDist(~sfMask)./rvir),log10(par),...
@@ -460,17 +442,17 @@ if DRACOFLAG
 
 
     % for fld=compNames
-    % 
+    %
     %     outStruct=PropStruct.(fld);
-    % 
+    %
     %     catName=sprintf('Subhalos_%s_PhysicalGasProperties',fld);
-    % 
+    %
     %     folder=['PhysicalGasProperties/' simDisplayName];
-    % 
+    %
     %     illustris.utils.write_catalog(outStruct,snap,'name',catName,...
     %         'path','default','folder','PhysicalGasProperties','v');
-    % 
-    % 
+    %
+    %
     %     %
     %     %         fname2=sprintf('gasProperties_massHistograms_snp%s_%s',num2str(snap),simDisplayName);
     %     %         save([DEFAULT_MATFILE_DIR '/' fname2],'massHist','-v7.3')

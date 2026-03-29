@@ -408,7 +408,7 @@ for id=ids
             case "Density"
                 par=nDensity(~sfMask);
             case "Zmet"
-                par=zMet(~sfMask);
+                par=gas.GFM_Metallicity(~sfMask);
         end
 
         [bird, binsize, xxlim,yylim]= histogram2d(log10(gasDist(~sfMask)./rvir),log10(par),...

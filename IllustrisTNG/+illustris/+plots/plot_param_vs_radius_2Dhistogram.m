@@ -4,7 +4,7 @@ function plot_param_vs_radius_2Dhistogram(limRad,limParam,bird,varargin )
 %
 
 % defualts
-bartag='Mass';
+bartag='log Mass [$\mathrm{M}_\odot$]';
 bmap='*Spectral';
 logFlag=true;
 xlab="radial distance ";

@@ -42,6 +42,10 @@ indxBase=find(papMask);
 
 ids=indxBase-1;
 cnt=0;
+
+step=5;
+stepNext=5;
+
 for id=ids
     % for following progress
     perCent=floor((cnt+1)/length(ids)*100);
@@ -62,7 +66,7 @@ for id=ids
     mass=double(gas.Masses.*illUnits.massUnit); %in Solarmass
     gas=illustris.utils.addTemperature(gas);
     gas.newCoord = illustris.utils.centerObject(gas.Coordinates,subs.SubhaloPos(:,id+1));
-    gasDist=sqrt( sum(double(gas.newCoord).^2,1));
+    gasDist=sqrt(sum(double(gas.newCoord).^2,1));
 
     %  radial mask 
     rv=double(R200c(id+1));
@@ -86,7 +90,7 @@ for id=ids
         gasMass.tot(k,cnt)=sum(mass(radMask(k,:)));
     end
         
-
+clear radMask 
 end
 
 %% save to catalog file

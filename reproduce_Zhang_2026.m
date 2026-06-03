@@ -44,7 +44,7 @@ ids=indxBase-1;
 cnt=0;
 for id=ids
     % for following progress
-    perCent=floor((cnt+1)/len2*100);
+    perCent=floor((cnt+1)/length(ids)*100);
 
     if (perCent>=stepNext)     %       mod(perCent,5)==0 && perCent>=5)
         fprintf('%s %% of Galaxies done  \n',num2str(floor(perCent)))

@@ -34,11 +34,11 @@ maskBase=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',m
 
 papMask=massAllGals>massThresh & subsInfo.isCentral & subs.SubhaloBHMass>0;% & subs.SubhaloMassType(1,:)>0;
 
-fprintf('Number of gals in base mask : %i',sum(maskBase & subs.SubhaloBHMass>0))
-fprintf('Number of gals in paper mask : %i',sum(papMask))
+fprintf('Number of gals in base mask : %i \n',sum(maskBase & subs.SubhaloBHMass>0))
+fprintf('Number of gals in paper mask : %i \n',sum(papMask))
 %% go over galaxies 
 
-indxBase=find(galMaskBase);
+indxBase=find(papMask);
 
 ids=indxBase-1;
 cnt=0;
@@ -70,6 +70,7 @@ for id=ids
     radMask(1,:)=gasDist<=0.03*rv;
     radMask(2,:)=gasDist<=0.15*rv;
     radMask(3,:)=gasDist<=rv;
+    radMask(4,:)=gasDist>rv;
 
     coldMask=gas.Temperature<1e4 & ~sfMask;
     coolMask=gas.Temperature>=1e4 & gas.Temperature<1e5 & ~sfMask;
@@ -77,12 +78,14 @@ for id=ids
     hotMask=gas.Temperature>=1e6 & ~sfMask;
 
         
-    for k=1:3
-        gasMass.cold(k,:)=sum(mass(coldMask & radMask(k,:)));
-        gasMass.cool(k,:)=sum(mass(coolMask & radMask(k,:)));
-        gasMass.warm(k,:)=sum(mass(warmMask & radMask(k,:)));
-        gasMass.hot(k,:)=sum(mass(hotMask & radMask(k,:)));
+    for k=1:4
+        gasMass.cold(k,cnt)=sum(mass(coldMask & radMask(k,:)));
+        gasMass.cool(k,cnt)=sum(mass(coolMask & radMask(k,:)));
+        gasMass.warm(k,cnt)=sum(mass(warmMask & radMask(k,:)));
+        gasMass.hot(k,cnt)=sum(mass(hotMask & radMask(k,:)));
+        gasMass.tot(k,cnt)=sum(mass(radMask(k,:)));
     end
+        
 
 end
 

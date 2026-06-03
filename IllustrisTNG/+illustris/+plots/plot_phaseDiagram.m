@@ -3,7 +3,7 @@ function plot_phaseDiagram(limT,limRo,bird,varargin )
 %
 
 % defualts
-bartag='Mass';
+bartag="Mass";
 bmap='*Spectral';
 logFlag=true;
 histFlag=false;
@@ -82,14 +82,16 @@ while i<=length(varargin)
     i=i+1;
 end
 
-if logFlag
-    plotBird=log10(plotBird);
-end
+ if logFlag
+     plotBird=log10(plotBird);
+     bartag="log " + bartag;
+ end
 
 if ~exist('cmap','var')
     cmap=brewermap(256,bmap);   
 end
 cmap(1,:)=[1 1 1];
+
 if ~exist('hf')
     hf=myFigure;
     %hf.visibility='on';
@@ -120,6 +122,7 @@ if colLim==[1 1]
     
     colLim(2)=max(max(plotBird));
 end
+
 
 
 if guideFlag

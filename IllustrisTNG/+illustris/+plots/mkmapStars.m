@@ -116,7 +116,7 @@ while i<=length(varargin)
             boxSize=varargin{i};
             % arguments for plotting a given cube
 
-        case{'data','datacube','cubestructure','cube'} %plot a given cube;
+        case{'data','datacube','cube'} %plot a given cube;
             i=i+1;
             cubeFlag=true;
             cubeStr=varargin{i};

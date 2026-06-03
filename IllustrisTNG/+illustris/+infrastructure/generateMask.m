@@ -4,14 +4,20 @@ function res = generateMask(varargin)
 % defaults
 global BASEPATH
 global simDisplayName
-
+global illUnits 
 
 centralFlag=false;
 satFlag=false;
-snap=99;
+
 massThresh=10^9;
 massThreshTop=Inf;
 % haloMassThresh=10^11;
+
+if ~isempty(illUnits)
+    snap=illUnits.snap;
+else
+    snap=99;
+end
 
 gasFlag=false;
 dmFlag=false;

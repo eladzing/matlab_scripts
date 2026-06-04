@@ -98,7 +98,7 @@ global DRACOFLAG
 if DRACOFLAG
 
     fname=sprintf('gasMasses_zhang2026_snp%s_%s.mat',num2str(snap),simDisplayName);
-    save([DEFAULT_MATFILE_DIR '/' fname],'PropStruct','massHistStruct','-v7.3')
+    save([DEFAULT_MATFILE_DIR '/' fname],'gasMass','-v7.3')
 
     fprintf(' *** Result saved to: %s *** \n',[DEFAULT_MATFILE_DIR '/' fname]);
 

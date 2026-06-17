@@ -1,6 +1,6 @@
-function res = find_k_nearest_neighbor(objectPositions,kk,varargin)
+function res = find_k_nearest_neighbor_3D(objectPositions,kk,varargin)
 %FIND_k_NEAREST_NEIBOR find the k-th nearest neighbor and the distance to it for a
-%bunch of objects in the TNG box. 
+% bunch of objects in the TNG box. 
 %   Given a list of object positions find the k-th nearest neigbor to each 
 %   query point. If query points aren't given it is assumed that the object
 %   positions are also the query points. 

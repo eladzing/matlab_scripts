@@ -55,28 +55,28 @@ K200c=mass_entropy_relation(M200c,'zred',illUnits.zred,'cosmo',cosmoStruct,...
 massAllGals=illustris.utils.get_stellar_mass(subs,'gal');
 
 % this mask selects all galaxies with dm component & stars, above *stellar* mass limit whose host has virials parameters
-galMaskBase=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'massTop',massThreshTop,'snap',snap,'gas','centrals');
-galMask2=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'gas','centrals');
+galMaskDwarf=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'massTop',massThreshTop,'snap',snap,'gas','centrals');
+galMaskAll=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'gas','centrals');
 
-indxBase=find(galMaskBase);
-indx2=find(galMask2);
+dwarfIndx=find(galMaskDwarf);
+allIndx=find(galMaskAll);
 
 %% find isolation condition in 3D space 
 
 isoThresh=5;
 
-nneib3=illustris.utils.find_k_nearest_neighbor_3D(subs.SubhaloPos(:,galMask2),1,'qp',subs.SubhaloPos(:,galMaskBase));
-nneib2=illustris.utils.find_k_nearest_neighbor_2D_vel(subs.SubhaloPos(:,galMask2),subs.SubhaloVel(:,galMask2),  ...
-    1,300,'qp',subs.SubhaloPos(:,galMaskBase),subs.SubhaloVel(:,galMaskBase));
+nneib3=illustris.utils.find_k_nearest_neighbor_3D(subs.SubhaloPos(:,galMaskAll),1,'qp',subs.SubhaloPos(:,galMaskDwarf));
+nneib2=illustris.utils.find_k_nearest_neighbor_2D_vel(subs.SubhaloPos(:,galMaskAll),subs.SubhaloVel(:,galMaskAll),  ...
+    1,300,'qp',subs.SubhaloPos(:,galMaskDwarf),subs.SubhaloVel(:,galMaskDwarf));
 
-indx3=indx2(nneib3.indx);
-rnorm=max(R200c(indxBase),R200c(indx3));
+indx3=allIndx(nneib3.indx);
+rnorm=max(R200c(dwarfIndx),R200c(indx3));
 isolatedMask3=nneib3.distance./rnorm>=isoThresh;
 
 
 %% find isolation condition in 2D-V space 
 for i=1:3
-    rnorm=max(R200c(indxBase),R200c(indx2(nneib2.indx(i,:))));
+    rnorm=max(R200c(dwarfIndx),R200c(allIndx(nneib2.indx(i,:))));
     isolatedMask2(i,:)=nneib2.distance(i,:)./rnorm>=isoThresh;
     isolatedMask22(i,:)=nneib2.distance(i,:)./rnorm>=isoThresh*sqrt(2/3);
     isolatedMask23(i,:)=nneib2.distance(i,:)./rnorm>=isoThresh*0.6;
@@ -91,7 +91,7 @@ i=2;
 cdfplot(log10(nneib2.distance(i,:)./rnorm));
 i=3;
 cdfplot(log10(nneib2.distance(i,:)./rnorm));
-cdfplot(log10(nneib3.distance./max(R200c(indxBase),R200c(indx2(nneib3.indx)))));
+cdfplot(log10(nneib3.distance./max(R200c(dwarfIndx),R200c(allIndx(nneib3.indx)))));
 
 %% compare isolatation criteria 
 % len=length(nneib3.distance);
@@ -116,8 +116,8 @@ i=2;
 hst2=histogram((nneib2.distance(i,:)./rnorm),linspace(0,(50),101),'Normalization','cumcount');
 i=3;
 hst3=histogram((nneib2.distance(i,:)./rnorm),linspace(0,(50),101),'Normalization','cumcount');
-hst4=histogram((nneib3.distance./max(R200c(indxBase),R200c(indx2(nneib3.indx)))),linspace(0,(50),101),'Normalization','cumcount');
-hst41=histogram((sqrt(2/3).*nneib3.distance./max(R200c(indxBase),R200c(indx2(nneib3.indx)))),linspace(-1,(50),51),'Normalization','cumcount');
+hst4=histogram((nneib3.distance./max(R200c(dwarfIndx),R200c(allIndx(nneib3.indx)))),linspace(0,(50),101),'Normalization','cumcount');
+hst41=histogram((sqrt(2/3).*nneib3.distance./max(R200c(dwarfIndx),R200c(allIndx(nneib3.indx)))),linspace(-1,(50),51),'Normalization','cumcount');
 
 %%
 
@@ -155,7 +155,7 @@ i=2;
 histogram(log10(nneib2.distance(i,:)./rnorm),'Normalization','cumcount');
 i=3;
 histogram(log10(nneib2.distance(i,:)./rnorm),'Normalization','cumcount');
-histogram(log10(nneib3.distance./max(R200c(indxBase),R200c(indx2(nneib3.indx)))),'Normalization','cumcount');
+histogram(log10(nneib3.distance./max(R200c(dwarfIndx),R200c(allIndx(nneib3.indx)))),'Normalization','cumcount');
 %%
 
 

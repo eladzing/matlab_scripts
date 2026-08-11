@@ -32,13 +32,13 @@ while i<=length(varargin)
             i=i+1;
             cosmoStruct=varargin{i};
             if ~isstruct(cosmoStruct)
-                error('comoving distance: cosmology structure must be a structure')
+                error('%s - cosmology structure must be a structure',current_function().upper)
             end
             Omm=cosmoStruct.Omm;
             Oml=cosmoStruct.Oml;
             h0=cosmoStruct.hub;
         otherwise
-            error('comoving distance - illegal argument: %s',varargin{i})
+            error('%s - illegal argument: %s',current_function().upper,varargin{i})
     end
     i=i+1;
 end

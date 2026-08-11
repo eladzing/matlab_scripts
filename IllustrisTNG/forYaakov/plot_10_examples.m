@@ -431,7 +431,7 @@ for k=1:length(flds)
 end
 
 fname=outdirBase+"dwarf10_par_limits";
-exportgraphics(gcf,fname+".png");
+%exportgraphics(gcf,fname+".png");
 
 
 %% plot limits - t & rho comparison to phase diagram

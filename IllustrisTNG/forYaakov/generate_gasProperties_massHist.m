@@ -55,38 +55,38 @@ K200c=mass_entropy_relation(M200c,'zred',illUnits.zred,'cosmo',cosmoStruct,...
 massAllGals=illustris.utils.get_stellar_mass(subs,'gal');
 
 % this mask selects all galaxies with dm component & stars, above *stellar* mass limit whose host has virials parameters
-galMaskBase=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'massTop',massThreshTop,'snap',snap,'gas','centrals');
-galMask2=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'gas','centrals');
+galMaskDwarf=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'massTop',massThreshTop,'snap',snap,'gas','centrals');
+galMaskAll=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'gas','centrals');
 
-indxBase=find(galMaskBase);
-indx2=find(galMask2);
+dwarfIndx=find(galMaskDwarf); 
+allIndx=find(galMaskAll);
 
 %% find isolation condition in 3D space 
 
-isoThresh=3;
+isoThresh=5;
+velCut=300; % in km/sec
+nneib3=illustris.utils.find_k_nearest_neighbor_3D(subs.SubhaloPos(:,galMaskAll),1,'qp',subs.SubhaloPos(:,galMaskDwarf));
+nneib2=illustris.utils.find_k_nearest_neighbor_2D_vel(subs.SubhaloPos(:,galMaskAll),subs.SubhaloVel(:,galMaskAll),  ...
+    1,velCut,'qp',subs.SubhaloPos(:,galMaskDwarf),subs.SubhaloVel(:,galMaskDwarf));
 
-nneib3=illustris.utils.find_k_nearest_neighbor_3D(subs.SubhaloPos(:,galMask2),1,'qp',subs.SubhaloPos(:,galMaskBase));
-nneib2=illustris.utils.find_k_nearest_neighbor_2D_vel(subs.SubhaloPos(:,galMask2),subs.SubhaloVel(:,galMask2),  ...
-    1,300,'qp',subs.SubhaloPos(:,galMaskBase),subs.SubhaloVel(:,galMaskBase));
-
-indx3=indx2(nneib3.indx);
-rnorm=max(R200c(indxBase),R200c(indx3));
+indx3=allIndx(nneib3.indx);
+rnorm=max(R200c(dwarfIndx),R200c(indx3));
 isolatedMask3=nneib3.distance./rnorm>=isoThresh;
 
 
 %% find isolation condition in 2D-V space 
 for i=1:3
-    rnorm=max(R200c(indxBase),R200c(indx2(nneib2.indx(i,:))));
+    rnorm=max(R200c(dwarfIndx),R200c(allIndx(nneib2.indx(i,:))));
     isolatedMask2(i,:)=nneib2.distance(i,:)./rnorm>=isoThresh;
-    isolatedMask22(i,:)=nneib2.distance(i,:)./rnorm>=isoThresh*sqrt(2/3);
+    %isolatedMask22(i,:)=nneib2.distance(i,:)./rnorm>=isoThresh*sqrt(2/3);
 end
 
 
 %% extract gas properties 
 
-dwarfIndx=indxBase(isolatedMask);
+dwarfIndx=dwarfIndx(isolatedMask3);
 
-
+% prepare nnear
 
 
 %massHistStruct.mask=galMaskBase;
@@ -95,10 +95,10 @@ ids=dwarfIndx-1;
 % ids=shuffleArray(ids);  % relic - examined 10 representative objects. 
 % ids=ids(1:10);
 massHistStruct.ids=ids;
-
-%PropStruct.galMass=massAllGals;
-%PropStruct.galMask=galMask;
-
+massHistStruct.nearNeighb3D.distance=nneib3.distance(isolatedMask3);
+massHistStruct.nearNeighb3D.indx=nneib3.indx(isolatedMask3);
+massHistStruct.nearNeighb2D.distance=nneib2.distance(:,isolatedMask3);
+massHistStruct.nearNeighb2D.indx=nneib2.indx(:,isolatedMask3);
 
 
 %% generate values
@@ -106,7 +106,7 @@ massHistStruct.ids=ids;
 
 step=5;
 stepNext=5;
-len=double(subs.count);
+%len=double(subs.count);
 
 len2=length(ids);%sum(galMask);
 
@@ -293,8 +293,7 @@ for id=ids
             ent=gas.Entropy(mask);
             nDens=nDensity(mask);
             zMet=gas.GFM_Metallicity(mask);
-
-
+           
 
             %% tcool and tc/tff
             % a small amount of cells have tc=0 set for positive cooling
@@ -405,7 +404,7 @@ for id=ids
             %                 PropStruct.(fld).cellNum(indx)=sum(mask);
             %
         end
-
+       
     end
 
     %% build radial-parameter 2Dhistogrma

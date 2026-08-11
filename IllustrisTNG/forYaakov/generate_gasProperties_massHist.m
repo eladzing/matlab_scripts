@@ -53,6 +53,7 @@ T200c=double(fofs.Group_T_Crit200(subsInfo.hostFof+1));
 K200c=mass_entropy_relation(M200c,'zred',illUnits.zred,'cosmo',cosmoStruct,...
     'delta',200,'rhotype','crit');
 massAllGals=illustris.utils.get_stellar_mass(subs,'gal');
+
 % this mask selects all galaxies with dm component & stars, above *stellar* mass limit whose host has virials parameters
 galMaskBase=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'massTop',massThreshTop,'snap',snap,'gas','centrals');
 galMask2=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',massThresh,'snap',snap,'gas','centrals');
@@ -60,20 +61,39 @@ galMask2=illustris.infrastructure.generateMask('subs',subs','fofs',fofs,'mass',m
 indxBase=find(galMaskBase);
 indx2=find(galMask2);
 
+%% find isolation condition in 3D space 
 
-nneib=illustris.utils.find_k_nearest_neighbor(subs.SubhaloPos(:,galMask2),1,'qp',subs.SubhaloPos(:,galMaskBase));
-indx3=indx2(nneib.indx);
+isoThresh=3;
+
+nneib3=illustris.utils.find_k_nearest_neighbor_3D(subs.SubhaloPos(:,galMask2),1,'qp',subs.SubhaloPos(:,galMaskBase));
+nneib2=illustris.utils.find_k_nearest_neighbor_2D_vel(subs.SubhaloPos(:,galMask2),subs.SubhaloVel(:,galMask2),  ...
+    1,300,'qp',subs.SubhaloPos(:,galMaskBase),subs.SubhaloVel(:,galMaskBase));
+
+indx3=indx2(nneib3.indx);
 rnorm=max(R200c(indxBase),R200c(indx3));
-isolatedMask=nneib.distance./rnorm>=10;
+isolatedMask3=nneib3.distance./rnorm>=isoThresh;
+
+
+%% find isolation condition in 2D-V space 
+for i=1:3
+    rnorm=max(R200c(indxBase),R200c(indx2(nneib2.indx(i,:))));
+    isolatedMask2(i,:)=nneib2.distance(i,:)./rnorm>=isoThresh;
+    isolatedMask22(i,:)=nneib2.distance(i,:)./rnorm>=isoThresh*sqrt(2/3);
+end
+
+
+%% extract gas properties 
 
 dwarfIndx=indxBase(isolatedMask);
 
 
 
+
 %massHistStruct.mask=galMaskBase;
 ids=dwarfIndx-1;
-ids=shuffleArray(ids);
-ids=ids(1:10);
+
+% ids=shuffleArray(ids);  % relic - examined 10 representative objects. 
+% ids=ids(1:10);
 massHistStruct.ids=ids;
 
 %PropStruct.galMass=massAllGals;

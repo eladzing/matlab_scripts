@@ -307,7 +307,7 @@ for id=ids
             % them to the last bin.
             tcMask=tc>0;
             if sum(tcMask)>0
-                [mx, mhist, mus]=mk_mass_histogram(log10(tc(tcMask)),mm(tcMask),qus,'len',distLen,'lim',tcoolLim);
+                [mx, mhist, mus]=mk_mass_histogram(log10(tc(tcMask)),mm(tcMask),'quantiles',qus,'len',distLen,'lim',tcoolLim);
                 %massDist(end)=massDist(end)+sum(mm(~tcMask));
                 %[~,mxInd]=max(massDist);
                 param="Tcool";
@@ -339,7 +339,7 @@ for id=ids
             end
 
             %% temperature
-            [mx, mhist, mus]=mk_mass_histogram(log10(tmp),mm,qus,'len',distLen,'lim',tempLim);
+            [mx, mhist, mus]=mk_mass_histogram(log10(tmp),mm,'quantiles',qus,'len',distLen,'lim',tempLim);
             %[~,mxInd]=max(massDist);
             param='Temp';
             PropStruct.(fld).(fld+param+"MeanMW")(cnt)=sum(mm.*tmp)/sum(mm);
@@ -351,7 +351,7 @@ for id=ids
 
 
             %% entropy
-            [mx, mhist, mus]=mk_mass_histogram(log10(ent),mm,qus,'len',distLen,'lim',entLim);
+            [mx, mhist, mus]=mk_mass_histogram(log10(ent),mm,'quantiles',qus,'len',distLen,'lim',entLim);
             %[~,mxInd]=max(massDist);
             param='Entropy';
             PropStruct.(fld).(fld+param+"MeanMW")(cnt)=sum(mm.*ent)/sum(mm);
@@ -364,7 +364,7 @@ for id=ids
 
 
             %% number density
-            [mx, mhist, mus]=mk_mass_histogram(log10(nDens),mm,qus,'len',distLen,'lim',densLim);
+            [mx, mhist, mus]=mk_mass_histogram(log10(nDens),mm,'quantiles',qus,'len',distLen,'lim',densLim);
             %[~,mxInd]=max(massDist);
             param='Density';
             PropStruct.(fld).(fld+param+"MeanMW")(cnt)=mean(nDens);
@@ -379,7 +379,7 @@ for id=ids
 
             %% metallicity
 
-            [mx, mhist, mus]=mk_mass_histogram(log10(zMet),mm,qus,'len',distLen,'lim',zmetLim);
+            [mx, mhist, mus]=mk_mass_histogram(log10(zMet),mm,'quantiles',qus,'len',distLen,'lim',zmetLim);
             %[~,mxInd]=max(massDist);
             param='Zmet';
             PropStruct.(fld).(fld+param+"MeanMW")(cnt)=sum(mm.*zMet)/sum(mm);

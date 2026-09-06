@@ -160,6 +160,12 @@ end
 
 qus=[0.1 0.25 0.5 0.75 0.9];
 PropStruct.qants=qus([1 2 4 5]);
+tempLim=[3.8 6.2];
+densLim=[-6 0.3];
+tcoolLim=[-5 4];
+entLim=[-3 2];
+zmetLim=[-9.1 -1];
+
 
 
 PropStruct.M200c=M200c(ids+1);
@@ -173,7 +179,7 @@ fprintf(' *** Running over %s Galaxies *** \n',num2str(length(ids)));
 cnt=0;
 for id=ids
 
-    structName="SubHalo_"+ num2str(id)
+    structName="SubHalo_"+ num2str(id);
 
     % for following progress
     perCent=floor((cnt+1)/len2*100);
@@ -191,7 +197,7 @@ for id=ids
 
     % load gas from in sub halo
     gas=illustris.snapshot.loadSubhalo(bp, snap, id, 'gas');
-    stars=illustris.snapshot.loadSubhalo(bp, snap, id, 'stars');
+    %stars=illustris.snapshot.loadSubhalo(bp, snap, id, 'stars');
 
     %indx=id+1;
 
@@ -224,7 +230,7 @@ for id=ids
 
 
     % find distance from galaxy center
-    stars.newCoord = illustris.utils.centerObject(stars.Coordinates,subs.SubhaloPos(:,id+1));
+    %stars.newCoord = illustris.utils.centerObject(stars.Coordinates,subs.SubhaloPos(:,id+1));
     gas.newCoord = illustris.utils.centerObject(gas.Coordinates,subs.SubhaloPos(:,id+1));
     gasDist=sqrt( sum(double(gas.newCoord).^2,1)).*illUnits.lengthUnit;
 
@@ -243,8 +249,8 @@ for id=ids
     rgal=2.0.*rhalfStar;
 
     %PropStruct.rhalfStar=double(subs.SubhaloHalfmassRadType(illustris.partTypeNum('stars')+1,id+1)); % stellar half mass radius
-    tmpLim=log10([min(gas.Temperature(~sfMask)) max(gas.Temperature(~sfMask))]);
-    dnsLim=log10([min(nDensity(~sfMask)) max(nDensity(~sfMask))]);
+    %tmpLim=log10([min(gas.Temperature(~sfMask)) max(gas.Temperature(~sfMask))]);
+    %dnsLim=log10([min(nDensity(~sfMask)) max(nDensity(~sfMask))]);
     %% go over components
     for fld=compNames
 
@@ -301,7 +307,7 @@ for id=ids
             % them to the last bin.
             tcMask=tc>0;
             if sum(tcMask)>0
-                [mx, mhist, mus]=mk_mass_histogram(log10(tc(tcMask)),mm(tcMask),qus,distLen);
+                [mx, mhist, mus]=mk_mass_histogram(log10(tc(tcMask)),mm(tcMask),qus,'len',distLen,'lim',tcoolLim);
                 %massDist(end)=massDist(end)+sum(mm(~tcMask));
                 %[~,mxInd]=max(massDist);
                 param="Tcool";
@@ -333,7 +339,7 @@ for id=ids
             end
 
             %% temperature
-            [mx, mhist, mus]=mk_mass_histogram(log10(tmp),mm,qus,distLen);
+            [mx, mhist, mus]=mk_mass_histogram(log10(tmp),mm,qus,'len',distLen,'lim',tempLim);
             %[~,mxInd]=max(massDist);
             param='Temp';
             PropStruct.(fld).(fld+param+"MeanMW")(cnt)=sum(mm.*tmp)/sum(mm);
@@ -345,7 +351,7 @@ for id=ids
 
 
             %% entropy
-            [mx, mhist, mus]=mk_mass_histogram(log10(ent),mm,qus,distLen);
+            [mx, mhist, mus]=mk_mass_histogram(log10(ent),mm,qus,'len',distLen,'lim',entLim);
             %[~,mxInd]=max(massDist);
             param='Entropy';
             PropStruct.(fld).(fld+param+"MeanMW")(cnt)=sum(mm.*ent)/sum(mm);
@@ -358,7 +364,7 @@ for id=ids
 
 
             %% number density
-            [mx, mhist, mus]=mk_mass_histogram(log10(nDens),mm,qus,distLen);
+            [mx, mhist, mus]=mk_mass_histogram(log10(nDens),mm,qus,'len',distLen,'lim',densLim);
             %[~,mxInd]=max(massDist);
             param='Density';
             PropStruct.(fld).(fld+param+"MeanMW")(cnt)=mean(nDens);
@@ -373,7 +379,7 @@ for id=ids
 
             %% metallicity
 
-            [mx, mhist, mus]=mk_mass_histogram(log10(zMet),mm,qus,distLen);
+            [mx, mhist, mus]=mk_mass_histogram(log10(zMet),mm,qus,'len',distLen,'lim',zmetLim);
             %[~,mxInd]=max(massDist);
             param='Zmet';
             PropStruct.(fld).(fld+param+"MeanMW")(cnt)=sum(mm.*zMet)/sum(mm);
@@ -389,7 +395,7 @@ for id=ids
 
             %% birds - phase diagram
             [bird, binsize, xxlim,yylim]= histogram2d(log10(nDens),log10(tmp),...
-                mm,'xlim',dnsLim,'ylim',tmpLim);
+                mm,'xlim',densLim,'ylim',tempLim);
             massHistStruct.(structName).(fld).phaseDiagram.bird=bird;
             massHistStruct.(structName).(fld).phaseDiagram.binsize=binsize;
             massHistStruct.(structName).(fld).phaseDiagram.xlim=xxlim;
@@ -420,18 +426,23 @@ for id=ids
         switch p
             case "Tcool"
                 par=tcool(~sfMask);
+                parLim=tcoolLim;
             case "Temp"
                 par=gas.Temperature(~sfMask);
+                parLim=tempLim;
             case "Entropy"
                 par=gas.Entropy(~sfMask);
+                parLim=entLim;
             case "Density"
                 par=nDensity(~sfMask);
+                parLim=densLim;
             case "Zmet"
                 par=gas.GFM_Metallicity(~sfMask);
+                parLim=zmetLim;
         end
 
         [bird, binsize, xxlim,yylim]= histogram2d(log10(gasDist(~sfMask)./rvir),log10(par),...
-            mass(~sfMask));
+            mass(~sfMask),'xlim',radLimLim,'ylim',parLim);
         massHistStruct.(structName).("rad" + p).bird=bird;
         massHistStruct.(structName).("rad" + p).binsize=binsize;
         massHistStruct.(structName).("rad" + p).xlim=xxlim;
@@ -445,8 +456,8 @@ for id=ids
     massHistStruct.(structName).M200c=M200c(id+1);
     massHistStruct.(structName).T200c=T200c(id+1);
     massHistStruct.(structName).K200c=K200c(id+1);
-    massHistStruct.(structName).gas=gas;
-    massHistStruct.(structName).stars=stars;
+    %massHistStruct.(structName).gas=gas;
+    %massHistStruct.(structName).stars=stars;
 
 
     %end

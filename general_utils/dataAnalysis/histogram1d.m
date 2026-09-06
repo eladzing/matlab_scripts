@@ -24,6 +24,8 @@ xxlim=[min(xx) max(xx)];
 if diff(xxlim)==0
     xxlim=xxlim.*[0.99 1.01];
 end
+xxlim=[min(xxlim) max(xxlim)];
+
 
 i=1;
 while i<=length(varargin)
@@ -40,7 +42,7 @@ while i<=length(varargin)
             i=i+1;
             wt=varargin{i};
         otherwise
-            error('histogram1d: Illegal argument: %s',varargin{i})
+            error('%s - Illegal argument: %s',current_function().upper,varargin{i})
     end
     i=i+1;
 end

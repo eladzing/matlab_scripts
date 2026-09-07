@@ -63,7 +63,7 @@ allIndx=find(galMaskAll);
 
 %% find isolation condition in 3D space 
 
-isoThresh=5;
+isoThresh=3;
 velCut=300; % in km/sec
 nneib3=illustris.utils.find_k_nearest_neighbor_3D(subs.SubhaloPos(:,galMaskAll),1,'qp',subs.SubhaloPos(:,galMaskDwarf));
 nneib2=illustris.utils.find_k_nearest_neighbor_2D_vel(subs.SubhaloPos(:,galMaskAll),subs.SubhaloVel(:,galMaskAll),  ...

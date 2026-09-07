@@ -165,7 +165,7 @@ densLim=[-6 0.3];
 tcoolLim=[-5 4];
 entLim=[-3 2];
 zmetLim=[-9.1 -1];
-
+radLim=[-2.0 0.5];
 
 
 PropStruct.M200c=M200c(ids+1);
@@ -442,7 +442,7 @@ for id=ids
         end
 
         [bird, binsize, xxlim,yylim]= histogram2d(log10(gasDist(~sfMask)./rvir),log10(par),...
-            mass(~sfMask),'xlim',radLimLim,'ylim',parLim);
+            mass(~sfMask),'xlim',radLim,'ylim',parLim);
         massHistStruct.(structName).("rad" + p).bird=bird;
         massHistStruct.(structName).("rad" + p).binsize=binsize;
         massHistStruct.(structName).("rad" + p).xlim=xxlim;
